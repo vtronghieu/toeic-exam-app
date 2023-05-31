@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{ISO8601} %5p %pid --- [%15.15t] %-40.40logger{1.} : %msg%n" />
+        </Console>
+
+        <RollingFile name="RollingFile"
+                     fileName="./src/main/resources/logs/app.log"
+                     filePattern="./src/main/resources/logs/$${date:yyyy-MM}/app-%d{-dd-MMMM-yyyy}-%i.log.gz">
+            <PatternLayout>
+                <pattern>%d{ISO8601} %5p %pid --- [%15.15t] %-40.40logger{1.} : %msg%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <OnStartupTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
+        </Root>
+
+        <Logger name="com.tip.dg4.toeic_exam.services" level="trace"/>
+    </Loggers>
+</Configuration>

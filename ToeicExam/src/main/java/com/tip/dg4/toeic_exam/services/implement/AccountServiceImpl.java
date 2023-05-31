@@ -6,9 +6,11 @@ import com.tip.dg4.toeic_exam.mappers.AccountMapper;
 import com.tip.dg4.toeic_exam.models.Account;
 import com.tip.dg4.toeic_exam.repositories.AccountRepository;
 import com.tip.dg4.toeic_exam.services.AccountService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+@Log4j2
 @Service
 public class AccountServiceImpl implements AccountService {
     @Autowired
@@ -22,7 +24,6 @@ public class AccountServiceImpl implements AccountService {
         Account account = accountMapper.convertRegisterDtoToModel(registerDto);
 
         accountRepository.insert(account);
-
         return accountMapper.convertModelToDto(account);
     }
 }
