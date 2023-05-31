@@ -5,4 +5,5 @@ import com.tip.dg4.toeic_exam.dto.RegisterDto;
 
 public interface AccountService {
     AccountDto registerAccount(RegisterDto registerDto);
+    AccountDto findByUsername(String username);
 }

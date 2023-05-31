@@ -7,4 +7,5 @@ import lombok.NoArgsConstructor;
 public class TExamSuccessfulConstants {
 //    Account
     public static final String ACCOUNT_S001 = "Account registered successfully";
+    public static final String ACCOUNT_S002 = "Account found successfully";
 }
