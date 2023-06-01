@@ -4,8 +4,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class TExamSuccessfulConstants {
-//    Account
+public class TExamSuccessfulConstant {
+    //    Account
     public static final String ACCOUNT_S001 = "Account registered successfully";
     public static final String ACCOUNT_S002 = "Account found successfully";
+    public static final String ACCOUNT_S003 = "Account logged successfully";
 }

@@ -4,6 +4,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class TExamConstants {
+public class TExamConstant {
     public static final String DATE_TIME_FORMAT = "dd-MM-yyyy HH:mm:ss";
 }

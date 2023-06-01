@@ -14,6 +14,7 @@ public class AccountDto {
     private UUID id;
     private String username;
     private String password;
+    private String role;
     @JsonProperty(value = "isActive")
     private boolean isActive;
 }
