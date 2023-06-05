@@ -1,5 +1,7 @@
 package com.tip.dg4.toeic_exam.config;
 
+import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
+import com.tip.dg4.toeic_exam.exceptions.ForbiddenException;
 import com.tip.dg4.toeic_exam.services.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -24,6 +26,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    @Autowired
+    private GlobalExceptionConfig globalExceptionConfig;
+
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
@@ -32,7 +37,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String token;
         String username;
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
+            globalExceptionConfig.handleForbiddenException(response, new ForbiddenException(TExamExceptionConstant.ACCOUNT_E005));
             return;
         }
         token = authHeader.substring(7);
