@@ -1,5 +1,6 @@
 package com.tip.dg4.toeic_exam.controllers;
 
+import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamSuccessfulConstant;
 import com.tip.dg4.toeic_exam.common.responses.ResponseData;
 import com.tip.dg4.toeic_exam.dto.LoginDto;
@@ -7,16 +8,19 @@ import com.tip.dg4.toeic_exam.dto.RegisterDto;
 import com.tip.dg4.toeic_exam.services.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(path = "/api/v1/accounts")
+@RequestMapping(path = TExamApiConstant.ACCOUNT_API_ROOT)
 public class AccountController {
     @Autowired
     private AccountService accountService;
 
-    @PostMapping(path = "/login", produces = "application/json")
+    @PostMapping(path = TExamApiConstant.ACCOUNT_API_LOGIN,
+                 produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseData> loginAccount(@RequestBody LoginDto loginDto) {
         HttpStatus httpStatus = HttpStatus.OK;
         ResponseData result = new ResponseData(
@@ -29,7 +33,8 @@ public class AccountController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @PostMapping(path = "/register", produces = "application/json")
+    @PostMapping(path = TExamApiConstant.ACCOUNT_API_REGISTER,
+                 produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseData> registerAccount(@RequestBody RegisterDto registerDto) {
         HttpStatus httpStatus = HttpStatus.CREATED;
         ResponseData result = new ResponseData(
@@ -42,7 +47,9 @@ public class AccountController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @GetMapping(path = "/{username}", produces = "application/json")
+    @GetMapping(path = TExamApiConstant.API_SLASH + "{username}",
+                produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('')")
     public ResponseEntity<ResponseData> findByUserName(@PathVariable(name = "username") String username) {
         HttpStatus httpStatus = HttpStatus.OK;
         ResponseData result = new ResponseData(

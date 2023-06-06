@@ -1,5 +1,6 @@
 package com.tip.dg4.toeic_exam.config;
 
+import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
 import com.tip.dg4.toeic_exam.exceptions.ForbiddenException;
 import com.tip.dg4.toeic_exam.services.JwtService;
@@ -18,9 +19,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Set;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final String BEARER_TOKEN_PREFIX = "Bearer ";
+
     @Autowired
     private JwtService jwtService;
     @Autowired
@@ -33,14 +38,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
-        String authHeader = request.getHeader("Authorization");
+        String authHeader = request.getHeader(AUTHORIZATION_HEADER);
         String token;
         String username;
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            globalExceptionConfig.handleForbiddenException(response, new ForbiddenException(TExamExceptionConstant.ACCOUNT_E005));
+        if (authHeader == null || !authHeader.startsWith(BEARER_TOKEN_PREFIX)) {
+            if (!isRequestUrlAllowed(request.getRequestURI())) {
+                globalExceptionConfig.handleForbiddenException(response, new ForbiddenException(TExamExceptionConstant.TEXAM_E002));
+                return;
+            }
+            filterChain.doFilter(request, response);
             return;
         }
-        token = authHeader.substring(7);
+        token = authHeader.substring(BEARER_TOKEN_PREFIX.length());
         username = jwtService.extractUsername(token);
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
@@ -53,5 +62,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
         }
         filterChain.doFilter(request, response);
+    }
+
+    private boolean isRequestUrlAllowed(String requestUrl) {
+        Set<String> requestUrls = Set.of(
+                TExamApiConstant.ACCOUNT_API_ROOT_LOGIN
+        );
+
+        return requestUrls.contains(requestUrl);
     }
 }

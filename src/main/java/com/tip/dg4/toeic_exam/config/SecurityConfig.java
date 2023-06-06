@@ -1,5 +1,6 @@
 package com.tip.dg4.toeic_exam.config;
 
+import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
 import com.tip.dg4.toeic_exam.services.implement.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -26,16 +27,21 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthFilter jwtAuthFilter;
 
+    @Autowired
+    private GlobalExceptionConfig globalExceptionConfig;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
-                        auth -> auth.requestMatchers(HttpMethod.POST, "/api/v1/accounts/login", "/api/v1/accounts/register").permitAll()
-                                .anyRequest().authenticated()
+                        auth -> auth.requestMatchers(HttpMethod.POST, TExamApiConstant.ACCOUNT_API_ROOT_LOGIN).permitAll()
+                                    .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(this.authenticationProvider())
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(ex -> ex.accessDeniedHandler(globalExceptionConfig.handleAccessDenied())
+                                           .authenticationEntryPoint(globalExceptionConfig.handleAuthenticationEntryPoint()));
 
         return httpSecurity.build();
     }
