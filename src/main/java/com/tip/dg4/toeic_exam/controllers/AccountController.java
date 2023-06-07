@@ -6,6 +6,8 @@ import com.tip.dg4.toeic_exam.common.responses.ResponseData;
 import com.tip.dg4.toeic_exam.dto.LoginDto;
 import com.tip.dg4.toeic_exam.dto.RegisterDto;
 import com.tip.dg4.toeic_exam.services.AccountService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +32,20 @@ public class AccountController {
                 httpStatus.getReasonPhrase(),
                 TExamSuccessfulConstant.ACCOUNT_S003,
                 accountService.loginAccount(loginDto)
+        );
+
+        return new ResponseEntity<>(result, httpStatus);
+    }
+
+    @PostMapping(path = TExamApiConstant.ACCOUNT_API_LOGOUT,
+                 produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseData> logoutAccount(HttpServletRequest request, HttpServletResponse response) {
+        HttpStatus httpStatus = HttpStatus.OK;
+        accountService.logoutAccount(request, response);
+        ResponseData result = new ResponseData(
+                httpStatus.value(),
+                httpStatus.getReasonPhrase(),
+                TExamSuccessfulConstant.ACCOUNT_S004
         );
 
         return new ResponseEntity<>(result, httpStatus);
