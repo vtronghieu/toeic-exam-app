@@ -2,7 +2,6 @@ package com.tip.dg4.toeic_exam.config;
 
 import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
 import com.tip.dg4.toeic_exam.services.implement.UserDetailsServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -24,11 +23,17 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    @Autowired
-    private JwtAuthFilter jwtAuthFilter;
+    private final JwtAuthFilter jwtAuthFilter;
+    private final GlobalExceptionConfig globalExceptionConfig;
+    private final UserDetailsServiceImpl userDetailsService;
 
-    @Autowired
-    private GlobalExceptionConfig globalExceptionConfig;
+    public SecurityConfig(JwtAuthFilter jwtAuthFilter,
+                          GlobalExceptionConfig globalExceptionConfig,
+                          UserDetailsServiceImpl userDetailsService) {
+        this.jwtAuthFilter = jwtAuthFilter;
+        this.globalExceptionConfig = globalExceptionConfig;
+        this.userDetailsService = userDetailsService;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -50,7 +55,7 @@ public class SecurityConfig {
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
 
-        authenticationProvider.setUserDetailsService(new UserDetailsServiceImpl());
+        authenticationProvider.setUserDetailsService(userDetailsService);
         authenticationProvider.setPasswordEncoder(passwordEncoder());
 
         return authenticationProvider;

@@ -13,24 +13,26 @@ import com.tip.dg4.toeic_exam.repositories.AccountRepository;
 import com.tip.dg4.toeic_exam.services.AccountService;
 import com.tip.dg4.toeic_exam.services.JwtService;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Log4j2
 @Service
 public class AccountServiceImpl implements AccountService {
-    @Autowired
-    private AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
+    private final AccountMapper accountMapper;
+    private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private AccountMapper accountMapper;
-
-    @Autowired
-    private JwtService jwtService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public AccountServiceImpl(AccountRepository accountRepository,
+                              AccountMapper accountMapper,
+                              JwtService jwtService,
+                              PasswordEncoder passwordEncoder) {
+        this.accountRepository = accountRepository;
+        this.accountMapper = accountMapper;
+        this.jwtService = jwtService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public String loginAccount(LoginDto loginDto) {

@@ -6,7 +6,6 @@ import com.tip.dg4.toeic_exam.common.responses.ResponseData;
 import com.tip.dg4.toeic_exam.dto.LoginDto;
 import com.tip.dg4.toeic_exam.dto.RegisterDto;
 import com.tip.dg4.toeic_exam.services.AccountService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +15,11 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(path = TExamApiConstant.ACCOUNT_API_ROOT)
 public class AccountController {
-    @Autowired
-    private AccountService accountService;
+    private final AccountService accountService;
+
+    public AccountController(AccountService accountService) {
+        this.accountService = accountService;
+    }
 
     @PostMapping(path = TExamApiConstant.ACCOUNT_API_LOGIN,
                  produces = MediaType.APPLICATION_JSON_VALUE)
