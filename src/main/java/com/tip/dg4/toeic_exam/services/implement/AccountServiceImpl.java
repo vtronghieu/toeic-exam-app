@@ -12,10 +12,8 @@ import com.tip.dg4.toeic_exam.mappers.AccountMapper;
 import com.tip.dg4.toeic_exam.models.Account;
 import com.tip.dg4.toeic_exam.repositories.AccountRepository;
 import com.tip.dg4.toeic_exam.services.AccountService;
-import com.tip.dg4.toeic_exam.services.JwtService;
-import jakarta.servlet.http.Cookie;
+import com.tip.dg4.toeic_exam.services.AccountTokenService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,48 +25,45 @@ import java.util.Optional;
 @Service
 public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
+    private final AccountTokenService accountTokenService;
     private final AccountMapper accountMapper;
-    private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
 
     public AccountServiceImpl(AccountRepository accountRepository,
+                              AccountTokenService accountTokenService,
                               AccountMapper accountMapper,
-                              JwtService jwtService,
                               PasswordEncoder passwordEncoder) {
         this.accountRepository = accountRepository;
+        this.accountTokenService = accountTokenService;
         this.accountMapper = accountMapper;
-        this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public String loginAccount(LoginDto loginDto) {
-        if (!existsByUsernameAndPassword(loginDto.getUsername(), loginDto.getPassword())) {
+        Optional<Account> optionalAccount = findByUsernameAndPassword(loginDto.getUsername(), loginDto.getPassword());
+        if (optionalAccount.isPresent()) {
+            return accountTokenService.createToken(optionalAccount.get());
+        } else {
             throw new UnauthorizedException(TExamExceptionConstant.ACCOUNT_E004);
         }
-
-        return jwtService.generateToken(loginDto.getUsername());
     }
 
     @Override
-    public void logoutAccount(HttpServletRequest request, HttpServletResponse response) {
-        String token = jwtService.resolveToken(request);
-        String username = jwtService.extractUsername(token);
-        Optional<Account> account = accountRepository.findByUsername(username);
-        if (account.isPresent()) {
-            request.getSession().invalidate();
-            if (token != null && jwtService.isTokenValid(token, account.get())) {
-                SecurityContextHolder.getContext().setAuthentication(null);
-                Cookie cookie = new Cookie("JSESSIONID", "");
-                cookie.setMaxAge(0);
-                cookie.setPath("/");
-                response.addCookie(cookie);
-            }
-        } else {
-            log.error("Invalid token: " + token);
-            log.error("Invalid username: " + username);
-            throw new InternalServerErrorException(TExamExceptionConstant.TEXAM_E001);
-        }
+    public void logoutAccount(HttpServletRequest request) {
+//        String token = jwtService.resolveToken(request);
+//        String username = jwtService.extractUsername(token);
+//        Optional<Account> account = accountRepository.findByUsername(username);
+//        if (account.isPresent()) {
+//            request.getSession().invalidate();
+//            if (token != null && jwtService.isTokenValid(token, account.get())) {
+//                SecurityContextHolder.getContext().setAuthentication(null);
+//            }
+//        } else {
+//            log.error("Invalid token: " + token);
+//            log.error("Invalid username: " + username);
+//            throw new InternalServerErrorException(TExamExceptionConstant.TEXAM_E001);
+//        }
     }
 
     @Override
@@ -94,9 +89,9 @@ public class AccountServiceImpl implements AccountService {
         return accountMapper.convertModelToDto(account);
     }
 
-    private boolean existsByUsernameAndPassword(String username, String password) {
+    private Optional<Account> findByUsernameAndPassword(String username, String password) {
         return accountRepository.findAll().stream()
-                .anyMatch(account -> username.equals(account.getUsername()) &&
-                        passwordEncoder.matches(password, account.getPassword()));
+                .filter(account -> username.equals(account.getUsername()) && passwordEncoder.matches(password, account.getPassword()))
+                .findFirst();
     }
 }

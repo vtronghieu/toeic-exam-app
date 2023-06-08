@@ -7,7 +7,6 @@ import com.tip.dg4.toeic_exam.dto.LoginDto;
 import com.tip.dg4.toeic_exam.dto.RegisterDto;
 import com.tip.dg4.toeic_exam.services.AccountService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -39,9 +38,9 @@ public class AccountController {
 
     @PostMapping(path = TExamApiConstant.ACCOUNT_API_LOGOUT,
                  produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseData> logoutAccount(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<ResponseData> logoutAccount(HttpServletRequest request) {
         HttpStatus httpStatus = HttpStatus.OK;
-        accountService.logoutAccount(request, response);
+        accountService.logoutAccount(request);
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),

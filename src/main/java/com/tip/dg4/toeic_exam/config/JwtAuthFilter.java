@@ -43,10 +43,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String token;
         String username;
         if (authHeader == null || !authHeader.startsWith(TExamConstant.BEARER_TOKEN_PREFIX)) {
-//            if (!isRequestUrlAllowed(request.getRequestURI())) {
-//                globalExceptionConfig.handleForbiddenException(response, new ForbiddenException(TExamExceptionConstant.TEXAM_E002));
-//                return;
-//            }
+            if (!isRequestUrlAllowed(request.getRequestURI())) {
+                globalExceptionConfig.handleForbiddenException(response, new ForbiddenException(TExamExceptionConstant.TEXAM_E002));
+                return;
+            }
             filterChain.doFilter(request, response);
             return;
         }
