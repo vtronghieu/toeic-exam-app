@@ -5,17 +5,14 @@ import com.tip.dg4.toeic_exam.dto.AccountDto;
 import com.tip.dg4.toeic_exam.dto.LoginDto;
 import com.tip.dg4.toeic_exam.dto.RegisterDto;
 import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
-import com.tip.dg4.toeic_exam.exceptions.InternalServerErrorException;
 import com.tip.dg4.toeic_exam.exceptions.NotFoundException;
 import com.tip.dg4.toeic_exam.exceptions.UnauthorizedException;
 import com.tip.dg4.toeic_exam.mappers.AccountMapper;
 import com.tip.dg4.toeic_exam.models.Account;
 import com.tip.dg4.toeic_exam.repositories.AccountRepository;
 import com.tip.dg4.toeic_exam.services.AccountService;
-import com.tip.dg4.toeic_exam.services.AccountTokenService;
-import jakarta.servlet.http.HttpServletRequest;
+import com.tip.dg4.toeic_exam.services.JwtService;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,45 +22,28 @@ import java.util.Optional;
 @Service
 public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
-    private final AccountTokenService accountTokenService;
     private final AccountMapper accountMapper;
+    private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
 
     public AccountServiceImpl(AccountRepository accountRepository,
-                              AccountTokenService accountTokenService,
                               AccountMapper accountMapper,
+                              JwtService jwtService,
                               PasswordEncoder passwordEncoder) {
         this.accountRepository = accountRepository;
-        this.accountTokenService = accountTokenService;
         this.accountMapper = accountMapper;
+        this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public String loginAccount(LoginDto loginDto) {
         Optional<Account> optionalAccount = findByUsernameAndPassword(loginDto.getUsername(), loginDto.getPassword());
-        if (optionalAccount.isPresent()) {
-            return accountTokenService.createToken(optionalAccount.get());
-        } else {
+        if (optionalAccount.isEmpty()) {
             throw new UnauthorizedException(TExamExceptionConstant.ACCOUNT_E004);
         }
-    }
 
-    @Override
-    public void logoutAccount(HttpServletRequest request) {
-//        String token = jwtService.resolveToken(request);
-//        String username = jwtService.extractUsername(token);
-//        Optional<Account> account = accountRepository.findByUsername(username);
-//        if (account.isPresent()) {
-//            request.getSession().invalidate();
-//            if (token != null && jwtService.isTokenValid(token, account.get())) {
-//                SecurityContextHolder.getContext().setAuthentication(null);
-//            }
-//        } else {
-//            log.error("Invalid token: " + token);
-//            log.error("Invalid username: " + username);
-//            throw new InternalServerErrorException(TExamExceptionConstant.TEXAM_E001);
-//        }
+        return jwtService.generateToken(optionalAccount.get());
     }
 
     @Override

@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletRequest;
 
 public interface AccountService {
     String loginAccount(LoginDto loginDto);
-    void logoutAccount(HttpServletRequest request);
     AccountDto registerAccount(RegisterDto registerDto);
     AccountDto findByUsername(String username);
 }
