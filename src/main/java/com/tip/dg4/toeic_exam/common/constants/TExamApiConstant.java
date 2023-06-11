@@ -12,6 +12,5 @@ public class TExamApiConstant {
     public static final String ACCOUNT_API_ROOT = API_ROOT + API_VERSION_1 + "/accounts";
     public static final String ACCOUNT_API_LOGIN = "/login";
     public static final String ACCOUNT_API_ROOT_LOGIN = ACCOUNT_API_ROOT + ACCOUNT_API_LOGIN;
-    public static final String ACCOUNT_API_LOGOUT = "/logout";
     public static final String ACCOUNT_API_REGISTER = "/register";
 }
