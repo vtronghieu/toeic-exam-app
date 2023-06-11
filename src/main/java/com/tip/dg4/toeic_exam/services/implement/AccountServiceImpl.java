@@ -43,7 +43,7 @@ public class AccountServiceImpl implements AccountService {
             throw new UnauthorizedException(TExamExceptionConstant.ACCOUNT_E004);
         }
 
-        return jwtService.generateToken(optionalAccount.get());
+        return jwtService.generateToken(loginDto.getUsername());
     }
 
     @Override
