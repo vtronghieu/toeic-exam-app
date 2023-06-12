@@ -1,13 +1,11 @@
 package com.tip.dg4.toeic_exam.services.implement;
 
-import com.tip.dg4.toeic_exam.common.constants.TExamConstant;
 import com.tip.dg4.toeic_exam.services.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -29,15 +27,6 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public String generateToken(UserDetails userDetails) {
         return createToken(new HashMap<>(), userDetails.getUsername());
-    }
-
-    @Override
-    public String resolveToken(HttpServletRequest request) {
-        String authHeader = request.getHeader(TExamConstant.AUTHORIZATION_HEADER);
-        if (authHeader != null && authHeader.startsWith(TExamConstant.BEARER_TOKEN_PREFIX)) {
-            return authHeader.substring(7);
-        }
-        return null;
     }
 
     @Override

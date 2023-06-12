@@ -23,6 +23,9 @@ import java.util.Set;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final String BEARER_TOKEN_PREFIX = "Bearer ";
+
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
     private final GlobalExceptionConfig globalExceptionConfig;
@@ -39,10 +42,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
-        String authHeader = request.getHeader(TExamConstant.AUTHORIZATION_HEADER);
+        String authHeader = request.getHeader(AUTHORIZATION_HEADER);
         String token;
         String username;
-        if (authHeader == null || !authHeader.startsWith(TExamConstant.BEARER_TOKEN_PREFIX)) {
+        if (authHeader == null || !authHeader.startsWith(BEARER_TOKEN_PREFIX)) {
             if (!isRequestUrlAllowed(request.getRequestURI())) {
                 globalExceptionConfig.handleForbiddenException(response, new ForbiddenException(TExamExceptionConstant.TEXAM_E002));
                 return;
@@ -50,7 +53,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        token = authHeader.substring(TExamConstant.BEARER_TOKEN_PREFIX.length());
+        token = authHeader.substring(BEARER_TOKEN_PREFIX.length());
         username = jwtService.extractUsername(token);
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
