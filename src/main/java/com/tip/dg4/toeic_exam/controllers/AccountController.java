@@ -19,6 +19,11 @@ public interface AccountController {
                  produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<ResponseData> registerAccount(@RequestBody RegisterDto registerDto);
 
+    @GetMapping(path = {TExamApiConstant.API_EMPTY, TExamApiConstant.API_SLASH},
+                produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('admin')")
+    ResponseEntity<ResponseData> getAllAccounts();
+
     @GetMapping(path = TExamApiConstant.API_SLASH + "{username}",
                 produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('admin')")

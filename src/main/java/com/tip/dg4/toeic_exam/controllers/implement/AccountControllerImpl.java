@@ -18,7 +18,7 @@ public class AccountControllerImpl implements AccountController {
         this.accountService = accountService;
     }
 
-        @Override
+    @Override
     public ResponseEntity<ResponseData> loginAccount(LoginDto loginDto) {
         HttpStatus httpStatus = HttpStatus.OK;
         ResponseData result = new ResponseData(
@@ -39,6 +39,19 @@ public class AccountControllerImpl implements AccountController {
                 httpStatus.getReasonPhrase(),
                 TExamSuccessfulConstant.ACCOUNT_S001,
                 accountService.registerAccount(registerDto)
+        );
+
+        return new ResponseEntity<>(result, httpStatus);
+    }
+
+    @Override
+    public ResponseEntity<ResponseData> getAllAccounts() {
+        HttpStatus httpStatus = HttpStatus.OK;
+        ResponseData result = new ResponseData(
+                httpStatus.value(),
+                httpStatus.getReasonPhrase(),
+                TExamSuccessfulConstant.ACCOUNT_S004,
+                accountService.getAllAccounts()
         );
 
         return new ResponseEntity<>(result, httpStatus);

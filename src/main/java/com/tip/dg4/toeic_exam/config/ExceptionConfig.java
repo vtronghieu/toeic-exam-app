@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
  */
 @Log4j2
 @ControllerAdvice
-public class GlobalExceptionConfig extends ResponseEntityExceptionHandler {
+public class ExceptionConfig extends ResponseEntityExceptionHandler {
     /**
      * Handles the NotFoundException and returns a ResponseEntity with the appropriate response.
      *

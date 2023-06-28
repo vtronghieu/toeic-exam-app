@@ -24,14 +24,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
-    private final GlobalExceptionConfig globalExceptionConfig;
+    private final ExceptionConfig exceptionConfig;
     private final UserDetailsServiceImpl userDetailsService;
 
     public SecurityConfig(JwtAuthFilter jwtAuthFilter,
-                          GlobalExceptionConfig globalExceptionConfig,
+                          ExceptionConfig exceptionConfig,
                           UserDetailsServiceImpl userDetailsService) {
         this.jwtAuthFilter = jwtAuthFilter;
-        this.globalExceptionConfig = globalExceptionConfig;
+        this.exceptionConfig = exceptionConfig;
         this.userDetailsService = userDetailsService;
     }
 
@@ -39,14 +39,14 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
-                        auth -> auth.requestMatchers(HttpMethod.POST, TExamApiConstant.ACCOUNT_API_ROOT_LOGIN).permitAll()
+                        auth -> auth.requestMatchers(HttpMethod.POST, getPermitAllAPIs()).permitAll()
                                     .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(this.authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(ex -> ex.accessDeniedHandler(globalExceptionConfig.handleAccessDenied())
-                                           .authenticationEntryPoint(globalExceptionConfig.handleAuthenticationEntryPoint()));
+                .exceptionHandling(ex -> ex.accessDeniedHandler(exceptionConfig.handleAccessDenied())
+                                           .authenticationEntryPoint(exceptionConfig.handleAuthenticationEntryPoint()));
 
         return httpSecurity.build();
     }
@@ -69,5 +69,11 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    private String[] getPermitAllAPIs() {
+        return new String[] {
+                TExamApiConstant.ACCOUNT_API_ROOT_LOGIN
+        };
     }
 }

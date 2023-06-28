@@ -2,6 +2,7 @@ package com.tip.dg4.toeic_exam.services.implement;
 
 import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
 import com.tip.dg4.toeic_exam.dto.AccountDto;
+import com.tip.dg4.toeic_exam.dto.AuthorizationDto;
 import com.tip.dg4.toeic_exam.dto.LoginDto;
 import com.tip.dg4.toeic_exam.dto.RegisterDto;
 import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
@@ -16,6 +17,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Log4j2
@@ -37,13 +39,15 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public String loginAccount(LoginDto loginDto) {
+    public AuthorizationDto loginAccount(LoginDto loginDto) {
         Optional<Account> optionalAccount = findByUsernameAndPassword(loginDto.getUsername(), loginDto.getPassword());
         if (optionalAccount.isEmpty()) {
             throw new UnauthorizedException(TExamExceptionConstant.ACCOUNT_E004);
         }
+        AuthorizationDto authorizationDto = new AuthorizationDto();
+        authorizationDto.setToken(jwtService.generateToken(loginDto.getUsername()));
 
-        return jwtService.generateToken(loginDto.getUsername());
+        return authorizationDto;
     }
 
     @Override
@@ -59,6 +63,11 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.insert(account);
 
         return accountMapper.convertModelToDto(account);
+    }
+
+    @Override
+    public List<AccountDto> getAllAccounts() {
+        return accountRepository.findAll().stream().map(accountMapper::convertModelToDto).toList();
     }
 
     @Override

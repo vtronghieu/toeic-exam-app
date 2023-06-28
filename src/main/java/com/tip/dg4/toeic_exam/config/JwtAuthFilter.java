@@ -1,7 +1,6 @@
 package com.tip.dg4.toeic_exam.config;
 
 import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
-import com.tip.dg4.toeic_exam.common.constants.TExamConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
 import com.tip.dg4.toeic_exam.exceptions.ForbiddenException;
 import com.tip.dg4.toeic_exam.services.JwtService;
@@ -28,14 +27,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
-    private final GlobalExceptionConfig globalExceptionConfig;
+    private final ExceptionConfig exceptionConfig;
 
     public JwtAuthFilter(JwtService jwtService,
                          UserDetailsService userDetailsService,
-                         GlobalExceptionConfig globalExceptionConfig) {
+                         ExceptionConfig exceptionConfig) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
-        this.globalExceptionConfig = globalExceptionConfig;
+        this.exceptionConfig = exceptionConfig;
     }
 
     @Override
@@ -47,7 +46,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String username;
         if (authHeader == null || !authHeader.startsWith(BEARER_TOKEN_PREFIX)) {
             if (!isRequestUrlAllowed(request.getRequestURI())) {
-                globalExceptionConfig.handleForbiddenException(response, new ForbiddenException(TExamExceptionConstant.TEXAM_E002));
+                exceptionConfig.handleForbiddenException(response, new ForbiddenException(TExamExceptionConstant.TEXAM_E002));
                 return;
             }
             filterChain.doFilter(request, response);

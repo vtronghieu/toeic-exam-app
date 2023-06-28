@@ -1,11 +1,15 @@
 package com.tip.dg4.toeic_exam.services;
 
 import com.tip.dg4.toeic_exam.dto.AccountDto;
+import com.tip.dg4.toeic_exam.dto.AuthorizationDto;
 import com.tip.dg4.toeic_exam.dto.LoginDto;
 import com.tip.dg4.toeic_exam.dto.RegisterDto;
 
+import java.util.List;
+
 public interface AccountService {
-    String loginAccount(LoginDto loginDto);
+    AuthorizationDto loginAccount(LoginDto loginDto);
     AccountDto registerAccount(RegisterDto registerDto);
+    List<AccountDto> getAllAccounts();
     AccountDto findByUsername(String username);
 }
