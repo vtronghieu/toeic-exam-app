@@ -1,7 +1,6 @@
 package com.tip.dg4.toeic_exam.services;
 
 import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.function.Function;
