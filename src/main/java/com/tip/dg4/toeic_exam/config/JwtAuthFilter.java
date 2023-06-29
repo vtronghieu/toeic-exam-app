@@ -69,7 +69,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private boolean isRequestUrlAllowed(String requestUrl) {
         Set<String> requestUrls = Set.of(
-                TExamApiConstant.ACCOUNT_API_ROOT_LOGIN
+                TExamApiConstant.ACCOUNT_API_ROOT_LOGIN,
+                TExamApiConstant.ACCOUNT_API_ROOT_REGISTER
         );
 
         return requestUrls.contains(requestUrl);
