@@ -1,6 +1,5 @@
 package com.tip.dg4.toeic_exam.controllers.implement;
 
-import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamSuccessfulConstant;
 import com.tip.dg4.toeic_exam.common.responses.ResponseData;
 import com.tip.dg4.toeic_exam.controllers.AccountController;
@@ -9,11 +8,9 @@ import com.tip.dg4.toeic_exam.dto.RegisterDto;
 import com.tip.dg4.toeic_exam.services.AccountService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin(origins = TExamApiConstant.GLOBAL_URL)
 public class AccountControllerImpl implements AccountController {
     private final AccountService accountService;
 
