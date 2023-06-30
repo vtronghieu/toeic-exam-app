@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 public class TExamApiConstant {
     private static final String API_ROOT = "/api";
     private static final String API_VERSION_1 = "/v1";
-    public static final String GLOBAL_URL = "https://toeic-exam-web.onrender.com";
     public static final String API_EMPTY = "";
     public static final String API_SLASH = "/";
     //    Account

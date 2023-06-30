@@ -18,6 +18,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -37,10 +42,10 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.cors(AbstractHttpConfigurer::disable)
+        httpSecurity.cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
-                        auth -> auth.requestMatchers(HttpMethod.POST, getPermitAllAPIs()).permitAll()
+                        auth -> auth.requestMatchers(getPermitAllAPIs()).permitAll()
                                     .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -50,6 +55,33 @@ public class SecurityConfig {
                                            .authenticationEntryPoint(exceptionConfig.handleAuthenticationEntryPoint()));
 
         return httpSecurity.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        List<String> allowedOrigins = List.of(
+                "http://localhost:4200",
+                "http://localhost:3000"
+        );
+        List<String> allowedMethods = List.of(
+                HttpMethod.GET.name(),
+                HttpMethod.POST.name(),
+                HttpMethod.PUT.name(),
+                HttpMethod.DELETE.name(),
+                HttpMethod.PATCH.name()
+        );
+        List<String> allowedHeaders = List.of("Authorization", "Cache-Control", "Content-Type");
+
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(allowedOrigins);
+        configuration.setAllowedMethods(allowedMethods);
+        configuration.setAllowedHeaders(allowedHeaders);
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
     }
 
     @Bean
