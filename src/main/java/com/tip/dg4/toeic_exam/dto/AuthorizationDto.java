@@ -6,5 +6,5 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class AuthorizationDto {
-    private String token;
+    private String accessToken;
 }

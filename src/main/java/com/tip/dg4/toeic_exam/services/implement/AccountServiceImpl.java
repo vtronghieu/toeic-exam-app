@@ -2,7 +2,6 @@ package com.tip.dg4.toeic_exam.services.implement;
 
 import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
 import com.tip.dg4.toeic_exam.dto.AccountDto;
-import com.tip.dg4.toeic_exam.dto.AuthorizationDto;
 import com.tip.dg4.toeic_exam.dto.LoginDto;
 import com.tip.dg4.toeic_exam.dto.RegisterDto;
 import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
@@ -10,9 +9,13 @@ import com.tip.dg4.toeic_exam.exceptions.NotFoundException;
 import com.tip.dg4.toeic_exam.exceptions.UnauthorizedException;
 import com.tip.dg4.toeic_exam.mappers.AccountMapper;
 import com.tip.dg4.toeic_exam.models.Account;
+import com.tip.dg4.toeic_exam.models.User;
 import com.tip.dg4.toeic_exam.repositories.AccountRepository;
+import com.tip.dg4.toeic_exam.repositories.UserRepository;
 import com.tip.dg4.toeic_exam.services.AccountService;
 import com.tip.dg4.toeic_exam.services.JwtService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,45 +27,55 @@ import java.util.Optional;
 @Service
 public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
+    private final UserRepository userRepository;
     private final AccountMapper accountMapper;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
 
     public AccountServiceImpl(AccountRepository accountRepository,
+                              UserRepository userRepository,
                               AccountMapper accountMapper,
                               JwtService jwtService,
                               PasswordEncoder passwordEncoder) {
         this.accountRepository = accountRepository;
+        this.userRepository = userRepository;
         this.accountMapper = accountMapper;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    public AuthorizationDto loginAccount(LoginDto loginDto) {
+    public void loginAccount(LoginDto loginDto, HttpServletResponse response) {
         Optional<Account> optionalAccount = findByUsernameAndPassword(loginDto.getUsername(), loginDto.getPassword());
         if (optionalAccount.isEmpty()) {
             throw new UnauthorizedException(TExamExceptionConstant.ACCOUNT_E004);
         }
-        AuthorizationDto authorizationDto = new AuthorizationDto();
-        authorizationDto.setToken(jwtService.generateToken(loginDto.getUsername()));
 
-        return authorizationDto;
+        String accessToken = jwtService.generateToken(loginDto.getUsername());
+        Cookie cookie = new Cookie("accessToken", accessToken);
+        cookie.setMaxAge(60 * 60 * 24 * 7);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+        cookie.setPath("/");
+        response.addCookie(cookie);
     }
 
     @Override
-    public AccountDto registerAccount(RegisterDto registerDto) {
+    public void registerAccount(RegisterDto registerDto) {
         if (accountRepository.existsByUsername(registerDto.getUsername())) {
             throw new BadRequestException(TExamExceptionConstant.ACCOUNT_E002 + registerDto.getUsername());
         }
         if (!registerDto.getPassword().equals(registerDto.getConfirmPassword())) {
             throw new BadRequestException(TExamExceptionConstant.ACCOUNT_E003);
         }
+
         Account account = accountMapper.convertRegisterDtoToModel(registerDto);
         account.setPassword(passwordEncoder.encode(account.getPassword()));
-        accountRepository.insert(account);
+        accountRepository.save(account);
 
-        return accountMapper.convertModelToDto(account);
+        User user = accountMapper.convertRegisterDtoToUser(registerDto);
+        user.setAccountId(account.getId());
+        userRepository.save(user);
     }
 
     @Override

@@ -2,77 +2,86 @@ package com.tip.dg4.toeic_exam.config;
 
 import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
-import com.tip.dg4.toeic_exam.exceptions.ForbiddenException;
+import com.tip.dg4.toeic_exam.exceptions.UnauthorizedException;
 import com.tip.dg4.toeic_exam.services.JwtService;
+import com.tip.dg4.toeic_exam.utils.ApiUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
-    private static final String AUTHORIZATION_HEADER = "Authorization";
-    private static final String BEARER_TOKEN_PREFIX = "Bearer ";
-
+    private static final String AUTH_COOKIE_NAME = "accessToken";
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
     private final ExceptionConfig exceptionConfig;
+    private final RequestMappingHandlerMapping handlerMapping;
 
     public JwtAuthFilter(JwtService jwtService,
                          UserDetailsService userDetailsService,
-                         ExceptionConfig exceptionConfig) {
+                         ExceptionConfig exceptionConfig,
+                         RequestMappingHandlerMapping handlerMapping) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
         this.exceptionConfig = exceptionConfig;
+        this.handlerMapping = handlerMapping;
     }
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
-        String authHeader = request.getHeader(AUTHORIZATION_HEADER);
-        String token;
-        String username;
-        if (authHeader == null || !authHeader.startsWith(BEARER_TOKEN_PREFIX)) {
-            if (!isRequestUrlAllowed(request.getRequestURI())) {
-                exceptionConfig.handleForbiddenException(response, new ForbiddenException(TExamExceptionConstant.TEXAM_E002));
+        Optional<Cookie> optionalCookie = Arrays.stream(Optional.ofNullable(request.getCookies()).orElse(new Cookie[0]))
+                                          .filter(cookie -> AUTH_COOKIE_NAME.equals(cookie.getName())).findAny();
+        if (optionalCookie.isEmpty()) {
+            String requestUri = request.getRequestURI();
+            if (ApiUtil.isApiExist(handlerMapping, requestUri) && !isRequestUriAllowed(requestUri)) {
+                exceptionConfig.handleUnauthorizedException(response, new UnauthorizedException(TExamExceptionConstant.TEXAM_E002));
                 return;
             }
             filterChain.doFilter(request, response);
             return;
         }
-        token = authHeader.substring(BEARER_TOKEN_PREFIX.length());
-        username = jwtService.extractUsername(token);
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        String authToken = optionalCookie.map(Cookie::getValue).orElse(null);
+        String username = jwtService.extractUsername(authToken);
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        if (Objects.nonNull(username) && Objects.isNull(securityContext.getAuthentication())) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            if (jwtService.isTokenValid(token, userDetails)) {
+            if (jwtService.isTokenValid(authToken, userDetails)) {
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities()
                 );
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                securityContext.setAuthentication(authenticationToken);
             }
         }
         filterChain.doFilter(request, response);
     }
 
-    private boolean isRequestUrlAllowed(String requestUrl) {
-        Set<String> requestUrls = Set.of(
+    private boolean isRequestUriAllowed(String requestUri) {
+        Set<String> requestUris = Set.of(
                 TExamApiConstant.ACCOUNT_API_ROOT_LOGIN,
                 TExamApiConstant.ACCOUNT_API_ROOT_REGISTER
         );
 
-        return requestUrls.contains(requestUrl);
+        return requestUris.contains(requestUri);
     }
 }

@@ -18,6 +18,7 @@ import java.util.function.Function;
 @Service
 public class JwtServiceImpl implements JwtService {
     private static final String SECRET_KEY = "4D6251655468576D5A7133743677397A24432646294A404E635266556A586E32";
+    private static final long EXPIRATION_TIMES = 1000 * 60 * 60 * 24 * 7L; // 7 days
 
     @Override
     public String generateToken(String username) {
@@ -54,13 +55,11 @@ public class JwtServiceImpl implements JwtService {
     }
 
     private String createToken(Map<String, Object> claims, String username) {
-        int timeTokenActive = 1000 * 60 * 60 * 24 * 7; // 7 days
-
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + timeTokenActive))
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIMES))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

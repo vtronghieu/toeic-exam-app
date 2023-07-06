@@ -4,6 +4,7 @@ import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
 import com.tip.dg4.toeic_exam.services.implement.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -22,12 +23,16 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
+    private static final String DEFAULT_HOST_ANGULAR = "http://localhost:4200";
+    private static final String DEFAULT_HOST_REACT = "http://localhost:3000";
+
     private final JwtAuthFilter jwtAuthFilter;
     private final ExceptionConfig exceptionConfig;
     private final UserDetailsServiceImpl userDetailsService;
@@ -59,27 +64,14 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        List<String> allowedOrigins = List.of(
-                "http://localhost:4200",
-                "http://localhost:3000"
-        );
-        List<String> allowedMethods = List.of(
-                HttpMethod.GET.name(),
-                HttpMethod.POST.name(),
-                HttpMethod.PUT.name(),
-                HttpMethod.DELETE.name(),
-                HttpMethod.PATCH.name()
-        );
-        List<String> allowedHeaders = List.of("Authorization", "Cache-Control", "Content-Type");
-
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(allowedOrigins);
-        configuration.setAllowedMethods(allowedMethods);
-        configuration.setAllowedHeaders(allowedHeaders);
-        configuration.setAllowCredentials(true);
+        CorsConfiguration corsConfig = new CorsConfiguration();
+        corsConfig.setAllowedOrigins(getAllowedOrigins());
+        corsConfig.setAllowedMethods(getAllowedMethods());
+        corsConfig.setAllowedHeaders(getAllowedHeaders());
+        corsConfig.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration(TExamApiConstant.ALL_API, corsConfig);
 
         return source;
     }
@@ -109,5 +101,30 @@ public class SecurityConfig {
                 TExamApiConstant.ACCOUNT_API_ROOT_LOGIN,
                 TExamApiConstant.ACCOUNT_API_ROOT_REGISTER
         };
+    }
+
+    private List<String> getAllowedOrigins() {
+        return new ArrayList<>(List.of(
+                DEFAULT_HOST_ANGULAR,
+                DEFAULT_HOST_REACT
+        ));
+    }
+
+    private List<String> getAllowedMethods() {
+        return new ArrayList<>(List.of(
+                HttpMethod.GET.name(),
+                HttpMethod.POST.name(),
+                HttpMethod.PUT.name(),
+                HttpMethod.DELETE.name(),
+                HttpMethod.PATCH.name()
+        ));
+    }
+
+    private List<String> getAllowedHeaders() {
+        return new ArrayList<>(List.of(
+                HttpHeaders.AUTHORIZATION,
+                HttpHeaders.CACHE_CONTROL,
+                HttpHeaders.CONTENT_TYPE
+        ));
     }
 }

@@ -4,6 +4,7 @@ import com.tip.dg4.toeic_exam.dto.AccountDto;
 import com.tip.dg4.toeic_exam.dto.RegisterDto;
 import com.tip.dg4.toeic_exam.models.Account;
 import com.tip.dg4.toeic_exam.models.AccountRole;
+import com.tip.dg4.toeic_exam.models.User;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,6 +18,20 @@ public class AccountMapper {
         account.setActive(true);
 
         return account;
+    }
+
+    public User convertRegisterDtoToUser(RegisterDto registerDto) {
+        User user = new User();
+
+        user.setSurname(registerDto.getSurname());
+        user.setName(registerDto.getName());
+        user.setEmail(registerDto.getEmail());
+        user.setDateOfBirth(registerDto.getDateOfBirth());
+        user.setAddress(registerDto.getAddress());
+        user.setPhone(registerDto.getPhone());
+        user.setAge(registerDto.getAge());
+
+        return user;
     }
 
     public AccountDto convertModelToDto(Account account) {
