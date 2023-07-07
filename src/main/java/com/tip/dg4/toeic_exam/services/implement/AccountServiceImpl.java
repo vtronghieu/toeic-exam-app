@@ -2,6 +2,7 @@ package com.tip.dg4.toeic_exam.services.implement;
 
 import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
 import com.tip.dg4.toeic_exam.dto.AccountDto;
+import com.tip.dg4.toeic_exam.dto.AuthorizationDto;
 import com.tip.dg4.toeic_exam.dto.LoginDto;
 import com.tip.dg4.toeic_exam.dto.RegisterDto;
 import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
@@ -14,8 +15,6 @@ import com.tip.dg4.toeic_exam.repositories.AccountRepository;
 import com.tip.dg4.toeic_exam.repositories.UserRepository;
 import com.tip.dg4.toeic_exam.services.AccountService;
 import com.tip.dg4.toeic_exam.services.JwtService;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -45,19 +44,17 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void loginAccount(LoginDto loginDto, HttpServletResponse response) {
+    public AuthorizationDto loginAccount(LoginDto loginDto) {
         Optional<Account> optionalAccount = findByUsernameAndPassword(loginDto.getUsername(), loginDto.getPassword());
         if (optionalAccount.isEmpty()) {
             throw new UnauthorizedException(TExamExceptionConstant.ACCOUNT_E004);
         }
 
         String accessToken = jwtService.generateToken(loginDto.getUsername());
-        Cookie cookie = new Cookie("accessToken", accessToken);
-        cookie.setMaxAge(60 * 60 * 24 * 7);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        AuthorizationDto authorizationDto = new AuthorizationDto();
+        authorizationDto.setAccessToken(accessToken);
+
+        return authorizationDto;
     }
 
     @Override

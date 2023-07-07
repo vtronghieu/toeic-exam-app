@@ -7,10 +7,10 @@ import com.tip.dg4.toeic_exam.services.JwtService;
 import com.tip.dg4.toeic_exam.utils.ApiUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,14 +22,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
-    private static final String AUTH_COOKIE_NAME = "accessToken";
+    private static final String BEARER_TOKEN_FLEX = "Bearer ";
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
     private final ExceptionConfig exceptionConfig;
@@ -49,9 +47,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
-        Optional<Cookie> optionalCookie = Arrays.stream(Optional.ofNullable(request.getCookies()).orElse(new Cookie[0]))
-                                          .filter(cookie -> AUTH_COOKIE_NAME.equals(cookie.getName())).findAny();
-        if (optionalCookie.isEmpty()) {
+        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (Objects.isNull(authHeader) || !authHeader.startsWith(BEARER_TOKEN_FLEX)) {
             String requestUri = request.getRequestURI();
             if (ApiUtil.isApiExist(handlerMapping, requestUri) && !isRequestUriAllowed(requestUri)) {
                 exceptionConfig.handleUnauthorizedException(response, new UnauthorizedException(TExamExceptionConstant.TEXAM_E002));
@@ -60,12 +57,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        String authToken = optionalCookie.map(Cookie::getValue).orElse(null);
-        String username = jwtService.extractUsername(authToken);
+        String token = authHeader.substring(BEARER_TOKEN_FLEX.length());
+        String username = jwtService.extractUsername(token);
         SecurityContext securityContext = SecurityContextHolder.getContext();
         if (Objects.nonNull(username) && Objects.isNull(securityContext.getAuthentication())) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-            if (jwtService.isTokenValid(authToken, userDetails)) {
+            if (jwtService.isTokenValid(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities()
                 );

@@ -6,7 +6,6 @@ import com.tip.dg4.toeic_exam.controllers.AccountController;
 import com.tip.dg4.toeic_exam.dto.LoginDto;
 import com.tip.dg4.toeic_exam.dto.RegisterDto;
 import com.tip.dg4.toeic_exam.services.AccountService;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,13 +19,13 @@ public class AccountControllerImpl implements AccountController {
     }
 
     @Override
-    public ResponseEntity<ResponseData> loginAccount(LoginDto loginDto, HttpServletResponse response) {
+    public ResponseEntity<ResponseData> loginAccount(LoginDto loginDto) {
         HttpStatus httpStatus = HttpStatus.OK;
-        accountService.loginAccount(loginDto, response);
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.ACCOUNT_S003
+                TExamSuccessfulConstant.ACCOUNT_S003,
+                accountService.loginAccount(loginDto)
         );
 
         return new ResponseEntity<>(result, httpStatus);
@@ -35,6 +34,7 @@ public class AccountControllerImpl implements AccountController {
     @Override
     public ResponseEntity<ResponseData> registerAccount(RegisterDto registerDto) {
         HttpStatus httpStatus = HttpStatus.CREATED;
+        accountService.registerAccount(registerDto);
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),

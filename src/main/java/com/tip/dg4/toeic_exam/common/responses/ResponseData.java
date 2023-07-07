@@ -1,9 +1,10 @@
 package com.tip.dg4.toeic_exam.common.responses;
 
-import com.tip.dg4.toeic_exam.common.constants.TExamConstant;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Collections;
 
 @Data
 @NoArgsConstructor
@@ -18,6 +19,6 @@ public class ResponseData {
         this.code = code;
         this.status = status;
         this.message = message;
-        this.data = TExamConstant.EMPTY;
+        this.data = Collections.emptyMap();
     }
 }

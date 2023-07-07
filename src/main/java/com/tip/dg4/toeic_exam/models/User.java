@@ -20,7 +20,6 @@ public class User {
     private String surname;
     private String name;
     private String email;
-    @Field(targetType = FieldType.DATE_TIME)
     private LocalDate dateOfBirth;
     private String address;
     private String phone;
