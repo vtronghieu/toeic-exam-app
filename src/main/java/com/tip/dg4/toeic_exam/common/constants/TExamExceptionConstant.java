@@ -14,4 +14,6 @@ public class TExamExceptionConstant {
     public static final String ACCOUNT_E003 = "Password and confirm password do not match";
     public static final String ACCOUNT_E004 = "Incorrect username or password";
     public static final String ACCOUNT_E005 = "This user is not have the permission to access this path";
+    //  Vocabulary category
+    public static final String VOCABULARY_CATEGORY_E001 = "Vocabulary category already exists by name: ";
 }

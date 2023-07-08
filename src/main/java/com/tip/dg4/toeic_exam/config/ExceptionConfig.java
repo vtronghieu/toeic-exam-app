@@ -5,10 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
 import com.tip.dg4.toeic_exam.common.responses.ResponseError;
-import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
-import com.tip.dg4.toeic_exam.exceptions.InternalServerErrorException;
-import com.tip.dg4.toeic_exam.exceptions.NotFoundException;
-import com.tip.dg4.toeic_exam.exceptions.UnauthorizedException;
+import com.tip.dg4.toeic_exam.exceptions.*;
 import com.tip.dg4.toeic_exam.utils.ApiUtil;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletResponse;
@@ -139,6 +136,19 @@ public class ExceptionConfig extends ResponseEntityExceptionHandler {
     @ExceptionHandler(InternalServerErrorException.class)
     public ResponseEntity<ResponseError> handleInternalServerErrorException(InternalServerErrorException exception) {
         HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        ResponseError result = new ResponseError(
+                LocalDateTime.now(),
+                httpStatus.value(),
+                httpStatus.getReasonPhrase(),
+                exception.getMessage()
+        );
+
+        return new ResponseEntity<>(result, httpStatus);
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ResponseError> handleConflictException(ConflictException exception) {
+        HttpStatus httpStatus = HttpStatus.CONFLICT;
         ResponseError result = new ResponseError(
                 LocalDateTime.now(),
                 httpStatus.value(),
