@@ -1,5 +1,6 @@
 package com.tip.dg4.toeic_exam.controllers.implement;
 
+import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamSuccessfulConstant;
 import com.tip.dg4.toeic_exam.common.responses.ResponseData;
 import com.tip.dg4.toeic_exam.controllers.AccountController;
@@ -7,10 +8,13 @@ import com.tip.dg4.toeic_exam.dto.LoginDto;
 import com.tip.dg4.toeic_exam.dto.RegisterDto;
 import com.tip.dg4.toeic_exam.services.AccountService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping(path = TExamApiConstant.ACCOUNT_API_ROOT)
 public class AccountControllerImpl implements AccountController {
     private final AccountService accountService;
 
@@ -19,7 +23,9 @@ public class AccountControllerImpl implements AccountController {
     }
 
     @Override
-    public ResponseEntity<ResponseData> loginAccount(LoginDto loginDto) {
+    @PostMapping(path = TExamApiConstant.ACCOUNT_API_LOGIN,
+                 produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseData> loginAccount(@RequestBody LoginDto loginDto) {
         HttpStatus httpStatus = HttpStatus.OK;
         ResponseData result = new ResponseData(
                 httpStatus.value(),
@@ -32,7 +38,9 @@ public class AccountControllerImpl implements AccountController {
     }
 
     @Override
-    public ResponseEntity<ResponseData> registerAccount(RegisterDto registerDto) {
+    @PostMapping(path = TExamApiConstant.ACCOUNT_API_REGISTER,
+                 produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseData> registerAccount(@RequestBody RegisterDto registerDto) {
         HttpStatus httpStatus = HttpStatus.CREATED;
         accountService.registerAccount(registerDto);
         ResponseData result = new ResponseData(
@@ -45,6 +53,9 @@ public class AccountControllerImpl implements AccountController {
     }
 
     @Override
+    @GetMapping(path = {TExamApiConstant.API_EMPTY, TExamApiConstant.API_SLASH},
+                produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<ResponseData> getAllAccounts() {
         HttpStatus httpStatus = HttpStatus.OK;
         ResponseData result = new ResponseData(
@@ -58,7 +69,10 @@ public class AccountControllerImpl implements AccountController {
     }
 
     @Override
-    public ResponseEntity<ResponseData> findByUserName(String username) {
+    @GetMapping(path = TExamApiConstant.ACCOUNT_API_FIND_BY_USERNAME + "{username}",
+                produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('admin')")
+    public ResponseEntity<ResponseData> findByUserName(@PathVariable(name = "username") String username) {
         HttpStatus httpStatus = HttpStatus.OK;
         ResponseData result = new ResponseData(
                 httpStatus.value(),

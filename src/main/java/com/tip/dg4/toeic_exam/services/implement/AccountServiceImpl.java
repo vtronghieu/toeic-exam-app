@@ -15,6 +15,7 @@ import com.tip.dg4.toeic_exam.repositories.AccountRepository;
 import com.tip.dg4.toeic_exam.repositories.UserRepository;
 import com.tip.dg4.toeic_exam.services.AccountService;
 import com.tip.dg4.toeic_exam.services.JwtService;
+import com.tip.dg4.toeic_exam.services.UserService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,17 +30,20 @@ public class AccountServiceImpl implements AccountService {
     private final UserRepository userRepository;
     private final AccountMapper accountMapper;
     private final JwtService jwtService;
+    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
     public AccountServiceImpl(AccountRepository accountRepository,
                               UserRepository userRepository,
                               AccountMapper accountMapper,
                               JwtService jwtService,
+                              UserService userService,
                               PasswordEncoder passwordEncoder) {
         this.accountRepository = accountRepository;
         this.userRepository = userRepository;
         this.accountMapper = accountMapper;
         this.jwtService = jwtService;
+        this.userService = userService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -69,10 +73,7 @@ public class AccountServiceImpl implements AccountService {
         Account account = accountMapper.convertRegisterDtoToModel(registerDto);
         account.setPassword(passwordEncoder.encode(account.getPassword()));
         accountRepository.save(account);
-
-        User user = accountMapper.convertRegisterDtoToUser(registerDto);
-        user.setAccountId(account.getId());
-        userRepository.save(user);
+        userService.createUser(registerDto, account.getId());
     }
 
     @Override
