@@ -12,5 +12,5 @@ public interface AccountController {
 
     ResponseEntity<ResponseData> getAllAccounts();
 
-    ResponseEntity<ResponseData> findByUserName(String username);
+    ResponseEntity<ResponseData> findByUsername(String username);
 }

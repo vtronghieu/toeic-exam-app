@@ -4,7 +4,6 @@ import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
 import com.tip.dg4.toeic_exam.services.implement.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -22,9 +21,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -50,7 +46,7 @@ public class SecurityConfig {
         httpSecurity.cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
-                        auth -> auth.requestMatchers(getPermitAllAPIs()).permitAll()
+                        auth -> auth.requestMatchers(HttpMethod.POST, getPermitAllAPIs()).permitAll()
                                     .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -65,9 +61,9 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.setAllowedOrigins(getAllowedOrigins());
-        corsConfig.setAllowedMethods(getAllowedMethods());
-        corsConfig.setAllowedHeaders(getAllowedHeaders());
+        corsConfig.addAllowedOriginPattern("*");
+        corsConfig.addAllowedHeader("*");
+        corsConfig.addAllowedMethod("*");
         corsConfig.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -101,30 +97,5 @@ public class SecurityConfig {
                 TExamApiConstant.ACCOUNT_API_ROOT_LOGIN,
                 TExamApiConstant.ACCOUNT_API_ROOT_REGISTER
         };
-    }
-
-    private List<String> getAllowedOrigins() {
-        return new ArrayList<>(List.of(
-                DEFAULT_HOST_ANGULAR,
-                DEFAULT_HOST_REACT
-        ));
-    }
-
-    private List<String> getAllowedMethods() {
-        return new ArrayList<>(List.of(
-                HttpMethod.GET.name(),
-                HttpMethod.POST.name(),
-                HttpMethod.PUT.name(),
-                HttpMethod.DELETE.name(),
-                HttpMethod.PATCH.name()
-        ));
-    }
-
-    private List<String> getAllowedHeaders() {
-        return new ArrayList<>(List.of(
-                HttpHeaders.AUTHORIZATION,
-                HttpHeaders.CACHE_CONTROL,
-                HttpHeaders.CONTENT_TYPE
-        ));
     }
 }

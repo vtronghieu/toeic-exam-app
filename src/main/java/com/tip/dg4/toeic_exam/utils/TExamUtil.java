@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Component
 public class TExamUtil {
-    public static String toSentenceCase(String value) {
+    public static String toTitleCase(String value) {
         String lowerCaseValue = value.toLowerCase();
 
         return lowerCaseValue.substring(0, 1).toUpperCase() + lowerCaseValue.substring(1);

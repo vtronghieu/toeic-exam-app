@@ -27,7 +27,7 @@ public class VocabularyCategoryServiceImpl implements VocabularyCategoryService 
 
     @Override
     public void createVocabularyCategory(VocabularyCategoryDto vocabularyCategoryDto) {
-        String formatName = TExamUtil.toSentenceCase(vocabularyCategoryDto.getName());
+        String formatName = TExamUtil.toTitleCase(vocabularyCategoryDto.getName());
         if (vocabularyCategoryRepository.existsByName(formatName)) {
             throw new ConflictException(TExamExceptionConstant.VOCABULARY_CATEGORY_E001 + formatName);
         }

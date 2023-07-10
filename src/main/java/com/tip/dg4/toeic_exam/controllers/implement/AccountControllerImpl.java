@@ -69,10 +69,11 @@ public class AccountControllerImpl implements AccountController {
     }
 
     @Override
-    @GetMapping(path = TExamApiConstant.ACCOUNT_API_FIND_BY_USERNAME + "{username}",
+    @GetMapping(path = TExamApiConstant.API_EMPTY,
+                params = "username",
                 produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<ResponseData> findByUserName(@PathVariable(name = "username") String username) {
+    public ResponseEntity<ResponseData> findByUsername(@RequestParam(name = "username") String username) {
         HttpStatus httpStatus = HttpStatus.OK;
         ResponseData result = new ResponseData(
                 httpStatus.value(),
