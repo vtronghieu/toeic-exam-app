@@ -21,7 +21,7 @@ public class VocabularyCategoryMapper {
 
         vocabularyCategoryDto.setId(vocabularyCategory.getId());
         vocabularyCategoryDto.setName(vocabularyCategory.getName());
-        vocabularyCategoryDto.setActive(vocabularyCategoryDto.isActive());
+        vocabularyCategoryDto.setActive(vocabularyCategory.isActive());
 
         return vocabularyCategoryDto;
     }

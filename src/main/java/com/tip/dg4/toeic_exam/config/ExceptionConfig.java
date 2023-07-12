@@ -115,7 +115,7 @@ public class ExceptionConfig extends ResponseEntityExceptionHandler {
             String requestUri = TExamApiConstant.API_ERROR.equals(request.getRequestURI()) ?
                                 request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI).toString() :
                                 request.getRequestURI();
-            if (ApiUtil.isApiExist(handlerMapping, requestUri)) return;
+            if (ApiUtil.existAPI(handlerMapping, requestUri)) return;
 
             HttpStatus httpStatus = HttpStatus.NOT_FOUND;
             ResponseError result = new ResponseError();

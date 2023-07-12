@@ -50,7 +50,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (Objects.isNull(authHeader) || !authHeader.startsWith(BEARER_TOKEN_FLEX)) {
             String requestUri = request.getRequestURI();
-            if (ApiUtil.isApiExist(handlerMapping, requestUri) && !isRequestUriAllowed(requestUri)) {
+            if (ApiUtil.existAPI(handlerMapping, requestUri) && !isRequestUriAllowed(requestUri)) {
                 exceptionConfig.handleUnauthorizedException(response, new UnauthorizedException(TExamExceptionConstant.TEXAM_E002));
                 return;
             }

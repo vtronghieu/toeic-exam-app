@@ -13,4 +13,7 @@ public class TExamSuccessfulConstant {
     //  Vocabulary category
     public static final String VOCABULARY_CATEGORY_S001 = "Vocabulary category was created successfully";
     public static final String VOCABULARY_CATEGORY_S002 = "Get all vocabulary categories successfully";
+    public static final String VOCABULARY_CATEGORY_S003 = "Vocabulary category was updated successfully";
+    public static final String VOCABULARY_CATEGORY_S004 = "Vocabulary category was deleted successfully";
+
 }

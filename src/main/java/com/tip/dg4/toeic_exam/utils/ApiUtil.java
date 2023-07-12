@@ -14,7 +14,7 @@ import java.util.Set;
 @Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ApiUtil {
-    public static boolean isApiExist(RequestMappingHandlerMapping handlerMapping, String requestUri) {
+    public static boolean existAPI(RequestMappingHandlerMapping handlerMapping, String requestUri) {
         Set<RequestMappingInfo> requestMappingInfo = handlerMapping.getHandlerMethods().keySet();
 
         for (RequestMappingInfo mappingInfo : requestMappingInfo) {

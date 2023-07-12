@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping(path = TExamApiConstant.VOCABULARY_CATEGORY_API_ROOT)
 public class VocabularyCategoryControllerImpl implements VocabularyCategoryController {
@@ -47,6 +49,39 @@ public class VocabularyCategoryControllerImpl implements VocabularyCategoryContr
                 httpStatus.getReasonPhrase(),
                 TExamSuccessfulConstant.VOCABULARY_CATEGORY_S002,
                 vocabularyCategoryService.getAllVocabularyCategories()
+        );
+
+        return new ResponseEntity<>(result, httpStatus);
+    }
+
+    @Override
+    @GetMapping(path = TExamApiConstant.API_EMPTY,
+                params = "name",
+                produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseData> getOneByName(@RequestParam(name = "name") String name) {
+        HttpStatus httpStatus = HttpStatus.OK;
+        ResponseData result = new ResponseData(
+                httpStatus.value(),
+                httpStatus.getReasonPhrase(),
+                TExamSuccessfulConstant.VOCABULARY_CATEGORY_S003,
+                vocabularyCategoryService.getOneByName(name)
+        );
+
+        return new ResponseEntity<>(result, httpStatus);
+    }
+
+    @Override
+    @PutMapping(path = TExamApiConstant.API_UPDATE,
+                params = "vocabularyCategoryId",
+                produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseData> updateVocabularyCategory(@RequestParam(name = "vocabularyCategoryId") UUID vocabularyCategoryId,
+                                                                 @RequestBody VocabularyCategoryDto vocabularyCategoryDto) {
+        HttpStatus httpStatus = HttpStatus.OK;
+        vocabularyCategoryService.updateVocabularyCategory(vocabularyCategoryId, vocabularyCategoryDto);
+        ResponseData result = new ResponseData(
+                httpStatus.value(),
+                httpStatus.getReasonPhrase(),
+                TExamSuccessfulConstant.VOCABULARY_CATEGORY_S003
         );
 
         return new ResponseEntity<>(result, httpStatus);
