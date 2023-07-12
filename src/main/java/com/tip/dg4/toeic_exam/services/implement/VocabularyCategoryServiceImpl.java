@@ -48,7 +48,7 @@ public class VocabularyCategoryServiceImpl implements VocabularyCategoryService 
     }
 
     @Override
-    public VocabularyCategoryDto getOneByName(String name) {
+    public VocabularyCategoryDto getVocabularyCategoryByName(String name) {
         Optional<VocabularyCategory> optionalCategory = vocabularyCategoryRepository.findOneByNameIgnoreCase(name);
         if (optionalCategory.isEmpty()) {
             throw new NotFoundException(TExamExceptionConstant.VOCABULARY_CATEGORY_E004 + name);

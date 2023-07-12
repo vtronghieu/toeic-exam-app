@@ -49,7 +49,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AuthorizationDto loginAccount(LoginDto loginDto) {
-        Optional<Account> optionalAccount = findByUsernameAndPassword(loginDto.getUsername(), loginDto.getPassword());
+        Optional<Account> optionalAccount = findOneByUsernameAndPassword(loginDto.getUsername(), loginDto.getPassword());
         if (optionalAccount.isEmpty()) {
             throw new UnauthorizedException(TExamExceptionConstant.ACCOUNT_E004);
         }
@@ -82,14 +82,14 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountDto findByUsername(String username) {
+    public AccountDto getAccountByUsername(String username) {
         Account account = accountRepository.findByUsername(username)
                 .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.ACCOUNT_E001 + username));
 
         return accountMapper.convertModelToDto(account);
     }
 
-    private Optional<Account> findByUsernameAndPassword(String username, String password) {
+    private Optional<Account> findOneByUsernameAndPassword(String username, String password) {
         return accountRepository.findAll().stream()
                 .filter(account -> username.equals(account.getUsername()) && passwordEncoder.matches(password, account.getPassword()))
                 .findFirst();

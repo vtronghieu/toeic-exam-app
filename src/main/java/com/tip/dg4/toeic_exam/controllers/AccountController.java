@@ -7,10 +7,7 @@ import org.springframework.http.ResponseEntity;
 
 public interface AccountController {
     ResponseEntity<ResponseData> loginAccount(LoginDto loginDto);
-
     ResponseEntity<ResponseData> registerAccount(RegisterDto registerDto);
-
     ResponseEntity<ResponseData> getAllAccounts();
-
-    ResponseEntity<ResponseData> findByUsername(String username);
+    ResponseEntity<ResponseData> getAccountByUsername(String username);
 }

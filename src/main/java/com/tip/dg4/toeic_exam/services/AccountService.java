@@ -11,5 +11,5 @@ public interface AccountService {
     AuthorizationDto loginAccount(LoginDto loginDto);
     void registerAccount(RegisterDto registerDto);
     List<AccountDto> getAllAccounts();
-    AccountDto findByUsername(String username);
+    AccountDto getAccountByUsername(String username);
 }

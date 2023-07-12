@@ -73,13 +73,13 @@ public class AccountControllerImpl implements AccountController {
                 params = "username",
                 produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<ResponseData> findByUsername(@RequestParam(name = "username") String username) {
+    public ResponseEntity<ResponseData> getAccountByUsername(@RequestParam(name = "username") String username) {
         HttpStatus httpStatus = HttpStatus.OK;
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
                 TExamSuccessfulConstant.ACCOUNT_S002,
-                accountService.findByUsername(username)
+                accountService.getAccountByUsername(username)
         );
 
         return new ResponseEntity<>(result, httpStatus);

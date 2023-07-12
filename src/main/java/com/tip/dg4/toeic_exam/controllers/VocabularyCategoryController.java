@@ -9,7 +9,7 @@ import java.util.UUID;
 public interface VocabularyCategoryController {
     ResponseEntity<ResponseData> createVocabularyCategory(VocabularyCategoryDto vocabularyCategoryDto);
     ResponseEntity<ResponseData> getAllVocabularyCategories();
-    ResponseEntity<ResponseData> getOneByName(String name);
+    ResponseEntity<ResponseData> getVocabularyCategoryByName(String name);
     ResponseEntity<ResponseData> updateVocabularyCategory(UUID vocabularyCategoryId,
                                                           VocabularyCategoryDto vocabularyCategoryDto);
 }

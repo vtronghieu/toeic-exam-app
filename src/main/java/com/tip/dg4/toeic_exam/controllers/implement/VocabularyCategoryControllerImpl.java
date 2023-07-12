@@ -58,13 +58,13 @@ public class VocabularyCategoryControllerImpl implements VocabularyCategoryContr
     @GetMapping(path = TExamApiConstant.API_EMPTY,
                 params = "name",
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseData> getOneByName(@RequestParam(name = "name") String name) {
+    public ResponseEntity<ResponseData> getVocabularyCategoryByName(@RequestParam(name = "name") String name) {
         HttpStatus httpStatus = HttpStatus.OK;
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
                 TExamSuccessfulConstant.VOCABULARY_CATEGORY_S003,
-                vocabularyCategoryService.getOneByName(name)
+                vocabularyCategoryService.getVocabularyCategoryByName(name)
         );
 
         return new ResponseEntity<>(result, httpStatus);
