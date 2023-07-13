@@ -4,6 +4,7 @@ import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamSuccessfulConstant;
 import com.tip.dg4.toeic_exam.common.responses.ResponseData;
 import com.tip.dg4.toeic_exam.controllers.VocabularyQuestionController;
+import com.tip.dg4.toeic_exam.dto.VocabularyAnswerDto;
 import com.tip.dg4.toeic_exam.dto.VocabularyQuestionDto;
 import com.tip.dg4.toeic_exam.services.VocabularyQuestionService;
 import org.springframework.http.HttpStatus;
@@ -78,5 +79,20 @@ public class VocabularyQuestionControllerImpl implements VocabularyQuestionContr
                    produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseData> deleteQuestionById(UUID questionId) {
         return null;
+    }
+
+
+    @Override
+    @PostMapping(path = TExamApiConstant.VOCABULARY_QUESTION_API_SEND_VOCABULARY_ANSWERS,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseData> sendVocabularyAnswers(@RequestBody VocabularyAnswerDto vocabularyAnswers) {
+        HttpStatus httpStatus = HttpStatus.CREATED;
+        ResponseData result = new ResponseData(
+                httpStatus.value(),
+                httpStatus.getReasonPhrase(),
+                TExamSuccessfulConstant.VOCABULARY_QUESTION_S002,
+                vocabularyQuestionService.sendVocabularyAnswers(vocabularyAnswers)
+        );
+        return new ResponseEntity<>(result, httpStatus);
     }
 }

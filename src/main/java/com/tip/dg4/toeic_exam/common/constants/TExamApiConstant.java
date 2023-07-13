@@ -29,6 +29,7 @@ public class TExamApiConstant {
     //    Vocabulary question
     public static final String VOCABULARY_QUESTION_API_ROOT = API_ROOT + API_VERSION_1 + "/vocabularyQuestions";
     public static final String VOCABULARY_QUESTION_API_GET_BY_VOCABULARY_IDS = "/getByVocabularyIds";
+    public static final String VOCABULARY_QUESTION_API_SEND_VOCABULARY_ANSWERS = "/sendVocabularyAnswers";
 
 
 }

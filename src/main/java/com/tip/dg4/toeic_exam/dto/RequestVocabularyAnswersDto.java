@@ -7,15 +7,13 @@ import lombok.Setter;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.FieldType;
 
-import java.util.List;
 import java.util.UUID;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class VocabularyAnswerDto {
+public class RequestVocabularyAnswersDto {
     @Field(targetType = FieldType.STRING)
-    private UUID userId;
-    private List<RequestVocabularyAnswersDto> requestVocabularyAnswers;
+    private UUID questionId;
+    private String userAnswer;
 }
