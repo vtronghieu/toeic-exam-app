@@ -19,4 +19,9 @@ public class TExamExceptionConstant {
     public static final String VOCABULARY_CATEGORY_E002 = "Vocabulary category not found";
     public static final String VOCABULARY_CATEGORY_E003 = "Vocabulary category not found with id: ";
     public static final String VOCABULARY_CATEGORY_E004 = "Vocabulary category not found with name: ";
+    //  Vocabulary
+    public static final String VOCABULARY_E001 = "Vocabulary does not exist by word: ";
+    public static final String VOCABULARY_E002 = "Vocabulary does not exist by id: ";
+    //  Vocabulary question
+    public static final String VOCABULARY_QUESTION_E001 = "Vocabulary does not exist ";
 }

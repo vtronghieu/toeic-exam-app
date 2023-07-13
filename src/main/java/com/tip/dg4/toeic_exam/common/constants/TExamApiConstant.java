@@ -24,4 +24,11 @@ public class TExamApiConstant {
     public static final String ACCOUNT_API_ROOT_REGISTER = ACCOUNT_API_ROOT + ACCOUNT_API_REGISTER;
     //    Vocabulary category
     public static final String VOCABULARY_CATEGORY_API_ROOT = API_ROOT + API_VERSION_1 + "/vocabularyCategories";
+    //    Vocabulary
+    public static final String VOCABULARY_ROOT = API_ROOT + API_VERSION_1 + "/vocabularies";
+    //    Vocabulary question
+    public static final String VOCABULARY_QUESTION_API_ROOT = API_ROOT + API_VERSION_1 + "/vocabularyQuestions";
+    public static final String VOCABULARY_QUESTION_API_GET_BY_VOCABULARY_IDS = "/getByVocabularyIds";
+
+
 }
