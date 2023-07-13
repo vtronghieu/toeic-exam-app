@@ -5,9 +5,12 @@ import com.tip.dg4.toeic_exam.dto.VocabularyCategoryDto;
 import com.tip.dg4.toeic_exam.exceptions.ConflictException;
 import com.tip.dg4.toeic_exam.exceptions.NotFoundException;
 import com.tip.dg4.toeic_exam.mappers.VocabularyCategoryMapper;
+import com.tip.dg4.toeic_exam.mappers.VocabularyMapper;
+import com.tip.dg4.toeic_exam.models.Vocabulary;
 import com.tip.dg4.toeic_exam.models.VocabularyCategory;
 import com.tip.dg4.toeic_exam.repositories.VocabularyCategoryRepository;
 import com.tip.dg4.toeic_exam.services.VocabularyCategoryService;
+import com.tip.dg4.toeic_exam.services.VocabularyService;
 import com.tip.dg4.toeic_exam.utils.TExamUtil;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -21,11 +24,17 @@ import java.util.UUID;
 public class VocabularyCategoryServiceImpl implements VocabularyCategoryService {
     private final VocabularyCategoryRepository vocabularyCategoryRepository;
     private final VocabularyCategoryMapper vocabularyCategoryMapper;
+    private final VocabularyMapper vocabularyMapper;
+    private final VocabularyService vocabularyService;
 
     public VocabularyCategoryServiceImpl(VocabularyCategoryRepository vocabularyCategoryRepository,
-                                         VocabularyCategoryMapper vocabularyCategoryMapper) {
+                                         VocabularyCategoryMapper vocabularyCategoryMapper,
+                                         VocabularyMapper vocabularyMapper,
+                                         VocabularyService vocabularyService) {
         this.vocabularyCategoryRepository = vocabularyCategoryRepository;
         this.vocabularyCategoryMapper = vocabularyCategoryMapper;
+        this.vocabularyMapper = vocabularyMapper;
+        this.vocabularyService = vocabularyService;
     }
 
     @Override
@@ -43,8 +52,8 @@ public class VocabularyCategoryServiceImpl implements VocabularyCategoryService 
     @Override
     public List<VocabularyCategoryDto> getAllVocabularyCategories() {
         return vocabularyCategoryRepository.findAll().stream()
-                                           .map(vocabularyCategoryMapper::convertModelToDto)
-                                           .toList();
+               .map(vocabularyCategoryMapper::convertModelToDto)
+               .toList();
     }
 
     @Override
@@ -76,5 +85,20 @@ public class VocabularyCategoryServiceImpl implements VocabularyCategoryService 
         vocabularyCategory.setActive(vocabularyCategoryDto.isActive());
 
         vocabularyCategoryRepository.save(vocabularyCategory);
+    }
+
+    @Override
+    public void deleteVocabularyCategory(UUID vocabularyCategoryId) {
+        if (!vocabularyCategoryRepository.existsById(vocabularyCategoryId)) {
+            log.error(TExamExceptionConstant.VOCABULARY_CATEGORY_E003 + vocabularyCategoryId);
+            throw new NotFoundException(TExamExceptionConstant.VOCABULARY_CATEGORY_E002);
+        }
+
+        List<Vocabulary> vocabularies = vocabularyService.getVocabulariesByCategoryId(vocabularyCategoryId).stream()
+                                        .map(vocabularyMapper::convertDtoToModel).toList();
+        for (Vocabulary vocabulary : vocabularies) {
+            vocabularyService.deleteVocabularyCategoryId(vocabulary.getId(), vocabularyCategoryId);
+        }
+        vocabularyCategoryRepository.deleteById(vocabularyCategoryId);
     }
 }

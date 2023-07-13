@@ -25,7 +25,8 @@ public class TExamApiConstant {
     //    Vocabulary category
     public static final String VOCABULARY_CATEGORY_API_ROOT = API_ROOT + API_VERSION_1 + "/vocabularyCategories";
     //    Vocabulary
-    public static final String VOCABULARY_ROOT = API_ROOT + API_VERSION_1 + "/vocabularies";
+    public static final String VOCABULARY_API_ROOT = API_ROOT + API_VERSION_1 + "/vocabularies";
+    public static final String VOCABULARY_API_GET_BY_CATEGORY_ID = "/getByCategoryId";
     //    Vocabulary question
     public static final String VOCABULARY_QUESTION_API_ROOT = API_ROOT + API_VERSION_1 + "/vocabularyQuestions";
     public static final String VOCABULARY_QUESTION_API_GET_BY_VOCABULARY_IDS = "/getByVocabularyIds";

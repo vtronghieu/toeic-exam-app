@@ -11,16 +11,17 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Log4j2
 @Service
 public class VocabularyServiceImpl implements VocabularyService {
     private final VocabularyRepository vocabularyRepository;
-
     private final VocabularyMapper vocabularyMapper;
 
-    public VocabularyServiceImpl(VocabularyRepository vocabularyRepository, VocabularyMapper vocabularyMapper) {
+    public VocabularyServiceImpl(VocabularyRepository vocabularyRepository,
+                                 VocabularyMapper vocabularyMapper) {
         this.vocabularyRepository = vocabularyRepository;
         this.vocabularyMapper = vocabularyMapper;
     }
@@ -62,5 +63,18 @@ public class VocabularyServiceImpl implements VocabularyService {
         Vocabulary vocabulary = vocabularyRepository.findById(vocabularyId)
                 .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.VOCABULARY_E002 + vocabularyId));
         vocabularyRepository.deleteById(vocabulary.getId());
+    }
+
+    @Override
+    public void deleteVocabularyCategoryId(UUID vocabularyId, UUID categoryId) {
+        Optional<Vocabulary> optionalVocabulary = vocabularyRepository.findById(vocabularyId);
+        if (optionalVocabulary.isEmpty()) {
+            log.error(TExamExceptionConstant.VOCABULARY_E002 + vocabularyId);
+            throw new NotFoundException(TExamExceptionConstant.VOCABULARY_E003 + vocabularyId);
+        }
+
+        List<UUID> vocabularyCategoryIDs = optionalVocabulary.get().getVocabularyCategoryIDs();
+        vocabularyCategoryIDs.removeIf(categoryId::equals);
+        vocabularyRepository.save(optionalVocabulary.get());
     }
 }

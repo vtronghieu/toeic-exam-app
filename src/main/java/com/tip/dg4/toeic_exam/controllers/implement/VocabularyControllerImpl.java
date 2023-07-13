@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 @RestController
-@RequestMapping(path = TExamApiConstant.VOCABULARY_ROOT)
+@RequestMapping(path = TExamApiConstant.VOCABULARY_API_ROOT)
 public class VocabularyControllerImpl implements VocabularyController {
     private final VocabularyService vocabularyService;
 
@@ -21,72 +21,80 @@ public class VocabularyControllerImpl implements VocabularyController {
         this.vocabularyService = vocabularyService;
     }
 
+    @Override
     @GetMapping(path = {TExamApiConstant.API_EMPTY, TExamApiConstant.API_SLASH},
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    @Override
     public ResponseEntity<ResponseData> getAllVocabulary() {
         HttpStatus httpStatus = HttpStatus.OK;
         ResponseData result = new ResponseData(
-                            httpStatus.value(),
-                            httpStatus.getReasonPhrase(),
-                            TExamSuccessfulConstant.VOCABULARY_S001,
-                            vocabularyService.getAllVocabularies()
+                httpStatus.value(),
+                httpStatus.getReasonPhrase(),
+                TExamSuccessfulConstant.VOCABULARY_S001,
+                vocabularyService.getAllVocabularies()
         );
+
         return new ResponseEntity<>(result, httpStatus);
     }
-    @GetMapping(path = {TExamApiConstant.API_EMPTY, TExamApiConstant.API_SLASH},
+
+    @Override
+    @GetMapping(path = TExamApiConstant.VOCABULARY_API_GET_BY_CATEGORY_ID,
                 params = "categoryId" ,
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    @Override
     public ResponseEntity<ResponseData> getVocabulariesByCategoryId(@RequestParam UUID categoryId) {
         HttpStatus httpStatus = HttpStatus.OK;
         ResponseData result = new ResponseData(
-                            httpStatus.value(),
-                            httpStatus.getReasonPhrase(),
-                            TExamSuccessfulConstant.VOCABULARY_S005,
-                            vocabularyService.getVocabulariesByCategoryId(categoryId)
+                httpStatus.value(),
+                httpStatus.getReasonPhrase(),
+                TExamSuccessfulConstant.VOCABULARY_S005,
+                vocabularyService.getVocabulariesByCategoryId(categoryId)
         );
+
         return new ResponseEntity<>(result, httpStatus);
     }
-    @PostMapping(path = {TExamApiConstant.API_EMPTY, TExamApiConstant.API_SLASH},
-                 produces = MediaType.APPLICATION_JSON_VALUE)
+
     @Override
+    @PostMapping(path = TExamApiConstant.API_CREATE,
+                 produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseData> createVocabulary(@RequestBody VocabularyDto vocabularyDto) {
         HttpStatus httpStatus = HttpStatus.CREATED;
         vocabularyService.createVocabulary(vocabularyDto);
         ResponseData result = new ResponseData(
-                            httpStatus.value(),
-                            httpStatus.getReasonPhrase(),
-                            TExamSuccessfulConstant.VOCABULARY_S002
+                httpStatus.value(),
+                httpStatus.getReasonPhrase(),
+                TExamSuccessfulConstant.VOCABULARY_S002
         );
-        return new ResponseEntity<>(result, httpStatus);
 
+        return new ResponseEntity<>(result, httpStatus);
     }
-    @PutMapping(path = {TExamApiConstant.API_EMPTY, TExamApiConstant.API_SLASH},
-                produces = MediaType.APPLICATION_JSON_VALUE)
+
     @Override
+    @PutMapping(path = TExamApiConstant.API_UPDATE,
+                produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseData> updateVocabulary(@RequestBody VocabularyDto vocabularyDto) {
         HttpStatus httpStatus = HttpStatus.OK;
         vocabularyService.updateVocabulary(vocabularyDto);
         ResponseData result = new ResponseData(
-                            httpStatus.value(),
-                            httpStatus.getReasonPhrase(),
-                            TExamSuccessfulConstant.VOCABULARY_S003
+                httpStatus.value(),
+                httpStatus.getReasonPhrase(),
+                TExamSuccessfulConstant.VOCABULARY_S003
         );
+
         return new ResponseEntity<>(result, httpStatus);
     }
-    @DeleteMapping(path = {TExamApiConstant.API_EMPTY, TExamApiConstant.API_SLASH},
-            params = "vocabularyId" ,
-                   produces = MediaType.APPLICATION_JSON_VALUE)
+
     @Override
+    @DeleteMapping(path = TExamApiConstant.API_DELETE,
+                   params = "vocabularyId" ,
+                   produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseData> deleteVocabulary(@RequestParam UUID vocabularyId) {
         vocabularyService.deleteVocabulary(vocabularyId);
         HttpStatus httpStatus = HttpStatus.OK;
         ResponseData result = new ResponseData(
-                            httpStatus.value(),
-                            httpStatus.getReasonPhrase(),
-                            TExamSuccessfulConstant.VOCABULARY_S004
+                httpStatus.value(),
+                httpStatus.getReasonPhrase(),
+                TExamSuccessfulConstant.VOCABULARY_S004
         );
+
         return new ResponseEntity<>(result, httpStatus);
     }
 }

@@ -14,5 +14,5 @@ public interface VocabularyQuestionController {
     ResponseEntity<ResponseData> createQuestion(VocabularyQuestionDto vocabularyQuestionDto);
     ResponseEntity<ResponseData> updateQuestion();
     ResponseEntity<ResponseData> deleteQuestionById(UUID questionId);
-    ResponseEntity<ResponseData> sendVocabularyAnswers(VocabularyAnswerDto vocabularyAnswerDtos);
+    ResponseEntity<ResponseData> sendVocabularyAnswers(VocabularyAnswerDto vocabularyAnswerDto);
 }

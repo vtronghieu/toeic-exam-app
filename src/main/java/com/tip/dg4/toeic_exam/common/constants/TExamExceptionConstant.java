@@ -22,6 +22,7 @@ public class TExamExceptionConstant {
     //  Vocabulary
     public static final String VOCABULARY_E001 = "Vocabulary does not exist by word: ";
     public static final String VOCABULARY_E002 = "Vocabulary does not exist by id: ";
+    public static final String VOCABULARY_E003 = "Vocabulary not found";
     //  Vocabulary question
     public static final String VOCABULARY_QUESTION_E001 = "Vocabulary does not exist ";
 }

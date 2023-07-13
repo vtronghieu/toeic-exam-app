@@ -12,4 +12,5 @@ public interface VocabularyCategoryController {
     ResponseEntity<ResponseData> getVocabularyCategoryByName(String name);
     ResponseEntity<ResponseData> updateVocabularyCategory(UUID vocabularyCategoryId,
                                                           VocabularyCategoryDto vocabularyCategoryDto);
+    ResponseEntity<ResponseData> deleteVocabularyCategory(UUID vocabularyCategoryId);
 }

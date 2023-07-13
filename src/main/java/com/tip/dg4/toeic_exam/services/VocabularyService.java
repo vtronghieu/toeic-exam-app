@@ -11,6 +11,5 @@ public interface VocabularyService {
     void createVocabulary(VocabularyDto vocabularyDto);
     void updateVocabulary(VocabularyDto vocabularyDto);
     void deleteVocabulary(UUID vocabularyId);
-
-
+    void deleteVocabularyCategoryId(UUID vocabularyId, UUID categoryId);
 }

@@ -72,9 +72,9 @@ public class VocabularyCategoryControllerImpl implements VocabularyCategoryContr
 
     @Override
     @PutMapping(path = TExamApiConstant.API_UPDATE,
-                params = "vocabularyCategoryId",
+                params = "id",
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseData> updateVocabularyCategory(@RequestParam(name = "vocabularyCategoryId") UUID vocabularyCategoryId,
+    public ResponseEntity<ResponseData> updateVocabularyCategory(@RequestParam(name = "id") UUID vocabularyCategoryId,
                                                                  @RequestBody VocabularyCategoryDto vocabularyCategoryDto) {
         HttpStatus httpStatus = HttpStatus.OK;
         vocabularyCategoryService.updateVocabularyCategory(vocabularyCategoryId, vocabularyCategoryDto);
@@ -82,6 +82,22 @@ public class VocabularyCategoryControllerImpl implements VocabularyCategoryContr
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
                 TExamSuccessfulConstant.VOCABULARY_CATEGORY_S003
+        );
+
+        return new ResponseEntity<>(result, httpStatus);
+    }
+
+    @Override
+    @DeleteMapping(path = TExamApiConstant.API_DELETE,
+                   params = "id",
+                   produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseData> deleteVocabularyCategory(@RequestParam(name = "id") UUID vocabularyCategoryId) {
+        HttpStatus httpStatus = HttpStatus.OK;
+        vocabularyCategoryService.deleteVocabularyCategory(vocabularyCategoryId);
+        ResponseData result = new ResponseData(
+                httpStatus.value(),
+                httpStatus.getReasonPhrase(),
+                TExamSuccessfulConstant.VOCABULARY_CATEGORY_S004
         );
 
         return new ResponseEntity<>(result, httpStatus);
