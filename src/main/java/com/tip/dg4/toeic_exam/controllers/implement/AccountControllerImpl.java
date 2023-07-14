@@ -7,6 +7,7 @@ import com.tip.dg4.toeic_exam.controllers.AccountController;
 import com.tip.dg4.toeic_exam.dto.LoginDto;
 import com.tip.dg4.toeic_exam.dto.RegisterDto;
 import com.tip.dg4.toeic_exam.services.AccountService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,13 +26,13 @@ public class AccountControllerImpl implements AccountController {
     @Override
     @PostMapping(path = TExamApiConstant.ACCOUNT_API_LOGIN,
                  produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseData> loginAccount(@RequestBody LoginDto loginDto) {
+    public ResponseEntity<ResponseData> loginAccount(@RequestBody LoginDto loginDto, HttpServletResponse response) {
         HttpStatus httpStatus = HttpStatus.OK;
+        accountService.loginAccount(loginDto, response);
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.ACCOUNT_S003,
-                accountService.loginAccount(loginDto)
+                TExamSuccessfulConstant.ACCOUNT_S003
         );
 
         return new ResponseEntity<>(result, httpStatus);
