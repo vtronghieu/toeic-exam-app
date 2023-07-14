@@ -20,6 +20,7 @@ public class TExamApiConstant {
     public static final String ACCOUNT_API_ROOT = API_ROOT + API_VERSION_1 + "/accounts";
     public static final String ACCOUNT_API_LOGIN = "/login";
     public static final String ACCOUNT_API_ROOT_LOGIN = ACCOUNT_API_ROOT + ACCOUNT_API_LOGIN;
+    public static final String ACCOUNT_API_LOGOUT = "/logout";
     public static final String ACCOUNT_API_REGISTER = "/register";
     public static final String ACCOUNT_API_ROOT_REGISTER = ACCOUNT_API_ROOT + ACCOUNT_API_REGISTER;
     //    Vocabulary category
@@ -31,6 +32,4 @@ public class TExamApiConstant {
     public static final String VOCABULARY_QUESTION_API_ROOT = API_ROOT + API_VERSION_1 + "/vocabularyQuestions";
     public static final String VOCABULARY_QUESTION_API_GET_BY_VOCABULARY_IDS = "/getByVocabularyIds";
     public static final String VOCABULARY_QUESTION_API_SEND_VOCABULARY_ANSWERS = "/sendVocabularyAnswers";
-
-
 }

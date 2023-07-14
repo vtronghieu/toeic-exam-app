@@ -26,9 +26,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-    private static final String DEFAULT_HOST_ANGULAR = "http://localhost:4200";
-    private static final String DEFAULT_HOST_REACT = "http://localhost:3000";
-
     private final JwtAuthFilter jwtAuthFilter;
     private final ExceptionConfig exceptionConfig;
     private final UserDetailsServiceImpl userDetailsService;

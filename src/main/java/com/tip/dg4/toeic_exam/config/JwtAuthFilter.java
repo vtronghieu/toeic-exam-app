@@ -1,11 +1,11 @@
 package com.tip.dg4.toeic_exam.config;
 
 import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
-import com.tip.dg4.toeic_exam.common.constants.TExamConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
 import com.tip.dg4.toeic_exam.exceptions.UnauthorizedException;
 import com.tip.dg4.toeic_exam.services.JwtService;
 import com.tip.dg4.toeic_exam.utils.ApiUtil;
+import com.tip.dg4.toeic_exam.utils.TExamUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -23,9 +23,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
 @Component
@@ -49,9 +47,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
-        Optional<Cookie> optionalAuthCookie = Arrays.stream(Optional.ofNullable(request.getCookies()).orElse(new Cookie[0]))
-                                              .filter(cookie -> TExamConstant.ACCESS_TOKEN.equals(cookie.getName())).findAny();
-        if (optionalAuthCookie.isEmpty()) {
+        Cookie authCookie = TExamUtil.getAuthCookie(request);
+        if (Objects.isNull(authCookie)) {
             String requestUri = request.getRequestURI();
             if (ApiUtil.existAPI(handlerMapping, requestUri) && !isRequestUriAllowed(requestUri)) {
                 exceptionConfig.handleUnauthorizedException(response, new UnauthorizedException(TExamExceptionConstant.TEXAM_E002));
@@ -60,7 +57,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        String token = optionalAuthCookie.get().getValue();
+        String token = authCookie.getValue();
         String username = jwtService.extractUsername(token);
         SecurityContext securityContext = SecurityContextHolder.getContext();
         if (Objects.nonNull(username) && Objects.isNull(securityContext.getAuthentication())) {
