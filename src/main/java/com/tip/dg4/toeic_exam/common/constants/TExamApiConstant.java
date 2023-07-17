@@ -22,6 +22,7 @@ public class TExamApiConstant {
     public static final String ACCOUNT_API_ROOT_LOGIN = ACCOUNT_API_ROOT + ACCOUNT_API_LOGIN;
     public static final String ACCOUNT_API_LOGOUT = "/logout";
     public static final String ACCOUNT_API_REGISTER = "/register";
+    public static final String ACCOUNT_API_CHANGE_PASSWORD = "/changePassword";
     public static final String ACCOUNT_API_ROOT_REGISTER = ACCOUNT_API_ROOT + ACCOUNT_API_REGISTER;
     //    Vocabulary category
     public static final String VOCABULARY_CATEGORY_API_ROOT = API_ROOT + API_VERSION_1 + "/vocabularyCategories";

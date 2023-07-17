@@ -4,6 +4,7 @@ import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamSuccessfulConstant;
 import com.tip.dg4.toeic_exam.common.responses.ResponseData;
 import com.tip.dg4.toeic_exam.controllers.AccountController;
+import com.tip.dg4.toeic_exam.dto.ChangePasswordDto;
 import com.tip.dg4.toeic_exam.dto.LoginDto;
 import com.tip.dg4.toeic_exam.dto.RegisterDto;
 import com.tip.dg4.toeic_exam.services.AccountService;
@@ -14,6 +15,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping(path = TExamApiConstant.ACCOUNT_API_ROOT)
@@ -29,11 +32,11 @@ public class AccountControllerImpl implements AccountController {
                  produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseData> loginAccount(@RequestBody LoginDto loginDto, HttpServletResponse response) {
         HttpStatus httpStatus = HttpStatus.OK;
-        accountService.loginAccount(loginDto, response);
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.ACCOUNT_S003
+                TExamSuccessfulConstant.ACCOUNT_S003,
+                accountService.loginAccount(loginDto, response)
         );
 
         return new ResponseEntity<>(result, httpStatus);
@@ -100,5 +103,17 @@ public class AccountControllerImpl implements AccountController {
         );
 
         return new ResponseEntity<>(result, httpStatus);
+    }
+
+    @Override
+    @PutMapping(path = TExamApiConstant.ACCOUNT_API_CHANGE_PASSWORD,
+                params = "id",
+                produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseData> changePasswordAccount(@RequestParam(name = "id") UUID accountId,
+                                                              @RequestBody ChangePasswordDto changePasswordDto) {
+        HttpStatus httpStatus = HttpStatus.OK;
+        ResponseData result = null;
+
+        return null;
     }
 }
