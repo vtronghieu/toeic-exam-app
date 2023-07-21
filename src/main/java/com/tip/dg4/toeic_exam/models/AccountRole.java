@@ -13,7 +13,7 @@ public enum AccountRole {
 
     private String value;
 
-    public static AccountRole getType(String value) {
+    public static AccountRole getRole(String value) {
         for (AccountRole type : AccountRole.values()) {
             if (value.equalsIgnoreCase(type.getValue())) {
                 return type;

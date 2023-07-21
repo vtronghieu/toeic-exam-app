@@ -13,7 +13,7 @@ public class AccountMapper {
 
         account.setUsername(registerDto.getUsername());
         account.setPassword(registerDto.getPassword());
-        account.setRole(AccountRole.getType(registerDto.getRole()));
+        account.setRole(AccountRole.getRole(registerDto.getRole()));
         account.setActive(true);
 
         return account;

@@ -11,10 +11,10 @@ public class VocabularyMapper {
 
         vocabulary.setId(vocabularyDto.getId());
         vocabulary.setWord(vocabularyDto.getWord());
-        vocabulary.setMean(vocabularyDto.getMean());
         vocabulary.setPronounce(vocabularyDto.getPronounce());
+        vocabulary.setMean(vocabularyDto.getMean());
+        vocabulary.setCategoryIds(vocabularyDto.getCategoryIds());
         vocabulary.setActive(vocabularyDto.isActive());
-        vocabulary.setVocabularyCategoryIDs(vocabularyDto.getVocabularyCategoryIDs());
 
         return vocabulary;
     }
@@ -24,10 +24,10 @@ public class VocabularyMapper {
 
         vocabularyDto.setId(vocabulary.getId());
         vocabularyDto.setWord(vocabulary.getWord());
-        vocabularyDto.setMean(vocabulary.getMean());
         vocabularyDto.setPronounce(vocabulary.getPronounce());
+        vocabularyDto.setMean(vocabulary.getMean());
+        vocabularyDto.setCategoryIds(vocabulary.getCategoryIds());
         vocabularyDto.setActive(vocabulary.isActive());
-        vocabularyDto.setVocabularyCategoryIDs(vocabulary.getVocabularyCategoryIDs());
 
         return vocabularyDto;
     }

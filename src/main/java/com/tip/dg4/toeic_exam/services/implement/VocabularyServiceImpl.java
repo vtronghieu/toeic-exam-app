@@ -2,6 +2,7 @@ package com.tip.dg4.toeic_exam.services.implement;
 
 import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
 import com.tip.dg4.toeic_exam.dto.VocabularyDto;
+import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
 import com.tip.dg4.toeic_exam.exceptions.NotFoundException;
 import com.tip.dg4.toeic_exam.mappers.VocabularyMapper;
 import com.tip.dg4.toeic_exam.models.Vocabulary;
@@ -11,6 +12,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,54 +29,85 @@ public class VocabularyServiceImpl implements VocabularyService {
     }
 
     @Override
-    public List<VocabularyDto> getAllVocabularies() {
-        return vocabularyRepository.findAll().stream()
-                .map(vocabularyMapper::convertModelToDto)
-                .toList();
-    }
-
-    @Override
-    public List<VocabularyDto> getVocabulariesByCategoryId(UUID categoryId) {
-        return vocabularyRepository.findByVocabularyCategoryIDsContaining(categoryId).stream()
-                .map(vocabularyMapper::convertModelToDto)
-                .toList();
-    }
-
-    @Override
     public void createVocabulary(VocabularyDto vocabularyDto) {
+        if (vocabularyRepository.existsByWord(vocabularyDto.getWord())) {
+            throw new BadRequestException(TExamExceptionConstant.VOCABULARY_E004 + vocabularyDto.getWord());
+        }
+
         Vocabulary vocabulary = vocabularyMapper.convertDtoToModel(vocabularyDto);
         vocabularyRepository.save(vocabulary);
     }
 
     @Override
-    public void updateVocabulary(VocabularyDto vocabularyDto) {
-        Vocabulary vocabulary = vocabularyRepository.findById(vocabularyDto.getId())
-                .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.VOCABULARY_E001 + vocabularyDto.getWord()));
+    public List<VocabularyDto> getAllVocabularies() {
+        return vocabularyRepository.findAll().stream()
+               .map(vocabularyMapper::convertModelToDto).toList();
+    }
+
+    @Override
+    public List<VocabularyDto> getVocabulariesByCategoryId(UUID categoryId) {
+        List<Vocabulary> vocabularies = vocabularyRepository.findByCategoryIds(categoryId);
+        if (vocabularies.isEmpty()) {
+            log.error(TExamExceptionConstant.VOCABULARY_E005 + categoryId);
+            throw new NotFoundException(TExamExceptionConstant.VOCABULARY_E003);
+        }
+
+        return vocabularies.stream().map(vocabularyMapper::convertModelToDto).toList();
+    }
+
+    @Override
+    public void updateVocabulary(UUID vocabularyId, VocabularyDto vocabularyDto) {
+        Optional<Vocabulary> optionalVocabulary = vocabularyRepository.findById(vocabularyId);
+        if (optionalVocabulary.isEmpty()) {
+            log.error(TExamExceptionConstant.VOCABULARY_E002 + vocabularyId);
+            throw new NotFoundException(TExamExceptionConstant.VOCABULARY_E003);
+        }
+        Vocabulary vocabulary = optionalVocabulary.get();
+        if (!Objects.equals(vocabulary.getWord(), vocabularyDto.getWord()) &&
+            vocabularyRepository.existsByWord(vocabularyDto.getWord())) {
+            throw new BadRequestException(TExamExceptionConstant.VOCABULARY_E004 + vocabularyDto.getWord());
+        }
         vocabulary.setWord(vocabularyDto.getWord());
-        vocabulary.setMean(vocabularyDto.getMean());
         vocabulary.setPronounce(vocabularyDto.getPronounce());
-        vocabulary.setVocabularyCategoryIDs(vocabularyDto.getVocabularyCategoryIDs());
+        vocabulary.setMean(vocabularyDto.getMean());
+        vocabulary.setCategoryIds(vocabularyDto.getCategoryIds());
         vocabulary.setActive(vocabularyDto.isActive());
+
         vocabularyRepository.save(vocabulary);
     }
 
     @Override
-    public void deleteVocabulary(UUID vocabularyId) {
-        Vocabulary vocabulary = vocabularyRepository.findById(vocabularyId)
-                .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.VOCABULARY_E002 + vocabularyId));
-        vocabularyRepository.deleteById(vocabulary.getId());
+    public void deleteVocabularyById(UUID vocabularyId) {
+        if (vocabularyRepository.existsById(vocabularyId)) {
+            log.error(TExamExceptionConstant.VOCABULARY_E002 + vocabularyId);
+            throw new NotFoundException(TExamExceptionConstant.VOCABULARY_E003);
+        }
+
+        vocabularyRepository.deleteById(vocabularyId);
     }
 
     @Override
-    public void deleteVocabularyCategoryId(UUID vocabularyId, UUID categoryId) {
-        Optional<Vocabulary> optionalVocabulary = vocabularyRepository.findById(vocabularyId);
-        if (optionalVocabulary.isEmpty()) {
-            log.error(TExamExceptionConstant.VOCABULARY_E002 + vocabularyId);
-            throw new NotFoundException(TExamExceptionConstant.VOCABULARY_E003 + vocabularyId);
+    public void deleteCategoryIdFromCategoryIds(UUID categoryId) {
+        List<Vocabulary> vocabularies = vocabularyRepository.findByCategoryIds(categoryId);
+        if (vocabularies.isEmpty()) {
+            log.error(TExamExceptionConstant.VOCABULARY_E005 + categoryId);
+            throw new NotFoundException(TExamExceptionConstant.VOCABULARY_E003);
         }
 
-        List<UUID> vocabularyCategoryIDs = optionalVocabulary.get().getVocabularyCategoryIDs();
-        vocabularyCategoryIDs.removeIf(categoryId::equals);
-        vocabularyRepository.save(optionalVocabulary.get());
+        for (Vocabulary vocabulary : vocabularies) {
+            List<UUID> categoryIdsFromVocabulary = vocabulary.getCategoryIds();
+            categoryIdsFromVocabulary.remove(categoryId);
+            if (categoryIdsFromVocabulary.isEmpty()) {
+                vocabularyRepository.delete(vocabulary);
+            } else {
+                vocabulary.setCategoryIds(categoryIdsFromVocabulary);
+                vocabularyRepository.save(vocabulary);
+            }
+        }
+    }
+
+    @Override
+    public boolean existsById(UUID id) {
+        return vocabularyRepository.existsById(id);
     }
 }

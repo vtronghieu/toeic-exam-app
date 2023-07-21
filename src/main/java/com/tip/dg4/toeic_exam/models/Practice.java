@@ -1,24 +1,25 @@
-package com.tip.dg4.toeic_exam.dto;
+package com.tip.dg4.toeic_exam.models;
 
-import com.tip.dg4.toeic_exam.models.VocabularyAnswer;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.FieldType;
 
 import java.util.List;
 import java.util.UUID;
-@Getter
-@Setter
+
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class VocabularyTestHistoryDto {
+@Document(collection = "practices")
+public class Practice {
     @Id
     @Field(targetType = FieldType.STRING)
     private UUID id;
-    private UUID userId;
-    private List<VocabularyAnswer> vocabularyAnswers;
+    private String name;
+    private PracticeType type;
+    private List<PracticePart> practiceParts;
 }

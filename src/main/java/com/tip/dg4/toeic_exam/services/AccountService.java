@@ -1,6 +1,7 @@
 package com.tip.dg4.toeic_exam.services;
 
 import com.tip.dg4.toeic_exam.dto.AccountDto;
+import com.tip.dg4.toeic_exam.dto.ChangePasswordDto;
 import com.tip.dg4.toeic_exam.dto.LoginDto;
 import com.tip.dg4.toeic_exam.dto.RegisterDto;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,4 +15,5 @@ public interface AccountService {
     void registerAccount(RegisterDto registerDto);
     List<AccountDto> getAllAccounts();
     AccountDto getAccountByUsername(String username);
+    void changePasswordAccount(HttpServletRequest request, ChangePasswordDto changePasswordDto);
 }

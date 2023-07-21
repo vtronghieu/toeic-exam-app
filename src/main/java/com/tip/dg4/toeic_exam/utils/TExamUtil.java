@@ -1,6 +1,7 @@
 package com.tip.dg4.toeic_exam.utils;
 
 import com.tip.dg4.toeic_exam.common.constants.TExamConstant;
+import com.tip.dg4.toeic_exam.models.QuestionType;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
@@ -23,5 +24,9 @@ public class TExamUtil {
         return Arrays.stream(Optional.ofNullable(request.getCookies()).orElse(new Cookie[0]))
                .filter(cookie -> TExamConstant.ACCESS_TOKEN.equals(cookie.getName())).
                 findAny().orElse(null);
+    }
+
+    public static boolean isVocabularyTypeOrGrammarType(QuestionType questionType) {
+        return QuestionType.VOCABULARY.equals(questionType) || QuestionType.GRAMMAR.equals(questionType);
     }
 }

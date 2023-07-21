@@ -18,9 +18,9 @@ public class Vocabulary {
     @Field(targetType = FieldType.STRING)
     private UUID id;
     private String word;
-    private String mean;
     private String pronounce;
-    private boolean isActive;
+    private String mean;
     @Field(targetType = FieldType.STRING)
-    private List<UUID> vocabularyCategoryIDs;
+    private List<UUID> categoryIds;
+    private boolean isActive;
 }

@@ -10,5 +10,5 @@ public interface VocabularyCategoryService {
     List<VocabularyCategoryDto> getAllVocabularyCategories();
     VocabularyCategoryDto getVocabularyCategoryByName(String name);
     void updateVocabularyCategory(UUID vocabularyCategoryId, VocabularyCategoryDto vocabularyCategoryDto);
-    void deleteVocabularyCategory(UUID vocabularyCategoryId);
+    void deleteVocabularyCategoryById(UUID vocabularyCategoryId);
 }

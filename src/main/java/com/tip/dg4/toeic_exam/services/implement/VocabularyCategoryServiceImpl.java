@@ -5,8 +5,6 @@ import com.tip.dg4.toeic_exam.dto.VocabularyCategoryDto;
 import com.tip.dg4.toeic_exam.exceptions.ConflictException;
 import com.tip.dg4.toeic_exam.exceptions.NotFoundException;
 import com.tip.dg4.toeic_exam.mappers.VocabularyCategoryMapper;
-import com.tip.dg4.toeic_exam.mappers.VocabularyMapper;
-import com.tip.dg4.toeic_exam.models.Vocabulary;
 import com.tip.dg4.toeic_exam.models.VocabularyCategory;
 import com.tip.dg4.toeic_exam.repositories.VocabularyCategoryRepository;
 import com.tip.dg4.toeic_exam.services.VocabularyCategoryService;
@@ -23,18 +21,15 @@ import java.util.UUID;
 @Service
 public class VocabularyCategoryServiceImpl implements VocabularyCategoryService {
     private final VocabularyCategoryRepository vocabularyCategoryRepository;
-    private final VocabularyCategoryMapper vocabularyCategoryMapper;
-    private final VocabularyMapper vocabularyMapper;
     private final VocabularyService vocabularyService;
+    private final VocabularyCategoryMapper vocabularyCategoryMapper;
 
     public VocabularyCategoryServiceImpl(VocabularyCategoryRepository vocabularyCategoryRepository,
-                                         VocabularyCategoryMapper vocabularyCategoryMapper,
-                                         VocabularyMapper vocabularyMapper,
-                                         VocabularyService vocabularyService) {
+                                         VocabularyService vocabularyService,
+                                         VocabularyCategoryMapper vocabularyCategoryMapper) {
         this.vocabularyCategoryRepository = vocabularyCategoryRepository;
-        this.vocabularyCategoryMapper = vocabularyCategoryMapper;
-        this.vocabularyMapper = vocabularyMapper;
         this.vocabularyService = vocabularyService;
+        this.vocabularyCategoryMapper = vocabularyCategoryMapper;
     }
 
     @Override
@@ -88,17 +83,12 @@ public class VocabularyCategoryServiceImpl implements VocabularyCategoryService 
     }
 
     @Override
-    public void deleteVocabularyCategory(UUID vocabularyCategoryId) {
-        if (!vocabularyCategoryRepository.existsById(vocabularyCategoryId)) {
-            log.error(TExamExceptionConstant.VOCABULARY_CATEGORY_E003 + vocabularyCategoryId);
+    public void deleteVocabularyCategoryById(UUID categoryId) {
+        if (!vocabularyCategoryRepository.existsById(categoryId)) {
+            log.error(TExamExceptionConstant.VOCABULARY_CATEGORY_E003 + categoryId);
             throw new NotFoundException(TExamExceptionConstant.VOCABULARY_CATEGORY_E002);
         }
-
-        List<Vocabulary> vocabularies = vocabularyService.getVocabulariesByCategoryId(vocabularyCategoryId).stream()
-                                        .map(vocabularyMapper::convertDtoToModel).toList();
-        for (Vocabulary vocabulary : vocabularies) {
-            vocabularyService.deleteVocabularyCategoryId(vocabulary.getId(), vocabularyCategoryId);
-        }
-        vocabularyCategoryRepository.deleteById(vocabularyCategoryId);
+        vocabularyService.deleteCategoryIdFromCategoryIds(categoryId);
+        vocabularyCategoryRepository.deleteById(categoryId);
     }
 }

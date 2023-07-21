@@ -3,6 +3,7 @@ package com.tip.dg4.toeic_exam.services.implement;
 import com.tip.dg4.toeic_exam.common.constants.TExamConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
 import com.tip.dg4.toeic_exam.dto.AccountDto;
+import com.tip.dg4.toeic_exam.dto.ChangePasswordDto;
 import com.tip.dg4.toeic_exam.dto.LoginDto;
 import com.tip.dg4.toeic_exam.dto.RegisterDto;
 import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
@@ -60,7 +61,7 @@ public class AccountServiceImpl implements AccountService {
         String accessToken = jwtService.generateToken(loginDto.getUsername());
         Cookie authCookie = new Cookie(TExamConstant.ACCESS_TOKEN, accessToken);
         authCookie.setMaxAge(TIME_TOKEN_ACTIVE);
-        authCookie.setPath("/");
+        authCookie.setPath(TExamConstant.SLASH);
         authCookie.setHttpOnly(true);
         authCookie.setSecure(true);
         response.addCookie(authCookie);
@@ -72,7 +73,9 @@ public class AccountServiceImpl implements AccountService {
     public void logoutAccount(HttpServletRequest request, HttpServletResponse response) {
         Cookie authCookie = TExamUtil.getAuthCookie(request);
         if (Objects.nonNull(authCookie)) {
+            authCookie.setValue(TExamConstant.EMPTY);
             authCookie.setMaxAge(0);
+            authCookie.setPath(TExamConstant.SLASH);
             response.addCookie(authCookie);
         }
     }
@@ -100,9 +103,25 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountDto getAccountByUsername(String username) {
         Account account = accountRepository.findByUsername(username)
-                .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.ACCOUNT_E001 + username));
+                          .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.ACCOUNT_E001 + username));
 
         return accountMapper.convertModelToDto(account);
+    }
+
+    @Override
+    public void changePasswordAccount(HttpServletRequest request, ChangePasswordDto changePasswordDto) {
+        String username = jwtService.extractUsername(TExamUtil.getAuthCookie(request).getValue());
+        Account account = accountRepository.findByUsername(username)
+                          .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.ACCOUNT_E006));
+        if (!passwordEncoder.matches(changePasswordDto.getOldPassword(), account.getPassword())) {
+            throw new BadRequestException(TExamExceptionConstant.ACCOUNT_E007);
+        }
+        if (!changePasswordDto.getNewPassword().equals(changePasswordDto.getConfirmNewPassword())) {
+            throw new BadRequestException(TExamExceptionConstant.ACCOUNT_E008);
+        }
+
+        account.setPassword(passwordEncoder.encode(changePasswordDto.getNewPassword()));
+        accountRepository.save(account);
     }
 
     private Optional<Account> findOneByUsernameAndPassword(String username, String password) {

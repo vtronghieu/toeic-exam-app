@@ -6,4 +6,5 @@ import java.util.UUID;
 
 public interface UserService {
     void createUser(RegisterDto registerDto, UUID accountId);
+    boolean existsUserById(UUID userId);
 }

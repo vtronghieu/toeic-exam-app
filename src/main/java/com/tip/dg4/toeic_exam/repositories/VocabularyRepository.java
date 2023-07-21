@@ -7,5 +7,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface VocabularyRepository extends MongoRepository<Vocabulary, UUID> {
-    List<Vocabulary> findByVocabularyCategoryIDsContaining(UUID vocabularyCategoryID);
+    boolean existsByWord(String word);
+    List<Vocabulary> findByCategoryIds(UUID categoryId);
 }

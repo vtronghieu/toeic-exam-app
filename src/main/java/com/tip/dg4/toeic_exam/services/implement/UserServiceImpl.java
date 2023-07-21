@@ -28,4 +28,9 @@ public class UserServiceImpl implements UserService {
         user.setAccountId(accountId);
         userRepository.save(user);
     }
+
+    @Override
+    public boolean existsUserById(UUID userId) {
+        return userRepository.existsById(userId);
+    }
 }

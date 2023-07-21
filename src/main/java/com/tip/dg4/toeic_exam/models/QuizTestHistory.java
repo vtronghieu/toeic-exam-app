@@ -12,14 +12,16 @@ import java.util.UUID;
 
 @Data
 @NoArgsConstructor
-@Document(collection = "vocabulary_questions")
-public class VocabularyQuestion {
+@Document(collection = "quiz_test_histories")
+public class QuizTestHistory {
     @Id
     @Field(targetType = FieldType.STRING)
     private UUID id;
-    private String question;
-    private List<String> answers;
-    private String correctAnswer;
     @Field(targetType = FieldType.STRING)
-    private UUID vocabularyId;
+    private UUID userId;
+    @Field(targetType = FieldType.STRING)
+    private UUID categoryId;
+    @Field(targetType = FieldType.STRING)
+    private QuestionType type;
+    private List<UserAnswer> userAnswers;
 }

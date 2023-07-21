@@ -9,17 +9,22 @@ import org.springframework.data.mongodb.core.mapping.FieldType;
 
 import java.util.List;
 import java.util.UUID;
+
 @Data
 @NoArgsConstructor
-@Document(collection = "vocabulary_test_histories")
-public class VocabularyTestHistory {
+@Document(collection = "questions")
+public class Question {
     @Id
     @Field(targetType = FieldType.STRING)
     private UUID id;
     @Field(targetType = FieldType.STRING)
-    private UUID userId;
-    private List<VocabularyAnswer> vocabularyAnswers;
+    private QuestionType type;
+    @Field(targetType = FieldType.STRING)
+    private UUID objectTypeId;
+    @Field(targetType = FieldType.STRING)
+    private QuestionLevel level;
+    private String textQuestion;
+    private String audioQuestion;
+    private List<String> images;
+    private OptionAnswers optionAnswers;
 }
-
-
-
