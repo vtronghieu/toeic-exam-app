@@ -32,4 +32,10 @@ public class TExamApiConstant {
     public static final String QUESTION_API_GET_BY_TYPE_AND_OBJECT_TYPE_IDS = "/getQuestionsByTypeAndObjectTypeIds";
     //  Quiz test history
     public static final String QUIZ_TEST_HISTORY_API_ROOT = API_ROOT + API_VERSION_1 + "/quizTestHistories";
+    //  Practice
+    public static final String PRACTICE_API_ROOT = API_ROOT + API_VERSION_1 + "/practices";
+    public static final String CREATE_WITHOUT_PARTS_API = "/createWithoutParts";
+    public static final String UPDATE_WITHOUT_PARTS_API = "/updateWithoutParts";
+    public static final String DELETE_WITHOUT_PARTS_API = "/deleteWithoutParts";
+    public static final String CREATE_PART_WITHOUT_LESSONS_AND_TESTS_API = "/createPartWithoutLessonsAndTests";
 }

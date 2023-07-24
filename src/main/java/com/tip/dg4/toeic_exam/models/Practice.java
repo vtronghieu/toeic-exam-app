@@ -21,5 +21,6 @@ public class Practice {
     private UUID id;
     private String name;
     private PracticeType type;
+    private String image;
     private List<PracticePart> practiceParts;
 }

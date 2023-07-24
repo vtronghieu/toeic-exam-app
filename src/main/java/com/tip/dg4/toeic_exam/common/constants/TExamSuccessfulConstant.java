@@ -31,4 +31,9 @@ public class TExamSuccessfulConstant {
     public static final String QUESTION_S005 = "Question was deleted successfully";
     //  Quiz test history
     public static final String QUIZ_TEST_HISTORY_S001 = "Quiz test history was created successfully";
+    //  Practice
+    public static final String PRACTICE_S001 = "Get all practices successfully";
+    public static final String PRACTICE_S002 = "Practice was created successfully";
+    public static final String PRACTICE_S003 = "Practice was updated successfully";
+    public static final String PRACTICE_S004 = "Practice was deleted successfully";
 }

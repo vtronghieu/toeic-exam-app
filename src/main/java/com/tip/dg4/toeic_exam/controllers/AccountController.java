@@ -84,7 +84,6 @@ public class AccountController {
     @GetMapping(path = TExamApiConstant.API_EMPTY,
                 params = "username",
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<ResponseData> getAccountByUsername(@RequestParam String username) {
         HttpStatus httpStatus = HttpStatus.OK;
         ResponseData result = new ResponseData(
