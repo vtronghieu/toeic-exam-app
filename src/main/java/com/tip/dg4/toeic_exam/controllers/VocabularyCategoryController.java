@@ -1,6 +1,7 @@
 package com.tip.dg4.toeic_exam.controllers;
 
 import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
+import com.tip.dg4.toeic_exam.common.constants.TExamParamConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamSuccessfulConstant;
 import com.tip.dg4.toeic_exam.common.responses.ResponseData;
 import com.tip.dg4.toeic_exam.dto.VocabularyCategoryDto;
@@ -46,6 +47,22 @@ public class VocabularyCategoryController {
                 httpStatus.getReasonPhrase(),
                 TExamSuccessfulConstant.VOCABULARY_CATEGORY_S002,
                 vocabularyCategoryService.getAllVocabularyCategories()
+        );
+
+        return new ResponseEntity<>(result, httpStatus);
+    }
+
+    @GetMapping(path = TExamApiConstant.API_EMPTY,
+                params = TExamParamConstant.ID,
+                produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('admin')")
+    public ResponseEntity<ResponseData> getVocabularyCategoryById(@RequestParam(name = TExamParamConstant.ID) UUID categoryId) {
+        HttpStatus httpStatus = HttpStatus.OK;
+        ResponseData result = new ResponseData(
+                httpStatus.value(),
+                httpStatus.getReasonPhrase(),
+                TExamSuccessfulConstant.VOCABULARY_CATEGORY_S005,
+                vocabularyCategoryService.getVocabularyCategoryById(categoryId)
         );
 
         return new ResponseEntity<>(result, httpStatus);

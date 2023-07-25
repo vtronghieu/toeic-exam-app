@@ -8,6 +8,7 @@ import java.util.UUID;
 public interface VocabularyCategoryService {
     void createVocabularyCategory(VocabularyCategoryDto vocabularyCategoryDto);
     List<VocabularyCategoryDto> getAllVocabularyCategories();
+    VocabularyCategoryDto getVocabularyCategoryById(UUID categoryId);
     VocabularyCategoryDto getVocabularyCategoryByName(String name);
     void updateVocabularyCategory(UUID vocabularyCategoryId, VocabularyCategoryDto vocabularyCategoryDto);
     void deleteVocabularyCategoryById(UUID vocabularyCategoryId);
