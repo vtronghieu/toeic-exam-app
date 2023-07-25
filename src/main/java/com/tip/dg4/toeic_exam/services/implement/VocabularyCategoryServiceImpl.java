@@ -52,6 +52,14 @@ public class VocabularyCategoryServiceImpl implements VocabularyCategoryService 
     }
 
     @Override
+    public VocabularyCategoryDto getVocabularyCategoryById(UUID categoryId) {
+        VocabularyCategory category = vocabularyCategoryRepository.findById(categoryId)
+                                      .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.VOCABULARY_CATEGORY_E002));
+
+        return vocabularyCategoryMapper.convertModelToDto(category);
+    }
+
+    @Override
     public VocabularyCategoryDto getVocabularyCategoryByName(String name) {
         Optional<VocabularyCategory> optionalCategory = vocabularyCategoryRepository.findOneByNameIgnoreCase(name);
         if (optionalCategory.isEmpty()) {
