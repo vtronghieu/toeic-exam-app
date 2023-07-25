@@ -78,7 +78,7 @@ public class VocabularyServiceImpl implements VocabularyService {
 
     @Override
     public void deleteVocabularyById(UUID vocabularyId) {
-        if (vocabularyRepository.existsById(vocabularyId)) {
+        if (!vocabularyRepository.existsById(vocabularyId)) {
             log.error(TExamExceptionConstant.VOCABULARY_E002 + vocabularyId);
             throw new NotFoundException(TExamExceptionConstant.VOCABULARY_E003);
         }
