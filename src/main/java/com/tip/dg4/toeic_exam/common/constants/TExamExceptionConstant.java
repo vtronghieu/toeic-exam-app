@@ -43,7 +43,10 @@ public class TExamExceptionConstant {
     //  Quiz test history
     public static final String QUIZ_TEST_HISTORY_E001 = "Question type must be vocabulary or grammar";
     //  Practice
-    public static final String PRACTICE_E001 = "Practice already exists";
+    public static final String PRACTICE_E001 = "Practice name already exists";
     public static final String PRACTICE_E002 = "Invalid type";
     public static final String PRACTICE_E003 = "Practice not found";
+    //  Practice part
+    public static final String PRACTICE_PART_E001 = "Practice part name already exists";
+    public static final String PRACTICE_PART_E002 = "Practice part not found";
 }
