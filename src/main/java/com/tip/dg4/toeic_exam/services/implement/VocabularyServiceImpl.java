@@ -89,19 +89,16 @@ public class VocabularyServiceImpl implements VocabularyService {
     @Override
     public void deleteCategoryIdFromCategoryIds(UUID categoryId) {
         List<Vocabulary> vocabularies = vocabularyRepository.findByCategoryIds(categoryId);
-        if (vocabularies.isEmpty()) {
-            log.error(TExamExceptionConstant.VOCABULARY_E005 + categoryId);
-            throw new NotFoundException(TExamExceptionConstant.VOCABULARY_E003);
-        }
-
-        for (Vocabulary vocabulary : vocabularies) {
-            List<UUID> categoryIdsFromVocabulary = vocabulary.getCategoryIds();
-            categoryIdsFromVocabulary.remove(categoryId);
-            if (categoryIdsFromVocabulary.isEmpty()) {
-                vocabularyRepository.delete(vocabulary);
-            } else {
-                vocabulary.setCategoryIds(categoryIdsFromVocabulary);
-                vocabularyRepository.save(vocabulary);
+        if (!vocabularies.isEmpty()) {
+            for (Vocabulary vocabulary : vocabularies) {
+                List<UUID> categoryIdsFromVocabulary = vocabulary.getCategoryIds();
+                categoryIdsFromVocabulary.remove(categoryId);
+                if (categoryIdsFromVocabulary.isEmpty()) {
+                    vocabularyRepository.delete(vocabulary);
+                } else {
+                    vocabulary.setCategoryIds(categoryIdsFromVocabulary);
+                    vocabularyRepository.save(vocabulary);
+                }
             }
         }
     }
