@@ -1,6 +1,7 @@
 package com.tip.dg4.toeic_exam.controllers;
 
 import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
+import com.tip.dg4.toeic_exam.common.constants.TExamParamConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamSuccessfulConstant;
 import com.tip.dg4.toeic_exam.common.responses.ResponseData;
 import com.tip.dg4.toeic_exam.dto.PracticeWithoutPartsDto;
@@ -68,11 +69,11 @@ public class PracticeController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @DeleteMapping(path = TExamApiConstant.DELETE_WITHOUT_PARTS_API,
-                   params = "id",
+    @DeleteMapping(path = TExamApiConstant.API_EMPTY,
+                   params = TExamParamConstant.ID,
                    produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<ResponseData> deletePracticeWithoutParts(@RequestParam(name = "id") UUID practiceId) {
+    public ResponseEntity<ResponseData> deletePracticeWithoutParts(@RequestParam(name = TExamParamConstant.ID) UUID practiceId) {
         HttpStatus httpStatus = HttpStatus.OK;
         practiceService.deletePracticeWithoutParts(practiceId);
         ResponseData result = new ResponseData(
