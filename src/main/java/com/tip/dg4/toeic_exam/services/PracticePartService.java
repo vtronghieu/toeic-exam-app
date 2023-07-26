@@ -9,4 +9,8 @@ public interface PracticePartService {
     void createPartWithoutLessonsAndTests(UUID practiceId,
                                           PracticePartWithoutLessonsAndTestsDto partWithoutLessonsAndTestsDto);
     List<PracticePartWithoutLessonsAndTestsDto> getPartsWithoutLessonsAndTestsByPracticeId(UUID practiceId);
+    void updatePartWithoutLessonsAndTests(UUID practiceId,
+                                          UUID practicePartId,
+                                          PracticePartWithoutLessonsAndTestsDto practicePartWithoutLessonsAndTestsDto);
+    void deletePartById(UUID practiceId, UUID practicePartId);
 }

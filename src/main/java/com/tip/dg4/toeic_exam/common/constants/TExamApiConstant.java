@@ -40,6 +40,7 @@ public class TExamApiConstant {
     public static final String PRACTICE_PART_API_ROOT = API_ROOT + API_VERSION_1 + "/practiceParts";
     public static final String CREATE_WITHOUT_LESSONS_AND_TESTS_API = "/createWithoutLessonsAndTests";
     public static final String GET_WITHOUT_LESSONS_AND_TESTS_BY_PRACTICE_ID_API = "/getWithoutLessonsAndTests";
+    public static final String UPDATE_WITHOUT_LESSONS_AND_TESTS_API = "/updateWithoutLessonsAndTests";
 
 }
 
