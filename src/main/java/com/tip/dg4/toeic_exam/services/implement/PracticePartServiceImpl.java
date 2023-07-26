@@ -99,6 +99,21 @@ public class PracticePartServiceImpl implements PracticePartService {
         practiceRepository.save(practice);
     }
 
+    @Override
+    public List<PracticePart> getAllPracticeParts() {
+        List<Practice> practices = practiceRepository.findAll();
+        List<PracticePart> practiceParts = new ArrayList<>();
+
+        for (Practice practice : practices) {
+            if (Objects.nonNull(practice.getPracticeParts())) {
+                practiceParts.addAll(practice.getPracticeParts());
+            }
+        }
+
+        return practiceParts;
+    }
+
+
     private Optional<PracticePart> findById(Practice practice, UUID id) {
         return practice.getPracticeParts().stream().filter(practicePart -> id.equals(practicePart.getId())).findFirst();
     }
