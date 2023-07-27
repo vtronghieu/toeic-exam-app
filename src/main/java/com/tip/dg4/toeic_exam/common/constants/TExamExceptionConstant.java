@@ -52,4 +52,6 @@ public class TExamExceptionConstant {
     //  Part test
     public static final String PART_TEST_E001 = "Part test name already exists";
     public static final String PART_TEST_E002 = "Part test type invalid";
+    //  Part lesson
+    public static final String PART_LESSON_E001 = "Part lesson name already exists";
 }

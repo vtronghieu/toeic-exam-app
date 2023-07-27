@@ -44,4 +44,7 @@ public class TExamSuccessfulConstant {
     public static final String PRACTICE_PART_S004 = "Practice part was deleted successfully";
     //  Part test
     public static final String PART_TEST_S001 = "Part test was created successfully";
+    //  Part lesson
+    public static final String PART_LESSON_S001 = "Part lesson was created successfully";
+    public static final String PART_LESSON_S002 = "Get part lessons successfully";
 }
