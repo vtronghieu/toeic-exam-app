@@ -113,7 +113,6 @@ public class PracticePartServiceImpl implements PracticePartService {
         return practiceParts;
     }
 
-
     private Optional<PracticePart> findById(Practice practice, UUID id) {
         return practice.getPracticeParts().stream().filter(practicePart -> id.equals(practicePart.getId())).findFirst();
     }
