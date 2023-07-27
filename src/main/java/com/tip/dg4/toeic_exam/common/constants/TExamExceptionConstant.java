@@ -49,4 +49,7 @@ public class TExamExceptionConstant {
     //  Practice part
     public static final String PRACTICE_PART_E001 = "Practice part name already exists";
     public static final String PRACTICE_PART_E002 = "Practice part not found";
+    //  Part test
+    public static final String PART_TEST_E001 = "Part test name already exists";
+    public static final String PART_TEST_E002 = "Part test type invalid";
 }
