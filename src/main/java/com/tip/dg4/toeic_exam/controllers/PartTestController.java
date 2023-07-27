@@ -44,7 +44,6 @@ public class PartTestController {
     @GetMapping(path = TExamApiConstant.API_EMPTY,
             params = TExamParamConstant.PRACTICE_PART_ID,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<ResponseData> getTestsByPartId(@RequestParam(TExamParamConstant.PRACTICE_PART_ID) UUID partId) {
         HttpStatus httpStatus = HttpStatus.OK;
         ResponseData result = new ResponseData(
