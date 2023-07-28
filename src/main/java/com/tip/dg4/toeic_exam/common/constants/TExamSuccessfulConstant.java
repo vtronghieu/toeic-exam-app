@@ -39,9 +39,23 @@ public class TExamSuccessfulConstant {
     public static final String PRACTICE_S004 = "Practice was deleted successfully";
     //  Practice part
     public static final String PRACTICE_PART_S001 = "Practice part was created successfully";
-    public static final String PRACTICE_PART_S002 = "Get all practice part successfully";
+    public static final String PRACTICE_PART_S002 = "Get practice parts successfully";
     public static final String PRACTICE_PART_S003 = "Practice part was updated successfully";
     public static final String PRACTICE_PART_S004 = "Practice part was deleted successfully";
     //  Part test
     public static final String PART_TEST_S001 = "Part test was created successfully";
+<<<<<<< Updated upstream
+    //  Part lesson
+    public static final String PART_LESSON_S001 = "Part lesson was created successfully";
+    public static final String PART_LESSON_S002 = "Get part lessons successfully";
+=======
+    public static final String PART_TEST_S002 = "Part test was updated successfully";
+    public static final String PART_TEST_S003 = "Part test was deleted successfully";
+    public static final String PART_TEST_S004 = "Get part tests successfully";
+    //  Part lesson
+    public static final String PART_LESSON_S001 = "Part lesson was created successfully";
+    public static final String PART_LESSON_S002 = "Get part lessons successfully";
+    public static final String PART_LESSON_S003 = "Part lesson was updated successfully";
+    public static final String PART_LESSON_S004 = "Part lesson was deleted successfully";
+>>>>>>> Stashed changes
 }

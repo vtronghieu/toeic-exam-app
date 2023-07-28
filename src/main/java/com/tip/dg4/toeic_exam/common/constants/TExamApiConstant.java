@@ -34,15 +34,18 @@ public class TExamApiConstant {
     public static final String QUIZ_TEST_HISTORY_API_ROOT = API_ROOT + API_VERSION_1 + "/quizTestHistories";
     //  Practice
     public static final String PRACTICE_API_ROOT = API_ROOT + API_VERSION_1 + "/practices";
-    public static final String CREATE_WITHOUT_PARTS_API = "/createWithoutParts";
-    public static final String UPDATE_WITHOUT_PARTS_API = "/updateWithoutParts";
     //  Practice part
     public static final String PRACTICE_PART_API_ROOT = API_ROOT + API_VERSION_1 + "/practiceParts";
-    public static final String CREATE_WITHOUT_LESSONS_AND_TESTS_API = "/createWithoutLessonsAndTests";
-    public static final String GET_WITHOUT_LESSONS_AND_TESTS_BY_PRACTICE_ID_API = "/getWithoutLessonsAndTests";
-    public static final String UPDATE_WITHOUT_LESSONS_AND_TESTS_API = "/updateWithoutLessonsAndTests";
     //  Part test
     public static final String PART_TEST_API_ROOT = API_ROOT + API_VERSION_1 + "/partTests";
+<<<<<<< Updated upstream
     public static final String CREATE_WITHOUT_USER_ANSWER_API = "/createWithoutUserAnswer";
+    //  Part lesson
+    public static final String PART_LESSON_API_ROOT = API_ROOT + API_VERSION_1 + "/partLessons";
+    public static final String CREATE_WITHOUT_CONTENTS_API = "/createWithoutContents";
+=======
+    //  Part lesson
+    public static final String PART_LESSON_API_ROOT = API_ROOT + API_VERSION_1 + "/partLessons";
+>>>>>>> Stashed changes
 }
 

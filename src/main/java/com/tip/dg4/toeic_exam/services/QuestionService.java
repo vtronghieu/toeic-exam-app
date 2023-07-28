@@ -11,8 +11,7 @@ import java.util.UUID;
 public interface QuestionService {
     void createQuestion(QuestionDto questionDto);
     List<QuestionDto> getAllQuestions();
-    List<QuestionDto> getQuestionsByType(String type);
-    List<QuestionDto> getQuestionsByTypeAndObjectTypeIds(String type, List<UUID> objectTypeIds);
+    List<QuestionDto> getQuestionsByObjectTypeId(UUID objectTypeId);
     Optional<Question> findByTypeAndId(QuestionType questionType, UUID questionId);
     void updateQuestion(UUID questionId, QuestionDto questionDto);
     void deleteQuestionById(UUID questionId);

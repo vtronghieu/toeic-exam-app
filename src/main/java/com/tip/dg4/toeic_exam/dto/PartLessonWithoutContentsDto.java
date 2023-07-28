@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PartTestWithoutUserAnswerAndFinishTimeDto {
-    private String type;
+public class PartLessonWithoutContentsDto {
     private String name;
 }

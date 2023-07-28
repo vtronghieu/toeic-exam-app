@@ -1,123 +1,95 @@
 package com.tip.dg4.toeic_exam.services.implement;
 
 import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
-import com.tip.dg4.toeic_exam.dto.PracticePartWithoutLessonsAndTestsDto;
+import com.tip.dg4.toeic_exam.dto.PracticePartDto;
 import com.tip.dg4.toeic_exam.exceptions.ConflictException;
 import com.tip.dg4.toeic_exam.exceptions.NotFoundException;
 import com.tip.dg4.toeic_exam.mappers.PracticePartMapper;
-import com.tip.dg4.toeic_exam.models.Practice;
 import com.tip.dg4.toeic_exam.models.PracticePart;
-import com.tip.dg4.toeic_exam.repositories.PracticeRepository;
+import com.tip.dg4.toeic_exam.repositories.PracticePartRepository;
 import com.tip.dg4.toeic_exam.services.PracticePartService;
+import com.tip.dg4.toeic_exam.services.PracticeService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Log4j2
 @Service
 public class PracticePartServiceImpl implements PracticePartService {
-    private final PracticeRepository practiceRepository;
+    private final PracticePartRepository practicePartRepository;
+    private final PracticeService practiceService;
     private final PracticePartMapper practicePartMapper;
 
-    public PracticePartServiceImpl(PracticeRepository practiceRepository,
+
+    public PracticePartServiceImpl(PracticePartRepository practicePartRepository,
+                                   PracticeService practiceService,
                                    PracticePartMapper practicePartMapper) {
-        this.practiceRepository = practiceRepository;
+        this.practicePartRepository = practicePartRepository;
+        this.practiceService = practiceService;
         this.practicePartMapper = practicePartMapper;
     }
 
     @Override
-    public void createPartWithoutLessonsAndTests(UUID practiceId,
-                                                 PracticePartWithoutLessonsAndTestsDto partWithoutLessonsAndTestsDto) {
-        Practice practice = practiceRepository.findById(practiceId)
-                .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PRACTICE_E003));
-        List<PracticePart> practiceParts = Optional.ofNullable(practice.getPracticeParts()).orElse(new ArrayList<>());
-        boolean existsPartByName = practiceParts.stream()
-                .anyMatch(practicePart -> partWithoutLessonsAndTestsDto.getName().equalsIgnoreCase(practicePart.getName()));
-        if (existsPartByName) {
+    public void createPracticePart(PracticePartDto practicePartDto) {
+        UUID practiceId = practicePartDto.getPracticeId();
+        if (!practiceService.existsById(practiceId)) {
+            throw new NotFoundException(TExamExceptionConstant.PRACTICE_E003);
+        }
+        if (practicePartRepository.existsByPracticeIdAndName(practicePartDto.getPracticeId(), practicePartDto.getName())) {
             throw new ConflictException(TExamExceptionConstant.PRACTICE_PART_E001);
         }
-        PracticePart newPracticePart = practicePartMapper.convertDtoWithoutLessonsAndTestsToModel(partWithoutLessonsAndTestsDto);
-        newPracticePart.setId(UUID.randomUUID());
-        practiceParts.add(newPracticePart);
-        practice.setPracticeParts(practiceParts);
-        practiceRepository.save(practice);
+        PracticePart newPracticePart = practicePartMapper.convertDtoToModel(practicePartDto);
+        newPracticePart.setPracticeId(practiceId);
+
+        practicePartRepository.save(newPracticePart);
     }
 
     @Override
-    public List<PracticePartWithoutLessonsAndTestsDto> getPartsWithoutLessonsAndTestsByPracticeId(UUID practiceId) {
-        Practice practice = practiceRepository.findById(practiceId)
-                            .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PRACTICE_PART_E002));
-        List<PracticePart> practiceParts = Optional.ofNullable(practice.getPracticeParts()).orElse(new ArrayList<>());
-        List<PracticePartWithoutLessonsAndTestsDto> partsWithoutLessonsAndTests = new ArrayList<>();
-        if (!practiceParts.isEmpty()) {
-            partsWithoutLessonsAndTests = practiceParts.stream()
-                                          .map(practicePartMapper::convertModelDtoWithoutLessonsAndTests)
-                                          .toList();
+    public List<PracticePartDto> getPracticePartsByPracticeId(UUID practiceId) {
+        if (!practiceService.existsById(practiceId)) {
+            throw new NotFoundException(TExamExceptionConstant.PRACTICE_E003);
         }
+        List<PracticePart> practiceParts = practicePartRepository.findByPracticeId(practiceId);
 
-        return partsWithoutLessonsAndTests;
+        return practiceParts.stream().map(practicePartMapper::convertModelToDto).toList();
     }
 
     @Override
-    public void updatePartWithoutLessonsAndTests(UUID practiceId,
-                                                 UUID practicePartId,
-                                                 PracticePartWithoutLessonsAndTestsDto partWithoutLessonsAndTestsDto) {
-        Practice practice = practiceRepository.findById(practiceId)
-                            .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PRACTICE_E003));
-        List<PracticePart> practiceParts = Optional.ofNullable(practice.getPracticeParts()).orElse(new ArrayList<>());
-        PracticePart practicePart = new PracticePart();
-        int partIndex = 0;
-        if (!practiceParts.isEmpty()) {
-            practicePart = this.findById(practice, practiceId)
-                           .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PRACTICE_PART_E002));
-            boolean existsByName = !partWithoutLessonsAndTestsDto.getName().equals(practicePart.getName()) &&
-                                   this.existsByName(practice, partWithoutLessonsAndTestsDto.getName());
-            if (existsByName) {
-                throw new ConflictException(TExamExceptionConstant.PRACTICE_E001);
-            }
-            partIndex = practiceParts.indexOf(practicePart);
-        }
-        practicePart.setName(partWithoutLessonsAndTestsDto.getName());
-        practicePart.setImage(partWithoutLessonsAndTestsDto.getImage());
-        practicePart.setDescription(partWithoutLessonsAndTestsDto.getDescription());
-
-        practiceParts.set(partIndex, practicePart);
-        practice.setPracticeParts(practiceParts);
-        practiceRepository.save(practice);
-    }
-
-    @Override
-    public void deletePartById(UUID practiceId, UUID practicePartId) {
-        Practice practice = practiceRepository.findById(practiceId)
-                            .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PRACTICE_E003));
-        List<PracticePart> practiceParts = practice.getPracticeParts();
-        if (findById(practice, practicePartId).isEmpty()) {
+    public void updatePracticePart(UUID practicePartId, PracticePartDto practicePartDto) {
+        Optional<PracticePart> optionalPracticePart = practicePartRepository.findById(practicePartId);
+        if (optionalPracticePart.isEmpty()) {
             throw new NotFoundException(TExamExceptionConstant.PRACTICE_PART_E002);
         }
-        practiceParts.removeIf(practicePart -> practicePartId.equals(practicePart.getId()));
-        practiceRepository.save(practice);
+        if (!practiceService.existsById(practicePartDto.getPracticeId())) {
+            throw new NotFoundException(TExamExceptionConstant.PRACTICE_E003);
+        }
+        PracticePart practicePart = optionalPracticePart.get();
+        if (!practicePartDto.getName().equals(practicePart.getName()) &&
+                practicePartRepository.existsByPracticeIdAndName(practicePartDto.getPracticeId(), practicePartDto.getName())) {
+            throw new ConflictException(TExamExceptionConstant.PRACTICE_PART_E001);
+        }
+        practicePart.setPracticeId(practicePartDto.getPracticeId());
+        practicePart.setName(practicePartDto.getName());
+        practicePart.setImage(practicePartDto.getImage());
+        practicePart.setDescription(practicePartDto.getDescription());
+
+        practicePartRepository.save(practicePart);
     }
 
     @Override
-    public List<PracticePart> getAllPracticeParts() {
-        List<Practice> practices = practiceRepository.findAll();
-        List<PracticePart> practiceParts = new ArrayList<>();
-
-        for (Practice practice : practices) {
-            if (Objects.nonNull(practice.getPracticeParts())) {
-                practiceParts.addAll(practice.getPracticeParts());
-            }
+    public void deletePracticePartById(UUID practicePartId) {
+        if (!practicePartRepository.existsById(practicePartId)) {
+            throw new NotFoundException(TExamExceptionConstant.PRACTICE_PART_E002);
         }
 
-        return practiceParts;
+        practicePartRepository.deleteById(practicePartId);
     }
 
-    private Optional<PracticePart> findById(Practice practice, UUID id) {
-        return practice.getPracticeParts().stream().filter(practicePart -> id.equals(practicePart.getId())).findFirst();
-    }
-
-    private boolean existsByName(Practice practice, String name) {
-        return practice.getPracticeParts().stream().anyMatch(practicePart -> name.equals(practicePart.getName()));
+    @Override
+    public boolean existsById(UUID practicePartId) {
+        return practicePartRepository.existsById(practicePartId);
     }
 }

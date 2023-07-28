@@ -10,10 +10,11 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PracticePartWithoutLessonsAndTestsDto {
+public class PartTestDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private UUID id;
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    private UUID practicePartId;
+    private String type;
     private String name;
-    private String image;
-    private String description;
 }

@@ -1,30 +1,32 @@
 package com.tip.dg4.toeic_exam.mappers;
 
-import com.tip.dg4.toeic_exam.dto.PracticePartWithoutLessonsAndTestsDto;
+import com.tip.dg4.toeic_exam.dto.PracticePartDto;
 import com.tip.dg4.toeic_exam.models.PracticePart;
 import org.springframework.stereotype.Component;
 
 @Component
 public class PracticePartMapper {
-    public PracticePart convertDtoWithoutLessonsAndTestsToModel(PracticePartWithoutLessonsAndTestsDto partWithoutLessonsAndTestsDto) {
+    public PracticePart convertDtoToModel(PracticePartDto practicePartDto) {
         PracticePart practicePart = new PracticePart();
 
-        practicePart.setId(partWithoutLessonsAndTestsDto.getId());
-        practicePart.setName(partWithoutLessonsAndTestsDto.getName());
-        practicePart.setImage(partWithoutLessonsAndTestsDto.getImage());
-        practicePart.setDescription(partWithoutLessonsAndTestsDto.getDescription());
+        practicePart.setId(practicePartDto.getId());
+        practicePart.setPracticeId(practicePartDto.getPracticeId());
+        practicePart.setName(practicePartDto.getName());
+        practicePart.setImage(practicePartDto.getImage());
+        practicePart.setDescription(practicePartDto.getDescription());
 
         return practicePart;
     }
 
-    public PracticePartWithoutLessonsAndTestsDto convertModelDtoWithoutLessonsAndTests(PracticePart practicePart) {
-        PracticePartWithoutLessonsAndTestsDto practicePartWithoutLessonsAndTestsDto = new PracticePartWithoutLessonsAndTestsDto();
+    public PracticePartDto convertModelToDto(PracticePart practicePart) {
+        PracticePartDto practicePartDto = new PracticePartDto();
 
-        practicePartWithoutLessonsAndTestsDto.setId(practicePart.getId());
-        practicePartWithoutLessonsAndTestsDto.setName(practicePart.getName());
-        practicePartWithoutLessonsAndTestsDto.setImage(practicePart.getImage());
-        practicePartWithoutLessonsAndTestsDto.setDescription(practicePart.getDescription());
+        practicePartDto.setId(practicePart.getId());
+        practicePartDto.setPracticeId(practicePart.getPracticeId());
+        practicePartDto.setName(practicePart.getName());
+        practicePartDto.setImage(practicePart.getImage());
+        practicePartDto.setDescription(practicePart.getDescription());
 
-        return practicePartWithoutLessonsAndTestsDto;
+        return practicePartDto;
     }
 }

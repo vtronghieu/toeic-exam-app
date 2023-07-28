@@ -1,13 +1,14 @@
 package com.tip.dg4.toeic_exam.services;
 
-import com.tip.dg4.toeic_exam.dto.PartTestWithoutUserAnswerAndFinishTimeDto;
+import com.tip.dg4.toeic_exam.dto.PartTestDto;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface PartTestService {
-    void createTest(UUID practiceId,
-                    UUID partId,
-                    PartTestWithoutUserAnswerAndFinishTimeDto partTestWithoutUserAnswerAndFinishTimeDto);
-    List<PartTestWithoutUserAnswerAndFinishTimeDto> getTestsByPartId(UUID partId);
+    void createPartTest(PartTestDto partTestDto);
+    List<PartTestDto> getPartTestsByPartId(UUID partId);
+    void updatePartTest(UUID partTestId, PartTestDto partTestDto);
+    void deletePartTestById(UUID partTestId);
+    boolean existsById(UUID partTestId);
 }

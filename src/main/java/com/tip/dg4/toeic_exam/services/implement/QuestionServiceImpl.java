@@ -10,6 +10,7 @@ import com.tip.dg4.toeic_exam.models.Question;
 import com.tip.dg4.toeic_exam.models.QuestionLevel;
 import com.tip.dg4.toeic_exam.models.QuestionType;
 import com.tip.dg4.toeic_exam.repositories.QuestionRepository;
+import com.tip.dg4.toeic_exam.services.PartTestService;
 import com.tip.dg4.toeic_exam.services.QuestionService;
 import com.tip.dg4.toeic_exam.services.VocabularyService;
 import com.tip.dg4.toeic_exam.utils.TExamUtil;
@@ -27,27 +28,32 @@ public class QuestionServiceImpl implements QuestionService {
     private final QuestionRepository questionRepository;
     private final QuestionMapper questionMapper;
     private final VocabularyService vocabularyService;
+    private final PartTestService partTestService;
 
     public QuestionServiceImpl(QuestionRepository questionRepository,
                                QuestionMapper questionMapper,
-                               VocabularyService vocabularyService) {
+                               VocabularyService vocabularyService,
+                               PartTestService partTestService) {
         this.questionRepository = questionRepository;
         this.questionMapper = questionMapper;
         this.vocabularyService = vocabularyService;
+        this.partTestService = partTestService;
     }
 
     @Override
     public void createQuestion(QuestionDto questionDto) {
-        if (questionRepository.existsByTextQuestion(questionDto.getTextQuestion()) ||
-            questionRepository.existsByAudioQuestion(questionDto.getAudioQuestion())) {
-            throw new ConflictException(TExamExceptionConstant.QUESTION_E001);
+        QuestionType questionType = QuestionType.getType(questionDto.getType());
+        if (Objects.isNull(questionType)) {
+            throw new BadRequestException(TExamExceptionConstant.QUESTION_E002);
         }
-        if (QuestionType.VOCABULARY.getValue().equals(questionDto.getType()) &&
-            !vocabularyService.existsById(questionDto.getObjectTypeId())) {
-            log.error(TExamExceptionConstant.VOCABULARY_E002 + questionDto.getObjectTypeId());
+        if (QuestionType.VOCABULARY.equals(questionType) &&
+                !vocabularyService.existsById(questionDto.getObjectTypeId())) {
             throw new NotFoundException(TExamExceptionConstant.VOCABULARY_E003);
         }
-
+        if (QuestionType.PRACTICE.equals(questionType) &&
+                !partTestService.existsById(questionDto.getObjectTypeId())) {
+            throw new NotFoundException(TExamExceptionConstant.PART_TEST_E003);
+        }
         Question question = questionMapper.convertDtoToModel(questionDto);
         questionRepository.save(question);
     }
@@ -59,32 +65,11 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public List<QuestionDto> getQuestionsByType(String type) {
-        QuestionType questionType = QuestionType.getType(type);
-        if (Objects.isNull(questionType)) {
-            throw new NotFoundException(TExamExceptionConstant.QUESTION_E002);
+    public List<QuestionDto> getQuestionsByObjectTypeId(UUID objectTypeId) {
+        List<Question> questions = questionRepository.findByObjectTypeId(objectTypeId);
+        if (questions.isEmpty()) {
+            throw new NotFoundException(TExamExceptionConstant.QUESTION_E006);
         }
-
-        return questionRepository.findByType(questionType).stream()
-                .map(questionMapper::convertModelToDto).toList();
-    }
-
-    @Override
-    public List<QuestionDto> getQuestionsByTypeAndObjectTypeIds(String type, List<UUID> objectTypeIds) {
-        QuestionType questionType = QuestionType.getType(type);
-        if (Objects.isNull(questionType)) {
-            throw new NotFoundException(TExamExceptionConstant.QUESTION_E002);
-        }
-        if (QuestionType.VOCABULARY.equals(questionType) || QuestionType.GRAMMAR.equals(questionType)) {
-            List<UUID> missingObjectTypeIds = objectTypeIds.stream()
-                    .filter(objectTypeId -> !questionRepository.existsByTypeAndObjectTypeId(questionType, objectTypeId))
-                    .toList();
-            if (!missingObjectTypeIds.isEmpty()) {
-                log.error(TExamExceptionConstant.QUESTION_E004 + missingObjectTypeIds);
-                throw new NotFoundException(TExamExceptionConstant.QUESTION_E003);
-            }
-        }
-        List<Question> questions = questionRepository.findByTypeAndObjectTypeIdIn(questionType, objectTypeIds);
 
         return questions.stream().map(questionMapper::convertModelToDto).toList();
     }
@@ -101,18 +86,25 @@ public class QuestionServiceImpl implements QuestionService {
     public void updateQuestion(UUID questionId, QuestionDto questionDto) {
         Optional<Question> optionalQuestion = questionRepository.findById(questionId);
         if (optionalQuestion.isEmpty()) {
-            log.error(TExamExceptionConstant.QUESTION_E005 + questionId);
             throw new NotFoundException(TExamExceptionConstant.QUESTION_E006);
         }
-        Question question = optionalQuestion.get();
         QuestionType questionDtoType = QuestionType.getType(questionDto.getType());
         if (Objects.isNull(questionDtoType)) {
-            throw new BadRequestException(TExamExceptionConstant.QUESTION_E008);
+            throw new BadRequestException(TExamExceptionConstant.QUESTION_E002);
         }
+        if (QuestionType.VOCABULARY.equals(questionDtoType) &&
+                !vocabularyService.existsById(questionDto.getObjectTypeId())) {
+            throw new NotFoundException(TExamExceptionConstant.VOCABULARY_E003);
+        }
+        if (QuestionType.PRACTICE.equals(questionDtoType) &&
+                !partTestService.existsById(questionDto.getObjectTypeId())) {
+            throw new NotFoundException(TExamExceptionConstant.PART_TEST_E003);
+        }
+        Question question = optionalQuestion.get();
         if (TExamUtil.isVocabularyTypeOrGrammarType(questionDtoType) &&
-            !Objects.equals(question.getTextQuestion(), questionDto.getTextQuestion()) &&
-            existsByTypeAndTextQuestion(questionDtoType, questionDto.getTextQuestion())) {
-            throw new NotFoundException(TExamExceptionConstant.QUESTION_E007 + questionDtoType.getValue());
+                !Objects.equals(question.getTextQuestion(), questionDto.getTextQuestion()) &&
+                existsByTypeAndTextQuestion(questionDtoType, questionDto.getTextQuestion())) {
+            throw new NotFoundException(TExamExceptionConstant.QUESTION_E002);
         }
         question.setType(questionDtoType);
         question.setObjectTypeId(questionDto.getObjectTypeId());
@@ -121,13 +113,13 @@ public class QuestionServiceImpl implements QuestionService {
         question.setAudioQuestion(questionDto.getAudioQuestion());
         question.setImages(questionDto.getImages());
         question.setOptionAnswers(questionDto.getOptionAnswers());
+
         questionRepository.save(question);
     }
 
     @Override
     public void deleteQuestionById(UUID questionId) {
         if (!questionRepository.existsById(questionId)) {
-            log.error(TExamExceptionConstant.QUESTION_E005 + questionId);
             throw new NotFoundException(TExamExceptionConstant.QUESTION_E006);
         }
         questionRepository.deleteById(questionId);

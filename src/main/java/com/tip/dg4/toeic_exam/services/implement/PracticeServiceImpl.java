@@ -1,7 +1,7 @@
 package com.tip.dg4.toeic_exam.services.implement;
 
 import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
-import com.tip.dg4.toeic_exam.dto.PracticeWithoutPartsDto;
+import com.tip.dg4.toeic_exam.dto.PracticeDto;
 import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
 import com.tip.dg4.toeic_exam.exceptions.ConflictException;
 import com.tip.dg4.toeic_exam.exceptions.NotFoundException;
@@ -30,47 +30,52 @@ public class PracticeServiceImpl implements PracticeService {
     }
 
     @Override
-    public void createPracticeWithoutParts(PracticeWithoutPartsDto practiceWithoutPartsDto) {
-        if (practiceRepository.existsByNameIgnoreCase(practiceWithoutPartsDto.getName())) {
+    public void createPractice(PracticeDto practiceDto) {
+        if (practiceRepository.existsByNameIgnoreCase(practiceDto.getName())) {
             throw new ConflictException(TExamExceptionConstant.PRACTICE_E001);
         }
-        if (Objects.isNull(PracticeType.getType(practiceWithoutPartsDto.getType()))) {
+        if (Objects.isNull(PracticeType.getType(practiceDto.getType()))) {
             throw new BadRequestException(TExamExceptionConstant.PRACTICE_E002);
         }
 
-        Practice practice = practiceMapper.convertDtoWithoutPartsToModel(practiceWithoutPartsDto);
+        Practice practice = practiceMapper.convertDtoToModel(practiceDto);
         practiceRepository.save(practice);
     }
 
     @Override
-    public List<PracticeWithoutPartsDto> getAllPracticesWithoutParts() {
+    public List<PracticeDto> getAllPractices() {
         return practiceRepository.findAll().stream()
-               .map(practiceMapper::convertModelToDtoWithoutParts).toList();
+               .map(practiceMapper::convertModelToDto).toList();
     }
 
     @Override
-    public void updatePracticeWithoutParts(UUID practiceId, PracticeWithoutPartsDto practiceWithoutPartsDto) {
+    public void updatePractice(UUID practiceId, PracticeDto practiceDto) {
         Practice practice = practiceRepository.findById(practiceId)
                              .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PRACTICE_E003));
-        if (!Objects.equals(practiceWithoutPartsDto.getName(), practice.getName()) &&
-            practiceRepository.existsByNameIgnoreCase(practiceWithoutPartsDto.getName())) {
+        if (!Objects.equals(practiceDto.getName(), practice.getName()) &&
+            practiceRepository.existsByNameIgnoreCase(practiceDto.getName())) {
             throw new ConflictException(TExamExceptionConstant.PRACTICE_E001);
         }
-        PracticeType practiceDtoType = PracticeType.getType(practiceWithoutPartsDto.getType());
+        PracticeType practiceDtoType = PracticeType.getType(practiceDto.getType());
         if (Objects.isNull(practiceDtoType)) {
             throw new BadRequestException(TExamExceptionConstant.PRACTICE_E002);
         }
-        practice.setName(practiceWithoutPartsDto.getName());
+        practice.setName(practiceDto.getName());
         practice.setType(practiceDtoType);
-        practice.setImage(practiceWithoutPartsDto.getImage());
+        practice.setImage(practiceDto.getImage());
         practiceRepository.save(practice);
     }
 
     @Override
-    public void deletePracticeWithoutParts(UUID practiceId) {
+    public void deletePractice(UUID practiceId) {
         if (!practiceRepository.existsById(practiceId)) {
             throw new NotFoundException(TExamExceptionConstant.PRACTICE_E003);
         }
         practiceRepository.deleteById(practiceId);
+    }
+
+    @Override
+    public boolean existsById(UUID practiceId) {
+        return practiceRepository.existsById(practiceId);
     }
 }

@@ -33,18 +33,14 @@ public class TExamExceptionConstant {
     public static final String VOCABULARY_E005 = "Vocabulary not found by categoryId: ";
     //  Question
     public static final String QUESTION_E001 = "Question already exists";
-    public static final String QUESTION_E002 = "Question type not found";
-    public static final String QUESTION_E003 = "Question not found by some resource";
-    public static final String QUESTION_E004 = "Question not found by objectTypeId(s): ";
+    public static final String QUESTION_E002 = "Question type invalid";
     public static final String QUESTION_E005 = "Question not found by id: ";
     public static final String QUESTION_E006 = "Question not found";
-    public static final String QUESTION_E007 = "Question not found by question type: ";
-    public static final String QUESTION_E008 = "Invalid question type";
     //  Quiz test history
     public static final String QUIZ_TEST_HISTORY_E001 = "Question type must be vocabulary or grammar";
     //  Practice
     public static final String PRACTICE_E001 = "Practice name already exists";
-    public static final String PRACTICE_E002 = "Invalid type";
+    public static final String PRACTICE_E002 = "Practice type invalid";
     public static final String PRACTICE_E003 = "Practice not found";
     //  Practice part
     public static final String PRACTICE_PART_E001 = "Practice part name already exists";
@@ -52,4 +48,13 @@ public class TExamExceptionConstant {
     //  Part test
     public static final String PART_TEST_E001 = "Part test name already exists";
     public static final String PART_TEST_E002 = "Part test type invalid";
+<<<<<<< Updated upstream
+    //  Part lesson
+    public static final String PART_LESSON_E001 = "Part lesson name already exists";
+=======
+    public static final String PART_TEST_E003 = "Part test not found";
+    //  Part lesson
+    public static final String PART_LESSON_E001 = "Part lesson name already exists";
+    public static final String PART_LESSON_E002 = "Part lesson not found";
+>>>>>>> Stashed changes
 }

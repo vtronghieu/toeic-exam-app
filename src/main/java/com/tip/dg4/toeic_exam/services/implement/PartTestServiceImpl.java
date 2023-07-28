@@ -1,83 +1,101 @@
 package com.tip.dg4.toeic_exam.services.implement;
 
 import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
-import com.tip.dg4.toeic_exam.dto.PartTestWithoutUserAnswerAndFinishTimeDto;
+import com.tip.dg4.toeic_exam.dto.PartTestDto;
 import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
 import com.tip.dg4.toeic_exam.exceptions.ConflictException;
 import com.tip.dg4.toeic_exam.exceptions.NotFoundException;
 import com.tip.dg4.toeic_exam.mappers.PartTestMapper;
 import com.tip.dg4.toeic_exam.models.PartTest;
-import com.tip.dg4.toeic_exam.models.Practice;
-import com.tip.dg4.toeic_exam.models.PracticePart;
 import com.tip.dg4.toeic_exam.models.PracticeType;
-import com.tip.dg4.toeic_exam.repositories.PracticeRepository;
+import com.tip.dg4.toeic_exam.repositories.PartTestRepository;
 import com.tip.dg4.toeic_exam.services.PartTestService;
 import com.tip.dg4.toeic_exam.services.PracticePartService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 @Log4j2
 @Service
 public class PartTestServiceImpl implements PartTestService {
-    private final PracticeRepository practiceRepository;
+    private final PartTestRepository partTestRepository;
     private final PracticePartService practicePartService;
     private final PartTestMapper partTestMapper;
 
-    public PartTestServiceImpl(PracticeRepository practiceRepository,
+    public PartTestServiceImpl(PartTestRepository partTestRepository,
                                PracticePartService practicePartService,
                                PartTestMapper partTestMapper) {
-        this.practiceRepository = practiceRepository;
+        this.partTestRepository = partTestRepository;
         this.practicePartService = practicePartService;
         this.partTestMapper = partTestMapper;
     }
 
     @Override
-    public void createTest(UUID practiceId, UUID partId, PartTestWithoutUserAnswerAndFinishTimeDto testWithoutUserAnswerAndFinishTimeDto) {
-        Practice practice = practiceRepository.findById(practiceId)
-                .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PRACTICE_E003));
-        List<PracticePart> practiceParts = Optional.ofNullable(practice.getPracticeParts()).orElse(new ArrayList<>());
-        PracticePart practicePart = practiceParts.stream().filter(part -> partId.equals(part.getId())).findFirst()
-                .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PRACTICE_PART_E002));
-        List<PartTest> partTests = Optional.ofNullable(practicePart.getPartTests()).orElse(new ArrayList<>());
-        int partIndex = 0;
-        if (!partTests.isEmpty()) {
-            PracticeType practiceType = PracticeType.getType(testWithoutUserAnswerAndFinishTimeDto.getType());
-            if (Objects.isNull(practiceType) || !practiceType.equals(practice.getType())) {
-                throw new BadRequestException(TExamExceptionConstant.PART_TEST_E002);
-            }
-            if (this.existsByName(practicePart, testWithoutUserAnswerAndFinishTimeDto.getName())) {
-                throw new ConflictException(TExamExceptionConstant.PART_TEST_E001);
-            }
-            partIndex = practiceParts.indexOf(practicePart);
+    public void createPartTest(PartTestDto partTestDto) {
+        if (!practicePartService.existsById(partTestDto.getPracticePartId())) {
+            throw new NotFoundException(TExamExceptionConstant.PRACTICE_PART_E002);
         }
-        PartTest newPartTest = partTestMapper.convertDtoWithoutUserAnswerAndFinishTimeToModel(testWithoutUserAnswerAndFinishTimeDto);
-        partTests.add(newPartTest);
-        practicePart.setPartTests(partTests);
-        practiceParts.set(partIndex, practicePart);
-        practice.setPracticeParts(practiceParts);
-        practiceRepository.save(practice);
+        PracticeType practiceType = PracticeType.getType(partTestDto.getType());
+        if (Objects.isNull(practiceType)) {
+            throw new BadRequestException(TExamExceptionConstant.PART_TEST_E002);
+        }
+        if (partTestRepository.existsByPracticePartIdAndName(partTestDto.getPracticePartId(), partTestDto.getName())) {
+            throw new ConflictException(TExamExceptionConstant.PART_TEST_E001);
+        }
+        PartTest newPartTest = partTestMapper.convertDtoToModel(partTestDto);
+
+        partTestRepository.save(newPartTest);
     }
 
     @Override
-    public List<PartTestWithoutUserAnswerAndFinishTimeDto> getTestsByPartId(UUID partId) {
-        List<PracticePart> practiceParts = practicePartService.getAllPracticeParts();
-        List<PartTest> partTests = new ArrayList<>();
-        boolean existsPartById = practiceParts.stream().anyMatch(practicePart -> partId.equals(practicePart.getId()));
-        if (!existsPartById) {
+    public List<PartTestDto> getPartTestsByPartId(UUID practicePartId) {
+        if (!practicePartService.existsById(practicePartId)) {
             throw new NotFoundException(TExamExceptionConstant.PRACTICE_PART_E002);
         }
-        for (PracticePart practicePart : practiceParts) {
-            if (Objects.nonNull(practicePart.getPartTests()) && partId.equals(practicePart.getId())) {
-                partTests.addAll(practicePart.getPartTests());
-            }
-        }
+        List<PartTest> partTests = partTestRepository.findByPracticePartId(practicePartId);
 
-        return partTests.stream().map(partTestMapper::convertModelToDtoWithoutUserAnswerAndFinishTime).toList();
+        return partTests.stream().map(partTestMapper::convertModelToDto).toList();
     }
 
-    private boolean existsByName(PracticePart practicePart, String name) {
-        return practicePart.getPartTests().stream().anyMatch(partTest -> name.equals(partTest.getName()));
+    public void updatePartTest(UUID partTestId, PartTestDto partTestDto) {
+        Optional<PartTest> optionalPartTest = partTestRepository.findById(partTestId);
+        if (optionalPartTest.isEmpty()) {
+            throw new NotFoundException(TExamExceptionConstant.PART_TEST_E003);
+        }
+        if (!practicePartService.existsById(partTestDto.getPracticePartId())) {
+            throw new NotFoundException(TExamExceptionConstant.PRACTICE_PART_E002);
+        }
+        PracticeType practiceType = PracticeType.getType(partTestDto.getType());
+        if (Objects.isNull(practiceType)) {
+            throw new BadRequestException(TExamExceptionConstant.PART_TEST_E002);
+        }
+        PartTest partTest = optionalPartTest.get();
+        if (!partTestDto.getName().equals(partTest.getName()) &&
+                partTestRepository.existsByPracticePartIdAndName(partTestDto.getPracticePartId(), partTestDto.getName())){
+            throw new ConflictException(TExamExceptionConstant.PART_TEST_E001);
+        }
+        partTest.setPracticePartId(partTestDto.getPracticePartId());
+        partTest.setName(partTestDto.getName());
+        partTest.setType(practiceType);
+
+        partTestRepository.save(partTest);
+    }
+
+    @Override
+    public void deletePartTestById(UUID partTestId) {
+        if (!partTestRepository.existsById(partTestId)) {
+            throw new NotFoundException(TExamExceptionConstant.PART_TEST_E003);
+        }
+
+        partTestRepository.deleteById(partTestId);
+    }
+
+    @Override
+    public boolean existsById(UUID partTestId) {
+        return partTestRepository.existsById(partTestId);
     }
 }
