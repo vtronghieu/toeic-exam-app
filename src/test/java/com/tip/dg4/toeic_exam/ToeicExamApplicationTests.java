@@ -9,5 +9,4 @@ class ToeicExamApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }
