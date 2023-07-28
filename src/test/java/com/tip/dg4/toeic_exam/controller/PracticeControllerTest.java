@@ -3,7 +3,7 @@ package com.tip.dg4.toeic_exam.controller;
 import com.tip.dg4.toeic_exam.common.constants.TExamSuccessfulConstant;
 import com.tip.dg4.toeic_exam.common.responses.ResponseData;
 import com.tip.dg4.toeic_exam.controllers.PracticeController;
-import com.tip.dg4.toeic_exam.dto.PracticeWithoutPartsDto;
+import com.tip.dg4.toeic_exam.dto.PracticeDto;
 import com.tip.dg4.toeic_exam.services.PracticeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,62 +33,62 @@ class PracticeControllerTest {
 	}
 
 	@Test
-	public void testCreatePracticeWithoutParts_WithValidRequest_ReturnsSuccessResponse() {
+	public void testCreatePractice_WithValidRequest_ReturnsSuccessResponse() {
 		// Arrange
-		PracticeWithoutPartsDto practiceWithoutPartsDto = new PracticeWithoutPartsDto();
+		PracticeDto practiceDto = new PracticeDto();
 		ResponseEntity<ResponseData> expectedResponse = new ResponseEntity<>(
 				new ResponseData(HttpStatus.CREATED.value(), HttpStatus.CREATED.getReasonPhrase(), TExamSuccessfulConstant.PRACTICE_S002),
 				HttpStatus.CREATED
 		);
 
 		// Act
-		ResponseEntity<ResponseData> actualResponse = practiceController.createPracticeWithoutParts(practiceWithoutPartsDto);
+		ResponseEntity<ResponseData> actualResponse = practiceController.createPractice(practiceDto);
 
 		// Assert
 		assertEquals(expectedResponse.getStatusCode(), actualResponse.getStatusCode());
 		assertEquals(expectedResponse.getBody(), actualResponse.getBody());
-		verify(practiceService, times(1)).createPracticeWithoutParts(practiceWithoutPartsDto);
+		verify(practiceService, times(1)).createPractice(practiceDto);
 	}
 
 	@Test
-	public void testGetAllPracticesWithoutParts_ReturnsSuccessResponse() {
+	public void testGetAllPractices_ReturnsSuccessResponse() {
 		// Arrange
 		ResponseEntity<ResponseData> expectedResponse = new ResponseEntity<>(
 				new ResponseData(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), TExamSuccessfulConstant.PRACTICE_S001, Collections.emptyList()),
 				HttpStatus.OK
 		);
-		when(practiceService.getAllPracticesWithoutParts()).thenReturn(Collections.emptyList());
+		when(practiceService.getAllPractices()).thenReturn(Collections.emptyList());
 
 		// Act
-		ResponseEntity<ResponseData> actualResponse = practiceController.getAllPracticesWithoutParts();
+		ResponseEntity<ResponseData> actualResponse = practiceController.getAllPractices();
 
 		// Assert
 		assertEquals(expectedResponse.getStatusCode(), actualResponse.getStatusCode());
 		assertEquals(expectedResponse.getBody(), actualResponse.getBody());
-		verify(practiceService, times(1)).getAllPracticesWithoutParts();
+		verify(practiceService, times(1)).getAllPractices();
 	}
 
 	@Test
-	public void testUpdatePracticeWithoutParts_WithValidRequest_ReturnsSuccessResponse() {
+	public void testUpdatePractice_WithValidRequest_ReturnsSuccessResponse() {
 		// Arrange
 		UUID practiceId = UUID.randomUUID();
-		PracticeWithoutPartsDto practiceWithoutPartsDto = new PracticeWithoutPartsDto();
+		PracticeDto practiceDto = new PracticeDto();
 		ResponseEntity<ResponseData> expectedResponse = new ResponseEntity<>(
 				new ResponseData(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), TExamSuccessfulConstant.PRACTICE_S003),
 				HttpStatus.OK
 		);
 
 		// Act
-		ResponseEntity<ResponseData> actualResponse = practiceController.updatePracticeWithoutParts(practiceId, practiceWithoutPartsDto);
+		ResponseEntity<ResponseData> actualResponse = practiceController.updatePractice(practiceId, practiceDto);
 
 		// Assert
 		assertEquals(expectedResponse.getStatusCode(), actualResponse.getStatusCode());
 		assertEquals(expectedResponse.getBody(), actualResponse.getBody());
-		verify(practiceService, times(1)).updatePracticeWithoutParts(practiceId, practiceWithoutPartsDto);
+		verify(practiceService, times(1)).updatePractice(practiceId, practiceDto);
 	}
 
 	@Test
-	public void testDeletePracticeWithoutParts_WithValidRequest_ReturnsSuccessResponse() {
+	public void testDeletePractice_WithValidRequest_ReturnsSuccessResponse() {
 		// Arrange
 		UUID practiceId = UUID.randomUUID();
 		ResponseEntity<ResponseData> expectedResponse = new ResponseEntity<>(
@@ -97,20 +97,20 @@ class PracticeControllerTest {
 		);
 
 		// Act
-		ResponseEntity<ResponseData> actualResponse = practiceController.deletePracticeWithoutParts(practiceId);
+		ResponseEntity<ResponseData> actualResponse = practiceController.deletePractice(practiceId);
 
 		// Assert
 		assertEquals(expectedResponse.getStatusCode(), actualResponse.getStatusCode());
 		assertEquals(expectedResponse.getBody(), actualResponse.getBody());
-		verify(practiceService, times(1)).deletePracticeWithoutParts(practiceId);
+		verify(practiceService, times(1)).deletePractice(practiceId);
 	}
 
 	@Test
-	public void testCreatePartWithoutPart_WithServiceException_ReturnsErrorResponse() {
+	public void testCreatePart_WithServiceException_ReturnsErrorResponse() {
 	}
 
 	@Test
-	public void testUpdatePartWithoutPart_WithServiceException_ReturnsErrorResponse() {
+	public void testUpdatePart_WithServiceException_ReturnsErrorResponse() {
 	}
 
 }
