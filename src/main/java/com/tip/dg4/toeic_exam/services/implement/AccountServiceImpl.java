@@ -52,16 +52,18 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountDto loginAccount(LoginDto loginDto, HttpServletResponse response) {
+    public AccountDto loginAccount(LoginDto loginDto, HttpServletRequest request, HttpServletResponse response) {
         Optional<Account> optionalAccount = findOneByUsernameAndPassword(loginDto.getUsername(), loginDto.getPassword());
         if (optionalAccount.isEmpty()) {
             throw new UnauthorizedException(TExamExceptionConstant.ACCOUNT_E004);
         }
 
+        String domain = request.getServerName();
         String accessToken = jwtService.generateToken(loginDto.getUsername());
         Cookie authCookie = new Cookie(TExamConstant.ACCESS_TOKEN, accessToken);
         authCookie.setMaxAge(TIME_TOKEN_ACTIVE);
         authCookie.setPath(TExamConstant.SLASH);
+        authCookie.setDomain(domain);
         authCookie.setHttpOnly(true);
         authCookie.setSecure(true);
         response.addCookie(authCookie);

@@ -48,13 +48,8 @@ public class TExamExceptionConstant {
     //  Part test
     public static final String PART_TEST_E001 = "Part test name already exists";
     public static final String PART_TEST_E002 = "Part test type invalid";
-<<<<<<< Updated upstream
-    //  Part lesson
-    public static final String PART_LESSON_E001 = "Part lesson name already exists";
-=======
     public static final String PART_TEST_E003 = "Part test not found";
     //  Part lesson
     public static final String PART_LESSON_E001 = "Part lesson name already exists";
     public static final String PART_LESSON_E002 = "Part lesson not found";
->>>>>>> Stashed changes
 }

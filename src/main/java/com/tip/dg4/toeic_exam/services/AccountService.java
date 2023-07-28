@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 
 public interface AccountService {
-    AccountDto loginAccount(LoginDto loginDto, HttpServletResponse response);
+    AccountDto loginAccount(LoginDto loginDto, HttpServletRequest request, HttpServletResponse response);
     void logoutAccount(HttpServletRequest request, HttpServletResponse response);
     void registerAccount(RegisterDto registerDto);
     List<AccountDto> getAllAccounts();

@@ -38,14 +38,7 @@ public class TExamApiConstant {
     public static final String PRACTICE_PART_API_ROOT = API_ROOT + API_VERSION_1 + "/practiceParts";
     //  Part test
     public static final String PART_TEST_API_ROOT = API_ROOT + API_VERSION_1 + "/partTests";
-<<<<<<< Updated upstream
-    public static final String CREATE_WITHOUT_USER_ANSWER_API = "/createWithoutUserAnswer";
     //  Part lesson
     public static final String PART_LESSON_API_ROOT = API_ROOT + API_VERSION_1 + "/partLessons";
-    public static final String CREATE_WITHOUT_CONTENTS_API = "/createWithoutContents";
-=======
-    //  Part lesson
-    public static final String PART_LESSON_API_ROOT = API_ROOT + API_VERSION_1 + "/partLessons";
->>>>>>> Stashed changes
 }
 

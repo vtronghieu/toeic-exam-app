@@ -55,7 +55,6 @@ public class VocabularyCategoryController {
     @GetMapping(path = TExamApiConstant.API_EMPTY,
                 params = TExamParamConstant.ID,
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<ResponseData> getVocabularyCategoryById(@RequestParam(name = TExamParamConstant.ID) UUID categoryId) {
         HttpStatus httpStatus = HttpStatus.OK;
         ResponseData result = new ResponseData(
