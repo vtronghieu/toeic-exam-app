@@ -4,7 +4,7 @@ import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamParamConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamSuccessfulConstant;
 import com.tip.dg4.toeic_exam.common.responses.ResponseData;
-import com.tip.dg4.toeic_exam.dto.PracticeWithoutPartsDto;
+import com.tip.dg4.toeic_exam.dto.PracticeDto;
 import com.tip.dg4.toeic_exam.services.PracticeService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,12 +23,12 @@ public class PracticeController {
         this.practiceService = practiceService;
     }
 
-    @PostMapping(path = TExamApiConstant.CREATE_WITHOUT_PARTS_API,
+    @PostMapping(path = TExamApiConstant.API_CREATE,
                  produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<ResponseData> createPracticeWithoutParts(@RequestBody PracticeWithoutPartsDto practiceWithoutPartsDto) {
+    public ResponseEntity<ResponseData> createPractice(@RequestBody PracticeDto practiceDto) {
         HttpStatus httpStatus = HttpStatus.CREATED;
-        practiceService.createPracticeWithoutParts(practiceWithoutPartsDto);
+        practiceService.createPractice(practiceDto);
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
@@ -40,26 +40,26 @@ public class PracticeController {
 
     @GetMapping(path = {TExamApiConstant.API_EMPTY, TExamApiConstant.API_SLASH},
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseData> getAllPracticesWithoutParts() {
+    public ResponseEntity<ResponseData> getAllPractices() {
         HttpStatus httpStatus = HttpStatus.OK;
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
                 TExamSuccessfulConstant.PRACTICE_S001,
-                practiceService.getAllPracticesWithoutParts()
+                practiceService.getAllPractices()
         );
 
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @PutMapping(path = TExamApiConstant.UPDATE_WITHOUT_PARTS_API,
-                params = "id",
+    @PutMapping(path = TExamApiConstant.API_EMPTY,
+                params = TExamParamConstant.ID,
                 produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<ResponseData> updatePracticeWithoutParts(@RequestParam(name = "id") UUID practiceId,
-                                                                   @RequestBody PracticeWithoutPartsDto practiceWithoutPartsDto) {
+    public ResponseEntity<ResponseData> updatePractice(@RequestParam(TExamParamConstant.ID) UUID practiceId,
+                                                       @RequestBody PracticeDto practiceDto) {
         HttpStatus httpStatus = HttpStatus.OK;
-        practiceService.updatePracticeWithoutParts(practiceId, practiceWithoutPartsDto);
+        practiceService.updatePractice(practiceId, practiceDto);
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
@@ -73,9 +73,9 @@ public class PracticeController {
                    params = TExamParamConstant.ID,
                    produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<ResponseData> deletePracticeWithoutParts(@RequestParam(name = TExamParamConstant.ID) UUID practiceId) {
+    public ResponseEntity<ResponseData> deletePractice(@RequestParam(name = TExamParamConstant.ID) UUID practiceId) {
         HttpStatus httpStatus = HttpStatus.OK;
-        practiceService.deletePracticeWithoutParts(practiceId);
+        practiceService.deletePractice(practiceId);
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),

@@ -4,7 +4,7 @@ import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamParamConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamSuccessfulConstant;
 import com.tip.dg4.toeic_exam.common.responses.ResponseData;
-import com.tip.dg4.toeic_exam.dto.PartTestWithoutUserAnswerAndFinishTimeDto;
+import com.tip.dg4.toeic_exam.dto.PartTestDto;
 import com.tip.dg4.toeic_exam.services.PartTestService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,15 +23,12 @@ public class PartTestController {
         this.partTestService = partTestService;
     }
 
-    @PostMapping(path = TExamApiConstant.CREATE_WITHOUT_USER_ANSWER_API,
-            params = {TExamParamConstant.PRACTICE_ID, TExamParamConstant.PRACTICE_PART_ID},
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = TExamApiConstant.API_CREATE,
+                 produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<ResponseData> createTestWithoutUserAnswersAndFinishTime(@RequestParam(TExamParamConstant.PRACTICE_ID) UUID practiceId,
-                                                                                  @RequestParam(TExamParamConstant.PRACTICE_PART_ID) UUID partId,
-                                                                                  @RequestBody PartTestWithoutUserAnswerAndFinishTimeDto partTestWithoutUserAnswerAndFinishTimeDto) {
+    public ResponseEntity<ResponseData> createPartTest(@RequestBody PartTestDto partTestDto) {
         HttpStatus httpStatus = HttpStatus.CREATED;
-        partTestService.createTest(practiceId, partId, partTestWithoutUserAnswerAndFinishTimeDto);
+        partTestService.createPartTest(partTestDto);
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
@@ -42,15 +39,46 @@ public class PartTestController {
     }
 
     @GetMapping(path = TExamApiConstant.API_EMPTY,
-            params = TExamParamConstant.PRACTICE_PART_ID,
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseData> getTestsByPartId(@RequestParam(TExamParamConstant.PRACTICE_PART_ID) UUID partId) {
+                params = TExamParamConstant.PRACTICE_PART_ID,
+                produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseData> getPartTestsByPartId(@RequestParam(TExamParamConstant.PRACTICE_PART_ID) UUID partId) {
         HttpStatus httpStatus = HttpStatus.OK;
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.PART_TEST_S001,
-                partTestService.getTestsByPartId(partId)
+                TExamSuccessfulConstant.PART_TEST_S004,
+                partTestService.getPartTestsByPartId(partId)
+        );
+
+        return new ResponseEntity<>(result, httpStatus);
+    }
+
+    @PutMapping(path = TExamApiConstant.API_EMPTY,
+                params = TExamParamConstant.ID,
+                produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseData> updatePartTest(@RequestParam(TExamParamConstant.ID) UUID partTestId,
+                                                       @RequestBody PartTestDto partTestDto) {
+        HttpStatus httpStatus = HttpStatus.OK;
+        partTestService.updatePartTest(partTestId, partTestDto);
+        ResponseData result = new ResponseData(
+                httpStatus.value(),
+                httpStatus.getReasonPhrase(),
+                TExamSuccessfulConstant.PART_TEST_S002
+        );
+        return new ResponseEntity<>(result, httpStatus);
+    }
+
+    @DeleteMapping(path = TExamApiConstant.API_EMPTY,
+                   params = TExamParamConstant.ID,
+                   produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('admin')")
+    public ResponseEntity<ResponseData> deletePartTestById(@RequestParam(TExamParamConstant.ID) UUID partTestId) {
+        HttpStatus httpStatus = HttpStatus.OK;
+        partTestService.deletePartTestById(partTestId);
+        ResponseData result = new ResponseData(
+                httpStatus.value(),
+                httpStatus.getReasonPhrase(),
+                TExamSuccessfulConstant.PART_TEST_S003
         );
 
         return new ResponseEntity<>(result, httpStatus);

@@ -1,27 +1,31 @@
 package com.tip.dg4.toeic_exam.mappers;
 
-import com.tip.dg4.toeic_exam.dto.PartTestWithoutUserAnswerAndFinishTimeDto;
+import com.tip.dg4.toeic_exam.dto.PartTestDto;
 import com.tip.dg4.toeic_exam.models.PartTest;
 import com.tip.dg4.toeic_exam.models.PracticeType;
 import org.springframework.stereotype.Component;
 
 @Component
 public class PartTestMapper {
-    public PartTest convertDtoWithoutUserAnswerAndFinishTimeToModel(PartTestWithoutUserAnswerAndFinishTimeDto testWithoutUserAnswerDto) {
+    public PartTest convertDtoToModel(PartTestDto partTestDto) {
         PartTest partTest = new PartTest();
 
-        partTest.setName(testWithoutUserAnswerDto.getName());
-        partTest.setType(PracticeType.getType(testWithoutUserAnswerDto.getType()));
+        partTest.setId(partTestDto.getId());
+        partTest.setPracticePartId(partTestDto.getPracticePartId());
+        partTest.setType(PracticeType.getType(partTestDto.getType()));
+        partTest.setName(partTestDto.getName());
 
         return partTest;
     }
 
-    public PartTestWithoutUserAnswerAndFinishTimeDto convertModelToDtoWithoutUserAnswerAndFinishTime(PartTest partTest) {
-        PartTestWithoutUserAnswerAndFinishTimeDto testWithoutUserAnswerDto = new PartTestWithoutUserAnswerAndFinishTimeDto();
+    public PartTestDto convertModelToDto(PartTest partTest) {
+        PartTestDto partTestDto = new PartTestDto();
 
-        testWithoutUserAnswerDto.setName(partTest.getName());
-        testWithoutUserAnswerDto.setType(PracticeType.getValueType(partTest.getType()));
+        partTestDto.setId(partTest.getId());
+        partTestDto.setPracticePartId(partTest.getPracticePartId());
+        partTestDto.setType(PracticeType.getValueType(partTest.getType()));
+        partTestDto.setName(partTest.getName());
 
-        return testWithoutUserAnswerDto;
+        return partTestDto;
     }
 }

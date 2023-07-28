@@ -8,9 +8,5 @@ import java.util.List;
 import java.util.UUID;
 
 public interface QuestionRepository extends MongoRepository<Question, UUID> {
-    boolean existsByTextQuestion(String textQuestion);
-    boolean existsByAudioQuestion(String audioQuestion);
-    boolean existsByTypeAndObjectTypeId(QuestionType questionType, UUID objectTypeId);
-    List<Question> findByType(QuestionType questionType);
-    List<Question> findByTypeAndObjectTypeIdIn(QuestionType questionType, List<UUID> objectTypeId);
+    List<Question> findByObjectTypeId(UUID objectTypeId);
 }

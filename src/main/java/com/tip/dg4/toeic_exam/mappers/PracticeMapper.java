@@ -1,31 +1,31 @@
 package com.tip.dg4.toeic_exam.mappers;
 
-import com.tip.dg4.toeic_exam.dto.PracticeWithoutPartsDto;
+import com.tip.dg4.toeic_exam.dto.PracticeDto;
 import com.tip.dg4.toeic_exam.models.Practice;
 import com.tip.dg4.toeic_exam.models.PracticeType;
 import org.springframework.stereotype.Component;
 
 @Component
 public class PracticeMapper {
-    public Practice convertDtoWithoutPartsToModel(PracticeWithoutPartsDto practiceWithoutPartsDto) {
+    public Practice convertDtoToModel(PracticeDto practiceDto) {
         Practice practice = new Practice();
 
-        practice.setId(practiceWithoutPartsDto.getId());
-        practice.setName(practiceWithoutPartsDto.getName());
-        practice.setType(PracticeType.getType(practiceWithoutPartsDto.getType()));
-        practice.setImage(practiceWithoutPartsDto.getImage());
+        practice.setId(practiceDto.getId());
+        practice.setName(practiceDto.getName());
+        practice.setType(PracticeType.getType(practiceDto.getType()));
+        practice.setImage(practiceDto.getImage());
 
         return practice;
     }
 
-    public PracticeWithoutPartsDto convertModelToDtoWithoutParts(Practice practice) {
-        PracticeWithoutPartsDto practiceWithoutPartsDto = new PracticeWithoutPartsDto();
+    public PracticeDto convertModelToDto(Practice practice) {
+        PracticeDto practiceDto = new PracticeDto();
 
-        practiceWithoutPartsDto.setId(practice.getId());
-        practiceWithoutPartsDto.setName(practice.getName());
-        practiceWithoutPartsDto.setType(PracticeType.getValueType(practice.getType()));
-        practiceWithoutPartsDto.setImage(practice.getImage());
+        practiceDto.setId(practice.getId());
+        practiceDto.setName(practice.getName());
+        practiceDto.setType(PracticeType.getValueType(practice.getType()));
+        practiceDto.setImage(practice.getImage());
 
-        return practiceWithoutPartsDto;
+        return practiceDto;
     }
 }
