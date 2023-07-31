@@ -16,10 +16,7 @@ import com.tip.dg4.toeic_exam.utils.TExamUtil;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Log4j2
 @Service
@@ -80,6 +77,19 @@ public class QuestionServiceImpl implements QuestionService {
             throw new BadRequestException(TExamExceptionConstant.QUESTION_E002);
         }
         List<Question> questions = questionRepository.findByType(questionType);
+
+        return questions.stream().map(questionMapper::convertModelToDto).toList();
+    }
+
+    @Override
+    public List<QuestionDto> getQuestionsByObjectTypeIds(List<UUID> objectTypeIds) {
+        List<Question> questions = new ArrayList<>();
+        for (UUID objectTypeId : objectTypeIds) {
+            List<Question> localQuestions = questionRepository.findByObjectTypeId(objectTypeId);
+            if (!localQuestions.isEmpty()) {
+                questions.addAll(localQuestions);
+            }
+        }
 
         return questions.stream().map(questionMapper::convertModelToDto).toList();
     }
