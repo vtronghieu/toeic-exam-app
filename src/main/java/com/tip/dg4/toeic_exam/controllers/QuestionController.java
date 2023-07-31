@@ -67,6 +67,21 @@ public class QuestionController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
+    @GetMapping(path = TExamApiConstant.API_EMPTY,
+                params = TExamParamConstant.TYPE,
+                produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseData> getQuestionsByType(@RequestParam(TExamParamConstant.TYPE) String type) {
+        HttpStatus httpStatus = HttpStatus.OK;
+        ResponseData result = new ResponseData(
+                httpStatus.value(),
+                httpStatus.getReasonPhrase(),
+                TExamSuccessfulConstant.QUESTION_S003,
+                questionService.getQuestionsByType(type)
+        );
+
+        return new ResponseEntity<>(result, httpStatus);
+    }
+
     @PutMapping(path = TExamApiConstant.API_EMPTY,
                 params = TExamParamConstant.ID,
                 produces = MediaType.APPLICATION_JSON_VALUE)

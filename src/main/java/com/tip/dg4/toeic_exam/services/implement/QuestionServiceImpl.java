@@ -3,7 +3,6 @@ package com.tip.dg4.toeic_exam.services.implement;
 import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
 import com.tip.dg4.toeic_exam.dto.QuestionDto;
 import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
-import com.tip.dg4.toeic_exam.exceptions.ConflictException;
 import com.tip.dg4.toeic_exam.exceptions.NotFoundException;
 import com.tip.dg4.toeic_exam.mappers.QuestionMapper;
 import com.tip.dg4.toeic_exam.models.Question;
@@ -70,6 +69,17 @@ public class QuestionServiceImpl implements QuestionService {
         if (questions.isEmpty()) {
             throw new NotFoundException(TExamExceptionConstant.QUESTION_E006);
         }
+
+        return questions.stream().map(questionMapper::convertModelToDto).toList();
+    }
+
+    @Override
+    public List<QuestionDto> getQuestionsByType(String type) {
+        QuestionType questionType = QuestionType.getType(type);
+        if (Objects.isNull(questionType)) {
+            throw new BadRequestException(TExamExceptionConstant.QUESTION_E002);
+        }
+        List<Question> questions = questionRepository.findByType(questionType);
 
         return questions.stream().map(questionMapper::convertModelToDto).toList();
     }
