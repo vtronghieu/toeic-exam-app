@@ -9,4 +9,5 @@ import java.util.UUID;
 
 public interface QuestionRepository extends MongoRepository<Question, UUID> {
     List<Question> findByObjectTypeId(UUID objectTypeId);
+    List<Question> findByType(QuestionType questionType);
 }

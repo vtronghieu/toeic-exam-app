@@ -12,6 +12,7 @@ public interface QuestionService {
     void createQuestion(QuestionDto questionDto);
     List<QuestionDto> getAllQuestions();
     List<QuestionDto> getQuestionsByObjectTypeId(UUID objectTypeId);
+    List<QuestionDto> getQuestionsByType(String type);
     Optional<Question> findByTypeAndId(QuestionType questionType, UUID questionId);
     void updateQuestion(UUID questionId, QuestionDto questionDto);
     void deleteQuestionById(UUID questionId);
