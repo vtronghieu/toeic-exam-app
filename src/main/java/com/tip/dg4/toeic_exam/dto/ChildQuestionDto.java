@@ -5,20 +5,20 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class QuestionDto {
+public class ChildQuestionDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private UUID id;
-    private String type;
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    private UUID objectTypeId;
-    private String level;
-    private String audioQuestion;
-    private List<String> images;
-    private List<ChildQuestionDto> questions;
+    private UUID questionId;
+    private String textQuestion;
+    private String answerA;
+    private String answerB;
+    private String answerC;
+    private String answerD;
+    private String correctAnswer;
 }

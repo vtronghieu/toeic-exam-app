@@ -40,29 +40,30 @@ public class QuizTestServiceImpl implements QuizTestHistoryService {
 
     @Override
     public QuizTestHistoryDto createQuizTestHistory(QuizTestHistoryDto quizTestHistoryDto) {
-        if (!userService.existsUserById(quizTestHistoryDto.getUserId())) {
-            log.error(TExamExceptionConstant.USER_E002 + quizTestHistoryDto.getUserId());
-            throw new NotFoundException(TExamExceptionConstant.USER_E001);
-        }
-        QuestionType questionType = QuestionType.getType(quizTestHistoryDto.getType());
-        if (Objects.isNull(questionType) || !TExamUtil.isVocabularyTypeOrGrammarType(questionType)) {
-            throw new BadRequestException(TExamExceptionConstant.QUIZ_TEST_HISTORY_E001);
-        }
-
-        QuizTestHistory quizTestHistory = quizTestHistoryMapper.convertDtoToModel(quizTestHistoryDto);
-        for (UserAnswer userAnswer : quizTestHistory.getUserAnswers()) {
-            Optional<Question> optionalQuestion = questionService.findByTypeAndId(questionType, userAnswer.getQuestionId());
-            if (optionalQuestion.isEmpty()) {
-                log.error(TExamExceptionConstant.QUESTION_E005 + userAnswer.getQuestionId());
-                throw new NotFoundException(TExamExceptionConstant.QUESTION_E006);
-            }
-
-            Question question = optionalQuestion.get();
-            boolean isCorrect = Objects.equals(userAnswer.getOptionAnswer(), question.getOptionAnswers().getCorrectAnswer());
-            userAnswer.setIsCorrect(isCorrect);
-        }
-        quizTestHistoryRepository.save(quizTestHistory);
-
-        return quizTestHistoryMapper.convertModelToDto(quizTestHistory);
+//        if (!userService.existsUserById(quizTestHistoryDto.getUserId())) {
+//            log.error(TExamExceptionConstant.USER_E002 + quizTestHistoryDto.getUserId());
+//            throw new NotFoundException(TExamExceptionConstant.USER_E001);
+//        }
+//        QuestionType questionType = QuestionType.getType(quizTestHistoryDto.getType());
+//        if (Objects.isNull(questionType) || !TExamUtil.isVocabularyTypeOrGrammarType(questionType)) {
+//            throw new BadRequestException(TExamExceptionConstant.QUIZ_TEST_HISTORY_E001);
+//        }
+//
+//        QuizTestHistory quizTestHistory = quizTestHistoryMapper.convertDtoToModel(quizTestHistoryDto);
+//        for (UserAnswer userAnswer : quizTestHistory.getUserAnswers()) {
+//            Optional<Question> optionalQuestion = questionService.findByTypeAndId(questionType, userAnswer.getQuestionId());
+//            if (optionalQuestion.isEmpty()) {
+//                log.error(TExamExceptionConstant.QUESTION_E005 + userAnswer.getQuestionId());
+//                throw new NotFoundException(TExamExceptionConstant.QUESTION_E006);
+//            }
+//
+//            Question question = optionalQuestion.get();
+//            boolean isCorrect = Objects.equals(userAnswer.getOptionAnswer(), question.getOptionAnswers().getCorrectAnswer());
+//            userAnswer.setIsCorrect(isCorrect);
+//        }
+//        quizTestHistoryRepository.save(quizTestHistory);
+//
+//        return quizTestHistoryMapper.convertModelToDto(quizTestHistory);
+        return null;
     }
 }
