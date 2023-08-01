@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -62,6 +63,20 @@ public class QuestionController {
                 httpStatus.getReasonPhrase(),
                 TExamSuccessfulConstant.QUESTION_S003,
                 questionService.getQuestionsByObjectTypeId(objectTypeId)
+        );
+
+        return new ResponseEntity<>(result, httpStatus);
+    }
+
+    @GetMapping(path = TExamApiConstant.GET_BY_OBJECT_TYPE_IDS_API,
+                produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseData> getQuestionsByObjectTypeIds(@RequestBody List<UUID> objectTypeIds) {
+        HttpStatus httpStatus = HttpStatus.OK;
+        ResponseData result = new ResponseData(
+                httpStatus.value(),
+                httpStatus.getReasonPhrase(),
+                TExamSuccessfulConstant.QUESTION_S003,
+                questionService.getQuestionsByObjectTypeIds(objectTypeIds)
         );
 
         return new ResponseEntity<>(result, httpStatus);

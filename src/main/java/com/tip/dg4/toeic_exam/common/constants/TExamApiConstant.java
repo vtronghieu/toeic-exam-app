@@ -29,7 +29,7 @@ public class TExamApiConstant {
     public static final String VOCABULARY_API_GET_BY_CATEGORY_IDS = "/getVocabulariesByCategoryId";
     //  Question
     public static final String QUESTION_API_ROOT = API_ROOT + API_VERSION_1 + "/questions";
-    public static final String QUESTION_API_GET_BY_TYPE_AND_OBJECT_TYPE_IDS = "/getQuestionsByTypeAndObjectTypeIds";
+    public static final String GET_BY_OBJECT_TYPE_IDS_API = "/getByObjectTypeIds";
     //  Quiz test history
     public static final String QUIZ_TEST_HISTORY_API_ROOT = API_ROOT + API_VERSION_1 + "/quizTestHistories";
     //  Practice
