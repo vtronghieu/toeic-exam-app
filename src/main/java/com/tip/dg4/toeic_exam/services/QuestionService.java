@@ -11,6 +11,7 @@ public interface QuestionService {
     List<QuestionDto> getQuestionsByObjectTypeId(UUID objectTypeId);
     List<QuestionDto> getQuestionsByType(String type);
     List<QuestionDto> getQuestionsByObjectTypeIds(List<UUID> objectTypeIds);
+    QuestionDto getQuestionById(UUID questionId);
     void updateQuestion(UUID questionId, QuestionDto questionDto);
     void deleteQuestionById(UUID questionId);
     boolean existsById(UUID questionId);
