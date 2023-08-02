@@ -68,8 +68,8 @@ public class QuestionController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @GetMapping(path = TExamApiConstant.GET_BY_OBJECT_TYPE_IDS_API,
-                produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = TExamApiConstant.GET_BY_OBJECT_TYPE_IDS_API,
+                 produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseData> getQuestionsByObjectTypeIds(@RequestBody List<UUID> objectTypeIds) {
         HttpStatus httpStatus = HttpStatus.OK;
         ResponseData result = new ResponseData(

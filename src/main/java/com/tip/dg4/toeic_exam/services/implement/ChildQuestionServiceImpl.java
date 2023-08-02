@@ -9,6 +9,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Log4j2
@@ -45,28 +46,15 @@ public class ChildQuestionServiceImpl implements ChildQuestionService {
         if (childQuestionDTOs.isEmpty()) return;
         this.deleteChildQuestionsByQuestionId(questionId);
         this.createChildQuestions(questionId, childQuestionDTOs);
-//        List<ChildQuestion> childQuestions = childQuestionRepository.findByQuestionId(questionId);
-//        for (int i = 0; i < childQuestions.size(); i++) {
-//            Optional<ChildQuestion> optionalChildQuestion = childQuestionRepository.findById(childQuestions.get(i).getId());
-//            if (optionalChildQuestion.isPresent()) {
-//                ChildQuestion childQuestion = optionalChildQuestion.get();
-//                ChildQuestionDto childQuestionDTO = childQuestionDTOs.get(i);
-//
-//                childQuestion.setQuestionId(childQuestionDTO.getQuestionId());
-//                childQuestion.setTextQuestion(childQuestionDTO.getTextQuestion());
-//                childQuestion.setAnswerA(childQuestionDTO.getAnswerA());
-//                childQuestion.setAnswerB(childQuestionDTO.getAnswerB());
-//                childQuestion.setAnswerC(childQuestionDTO.getAnswerC());
-//                childQuestion.setAnswerD(childQuestionDTO.getAnswerD());
-//                childQuestion.setCorrectAnswer(childQuestionDTO.getCorrectAnswer());
-//
-//                childQuestionRepository.save(childQuestion);
-//            }
-//        }
     }
 
     @Override
     public void deleteChildQuestionsByQuestionId(UUID questionId) {
         childQuestionRepository.deleteByQuestionId(questionId);
+    }
+
+    @Override
+    public Optional<ChildQuestion> findById(UUID childQuestionId) {
+        return childQuestionRepository.findById(childQuestionId);
     }
 }

@@ -58,12 +58,11 @@ public class AccountServiceImpl implements AccountService {
             throw new UnauthorizedException(TExamExceptionConstant.ACCOUNT_E004);
         }
 
-        String domain = request.getServerName();
         String accessToken = jwtService.generateToken(loginDto.getUsername());
         Cookie authCookie = new Cookie(TExamConstant.ACCESS_TOKEN, accessToken);
         authCookie.setMaxAge(TIME_TOKEN_ACTIVE);
         authCookie.setPath(TExamConstant.SLASH);
-        authCookie.setDomain(domain);
+        authCookie.setDomain(null);
         authCookie.setHttpOnly(true);
         authCookie.setSecure(true);
         response.addCookie(authCookie);

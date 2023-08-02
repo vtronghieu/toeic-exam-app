@@ -19,7 +19,6 @@ public class TExamExceptionConstant {
     public static final String ACCOUNT_E008 = "New password and confirm password do not match";
     //  User
     public static final String USER_E001 = "User not found";
-    public static final String USER_E002 = "User not found by id: ";
     //  Vocabulary category
     public static final String VOCABULARY_CATEGORY_E001 = "Vocabulary category already exists by name: ";
     public static final String VOCABULARY_CATEGORY_E002 = "Vocabulary category not found";
