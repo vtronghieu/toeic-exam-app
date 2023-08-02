@@ -1,18 +1,20 @@
 package com.tip.dg4.toeic_exam.services.implement;
 
 import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
+import com.tip.dg4.toeic_exam.dto.ChildQuestionDto;
 import com.tip.dg4.toeic_exam.dto.QuestionDto;
 import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
 import com.tip.dg4.toeic_exam.exceptions.NotFoundException;
 import com.tip.dg4.toeic_exam.mappers.QuestionMapper;
+import com.tip.dg4.toeic_exam.models.ChildQuestion;
 import com.tip.dg4.toeic_exam.models.Question;
 import com.tip.dg4.toeic_exam.models.QuestionLevel;
 import com.tip.dg4.toeic_exam.models.QuestionType;
 import com.tip.dg4.toeic_exam.repositories.QuestionRepository;
+import com.tip.dg4.toeic_exam.services.ChildQuestionService;
 import com.tip.dg4.toeic_exam.services.PartTestService;
 import com.tip.dg4.toeic_exam.services.QuestionService;
 import com.tip.dg4.toeic_exam.services.VocabularyService;
-import com.tip.dg4.toeic_exam.utils.TExamUtil;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
@@ -25,15 +27,18 @@ public class QuestionServiceImpl implements QuestionService {
     private final QuestionMapper questionMapper;
     private final VocabularyService vocabularyService;
     private final PartTestService partTestService;
+    private final ChildQuestionService childQuestionService;
 
     public QuestionServiceImpl(QuestionRepository questionRepository,
                                QuestionMapper questionMapper,
                                VocabularyService vocabularyService,
-                               PartTestService partTestService) {
+                               PartTestService partTestService,
+                               ChildQuestionService childQuestionService) {
         this.questionRepository = questionRepository;
         this.questionMapper = questionMapper;
         this.vocabularyService = vocabularyService;
         this.partTestService = partTestService;
+        this.childQuestionService = childQuestionService;
     }
 
     @Override
@@ -52,12 +57,25 @@ public class QuestionServiceImpl implements QuestionService {
         }
         Question question = questionMapper.convertDtoToModel(questionDto);
         questionRepository.save(question);
+        childQuestionService.createChildQuestions(question.getId(), questionDto.getQuestions());
     }
 
     @Override
     public List<QuestionDto> getAllQuestions() {
-        return questionRepository.findAll().stream()
-                .map(questionMapper::convertModelToDto).toList();
+        List<Question> questions = questionRepository.findAll();
+        List<QuestionDto> questionDTOs = new ArrayList<>();
+
+        for (Question question : questions) {
+            Optional<Question> optionalQuestion = questionRepository.findById(question.getId());
+            if (optionalQuestion.isPresent()) {
+                List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(question.getId());
+                QuestionDto questionDTO = questionMapper.convertModelToDto(optionalQuestion.get(), childQuestions);
+
+                questionDTOs.add(questionDTO);
+            }
+        }
+
+        return questionDTOs;
     }
 
     @Override
@@ -66,8 +84,22 @@ public class QuestionServiceImpl implements QuestionService {
         if (questions.isEmpty()) {
             throw new NotFoundException(TExamExceptionConstant.QUESTION_E006);
         }
+        List<QuestionDto> questionDTOs = new ArrayList<>();
 
-        return questions.stream().map(questionMapper::convertModelToDto).toList();
+        for (Question question : questions) {
+            Optional<Question> optionalQuestion = questionRepository.findById(question.getId());
+            if (optionalQuestion.isPresent()) {
+                List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(question.getId());
+                QuestionDto questionDTO = questionMapper.convertModelToDto(optionalQuestion.get(), childQuestions);
+
+                for (ChildQuestionDto childQuestionDto : questionDTO.getQuestions()) {
+                    childQuestionDto.setCorrectAnswer(null);
+                }
+                questionDTOs.add(questionDTO);
+            }
+        }
+
+        return questionDTOs;
     }
 
     @Override
@@ -77,8 +109,19 @@ public class QuestionServiceImpl implements QuestionService {
             throw new BadRequestException(TExamExceptionConstant.QUESTION_E002);
         }
         List<Question> questions = questionRepository.findByType(questionType);
+        List<QuestionDto> questionDTOs = new ArrayList<>();
 
-        return questions.stream().map(questionMapper::convertModelToDto).toList();
+        for (Question question : questions) {
+            Optional<Question> optionalQuestion = questionRepository.findById(question.getId());
+            if (optionalQuestion.isPresent()) {
+                List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(question.getId());
+                QuestionDto questionDTO = questionMapper.convertModelToDto(optionalQuestion.get(), childQuestions);
+
+                questionDTOs.add(questionDTO);
+            }
+        }
+
+        return questionDTOs;
     }
 
     @Override
@@ -91,15 +134,18 @@ public class QuestionServiceImpl implements QuestionService {
             }
         }
 
-        return questions.stream().map(questionMapper::convertModelToDto).toList();
-    }
+        List<QuestionDto> questionDTOs = new ArrayList<>();
+        for (Question question : questions) {
+            Optional<Question> optionalQuestion = questionRepository.findById(question.getId());
+            if (optionalQuestion.isPresent()) {
+                List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(question.getId());
+                QuestionDto questionDTO = questionMapper.convertModelToDto(optionalQuestion.get(), childQuestions);
 
-    @Override
-    public Optional<Question> findByTypeAndId(QuestionType questionType, UUID questionId) {
-        return questionRepository.findAll().stream().
-               filter(question -> questionType.equals(question.getType()) &&
-                                  questionId.equals(question.getId()))
-               .findFirst();
+                questionDTOs.add(questionDTO);
+            }
+        }
+
+        return questionDTOs;
     }
 
     @Override
@@ -121,19 +167,13 @@ public class QuestionServiceImpl implements QuestionService {
             throw new NotFoundException(TExamExceptionConstant.PART_TEST_E003);
         }
         Question question = optionalQuestion.get();
-        if (TExamUtil.isVocabularyTypeOrGrammarType(questionDtoType) &&
-                !Objects.equals(question.getTextQuestion(), questionDto.getTextQuestion()) &&
-                existsByTypeAndTextQuestion(questionDtoType, questionDto.getTextQuestion())) {
-            throw new NotFoundException(TExamExceptionConstant.QUESTION_E002);
-        }
         question.setType(questionDtoType);
         question.setObjectTypeId(questionDto.getObjectTypeId());
         question.setLevel(QuestionLevel.getLevel(questionDto.getLevel()));
-        question.setTextQuestion(questionDto.getTextQuestion());
         question.setAudioQuestion(questionDto.getAudioQuestion());
         question.setImages(questionDto.getImages());
-        question.setOptionAnswers(questionDto.getOptionAnswers());
 
+        childQuestionService.updateChildQuestion(question.getId(), questionDto.getQuestions());
         questionRepository.save(question);
     }
 
@@ -142,12 +182,13 @@ public class QuestionServiceImpl implements QuestionService {
         if (!questionRepository.existsById(questionId)) {
             throw new NotFoundException(TExamExceptionConstant.QUESTION_E006);
         }
+
+        childQuestionService.deleteChildQuestionsByQuestionId(questionId);
         questionRepository.deleteById(questionId);
     }
 
-    private boolean existsByTypeAndTextQuestion(QuestionType questionType, String textQuestion) {
-        return questionRepository.findAll().stream()
-                .anyMatch(question -> questionType.equals(question.getType()) &&
-                                      textQuestion.equals(question.getTextQuestion()));
+    @Override
+    public boolean existsById(UUID questionId) {
+        return questionRepository.existsById(questionId);
     }
 }
