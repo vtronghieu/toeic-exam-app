@@ -30,6 +30,7 @@ public class TExamSuccessfulConstant {
     public static final String QUESTION_S003 = "Get questions successfully";
     public static final String QUESTION_S004 = "Question was updated successfully";
     public static final String QUESTION_S005 = "Question was deleted successfully";
+    public static final String QUESTION_S006 = "Get the question successfully";
     //  Quiz test history
     public static final String QUIZ_TEST_HISTORY_S001 = "Quiz test history was created successfully";
     //  Practice

@@ -149,6 +149,18 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
+    public QuestionDto getQuestionById(UUID questionId) {
+        Optional<Question> optionalQuestion = questionRepository.findById(questionId);
+        if (optionalQuestion.isEmpty()) {
+            throw new NotFoundException(TExamExceptionConstant.QUESTION_E006);
+        }
+        Question question = optionalQuestion.get();
+        List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(questionId);
+
+        return questionMapper.convertModelToDto(question, childQuestions);
+    }
+
+    @Override
     public void updateQuestion(UUID questionId, QuestionDto questionDto) {
         Optional<Question> optionalQuestion = questionRepository.findById(questionId);
         if (optionalQuestion.isEmpty()) {
