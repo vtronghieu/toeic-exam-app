@@ -43,7 +43,8 @@ public class SecurityConfig {
         httpSecurity.cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
-                        auth -> auth.requestMatchers(HttpMethod.POST, getPermitAllAPIs()).permitAll()
+                        auth -> auth.requestMatchers(HttpMethod.POST, this.getPermitAllAPIs()).permitAll()
+                                    .requestMatchers(this.getPermitAllSwagger()).permitAll()
                                     .anyRequest().authenticated()
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
@@ -96,6 +97,21 @@ public class SecurityConfig {
         return new String[] {
                 TExamApiConstant.ACCOUNT_API_ROOT_LOGIN,
                 TExamApiConstant.ACCOUNT_API_ROOT_REGISTER
+        };
+    }
+
+    private String[] getPermitAllSwagger() {
+        return new String[] {
+                "/v2/api-docs",
+                "/v3/api-docs",
+                "/v3/api-docs/**",
+                "/swagger-resources",
+                "/swagger-resources/**",
+                "/configuration/ui",
+                "/configuration/security",
+                "/swagger-ui/**",
+                "/webjars/**",
+                "/swagger-ui.html"
         };
     }
 }

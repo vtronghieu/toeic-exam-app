@@ -78,7 +78,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 TExamApiConstant.ACCOUNT_API_ROOT_LOGIN,
                 TExamApiConstant.ACCOUNT_API_ROOT_REGISTER
         );
+        Set<String> swaggerUris = Set.of(
+                "/v2/api-docs",
+                "/v3/api-docs",
+                "/swagger-resources",
+                "/swagger-config",
+                "/configuration/ui",
+                "/configuration/security",
+                "/swagger-ui",
+                "/webjars"
+        );
 
-        return requestUris.contains(requestUri);
+        return requestUris.contains(requestUri) || swaggerUris.stream().anyMatch(requestUri::startsWith);
     }
 }
