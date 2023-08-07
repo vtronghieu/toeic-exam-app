@@ -22,6 +22,8 @@ public class TExamApiConstant {
     public static final String ACCOUNT_API_REGISTER = "/register";
     public static final String ACCOUNT_API_CHANGE_PASSWORD = "/changePassword";
     public static final String ACCOUNT_API_ROOT_REGISTER = ACCOUNT_API_ROOT + ACCOUNT_API_REGISTER;
+    //  User
+    public static final String USER_API_ROOT = API_ROOT + API_VERSION_1 + "/users";
     //  Vocabulary category
     public static final String VOCABULARY_CATEGORY_API_ROOT = API_ROOT + API_VERSION_1 + "/vocabularyCategories";
     //  Vocabulary
