@@ -5,10 +5,9 @@ import com.tip.dg4.toeic_exam.models.QuestionType;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface QuestionRepository extends MongoRepository<Question, UUID> {
-    Optional<Question> findByObjectTypeId(UUID objectTypeId);
+    List<Question> findByObjectTypeId(UUID objectTypeId);
     List<Question> findByType(QuestionType questionType);
 }

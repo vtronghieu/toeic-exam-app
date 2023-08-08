@@ -8,7 +8,7 @@ import java.util.UUID;
 public interface QuestionService {
     void createQuestion(QuestionDto questionDto);
     List<QuestionDto> getAllQuestions();
-    QuestionDto getQuestionsByObjectTypeId(UUID objectTypeId);
+    List<QuestionDto> getQuestionsByObjectTypeId(UUID objectTypeId);
     List<QuestionDto> getQuestionsByType(String type);
     List<QuestionDto> getQuestionsByObjectTypeIds(List<UUID> objectTypeIds);
     QuestionDto getQuestionById(UUID questionId);
