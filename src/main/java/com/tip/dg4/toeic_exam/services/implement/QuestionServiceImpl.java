@@ -64,15 +64,15 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public List<QuestionDto> getAllQuestions() {
         List<Question> questions = questionRepository.findAll();
-        List<QuestionDto> questionDTOs = new CopyOnWriteArrayList<>();
+        List<QuestionDto> questionDTOs = new CopyOnWriteArrayList<>(Collections.nCopies(questions.size(), null));
 
-        questions.parallelStream().forEachOrdered(question -> {
+        questions.parallelStream().forEach(question -> {
             Optional<Question> optionalQuestion = questionRepository.findById(question.getId());
             if (optionalQuestion.isPresent()) {
                 List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(question.getId());
                 QuestionDto questionDTO = questionMapper.convertModelToDto(optionalQuestion.get(), childQuestions);
 
-                questionDTOs.add(questionDTO);
+                questionDTOs.set(questions.indexOf(question), questionDTO);
             }
         });
 
@@ -84,11 +84,11 @@ public class QuestionServiceImpl implements QuestionService {
         List<Question> questions = questionRepository.findByObjectTypeId(objectTypeId);
         if (questions.isEmpty()) return Collections.emptyList();
 
-        List<QuestionDto> questionDTOs = new CopyOnWriteArrayList<>();
+        List<QuestionDto> questionDTOs = new CopyOnWriteArrayList<>(Collections.nCopies(questions.size(), null));
         questions.parallelStream().forEachOrdered(question -> {
             List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(question.getId());
 
-            questionDTOs.add(questionMapper.convertModelToDto(question, childQuestions));
+            questionDTOs.set(questions.indexOf(question), questionMapper.convertModelToDto(question, childQuestions));
         });
 
         return questionDTOs;
@@ -101,14 +101,14 @@ public class QuestionServiceImpl implements QuestionService {
             throw new BadRequestException(TExamExceptionConstant.QUESTION_E002);
         }
         List<Question> questions = questionRepository.findByType(questionType);
-        List<QuestionDto> questionDTOs = new CopyOnWriteArrayList<>();
+        List<QuestionDto> questionDTOs = new CopyOnWriteArrayList<>(Collections.nCopies(questions.size(), null));
         questions.parallelStream().forEachOrdered(question -> {
             Optional<Question> optionalQuestion = questionRepository.findById(question.getId());
             if (optionalQuestion.isPresent()) {
                 List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(question.getId());
                 QuestionDto questionDTO = questionMapper.convertModelToDto(optionalQuestion.get(), childQuestions);
 
-                questionDTOs.add(questionDTO);
+                questionDTOs.set(questions.indexOf(question), questionDTO);
             }
         });
 
@@ -122,14 +122,14 @@ public class QuestionServiceImpl implements QuestionService {
             List<Question> localQuestion = questionRepository.findByObjectTypeId(objectTypeId);
             questions.addAll(localQuestion);
         });
-        List<QuestionDto> questionDTOs = new CopyOnWriteArrayList<>();
+        List<QuestionDto> questionDTOs = new CopyOnWriteArrayList<>(Collections.nCopies(questions.size(), null));
         questions.parallelStream().forEachOrdered(question -> {
             Optional<Question> optionalQuestion = questionRepository.findById(question.getId());
             if (optionalQuestion.isPresent()) {
                 List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(question.getId());
                 QuestionDto questionDTO = questionMapper.convertModelToDto(optionalQuestion.get(), childQuestions);
 
-                questionDTOs.add(questionDTO);
+                questionDTOs.set(questions.indexOf(question), questionDTO);
             }
         });
 
