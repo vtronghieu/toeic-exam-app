@@ -1,6 +1,7 @@
 package com.tip.dg4.toeic_exam.controllers;
 
 import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
+import com.tip.dg4.toeic_exam.common.constants.TExamParamConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamSuccessfulConstant;
 import com.tip.dg4.toeic_exam.common.responses.ResponseData;
 import com.tip.dg4.toeic_exam.dto.SendAnswerDto;
@@ -35,20 +36,19 @@ public class TestHistoryController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @GetMapping(path = TExamApiConstant.GET_TEST_HISTORY_OF_TEST_ID_BY_STATUS,
-            params = {"testId", "userId"},
-            produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseData> getTestHistoryOfTestIdByStatus(@RequestParam("testId") UUID testId,
-                                                                       @RequestParam("userId") UUID userId) {
+    @GetMapping(path = TExamApiConstant.API_EMPTY,
+                params = {TExamParamConstant.TEST_ID, TExamParamConstant.USER_ID},
+                produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseData> getTestHistoriesByTestIdAndUserId(@RequestParam(TExamParamConstant.TEST_ID) UUID testId,
+                                                                          @RequestParam(TExamParamConstant.USER_ID) UUID userId) {
         HttpStatus httpStatus = HttpStatus.OK;
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.TEST_HISTORY_S001,
-                testHistoryService.getTestHistoryOfTestIdByStatus(userId, testId)
+                TExamSuccessfulConstant.TEST_HISTORY_S002,
+                testHistoryService.getTestHistoriesByTestIdAndUserId(userId, testId)
         );
 
         return new ResponseEntity<>(result, httpStatus);
     }
-
 }

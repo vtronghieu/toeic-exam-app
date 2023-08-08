@@ -17,7 +17,6 @@ import com.tip.dg4.toeic_exam.services.PracticePartService;
 import com.tip.dg4.toeic_exam.services.QuestionService;
 import com.tip.dg4.toeic_exam.services.TestHistoryService;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +24,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 @Log4j2
 @Service
@@ -38,7 +39,9 @@ public class PartTestServiceImpl implements PartTestService {
     @Lazy
     public PartTestServiceImpl(PartTestRepository partTestRepository,
                                PracticePartService practicePartService,
-                               PartTestMapper partTestMapper, TestHistoryService testHistoryService, QuestionService questionService) {
+                               PartTestMapper partTestMapper,
+                               TestHistoryService testHistoryService,
+                               QuestionService questionService) {
         this.partTestRepository = partTestRepository;
         this.practicePartService = practicePartService;
         this.partTestMapper = partTestMapper;
@@ -69,21 +72,22 @@ public class PartTestServiceImpl implements PartTestService {
             throw new NotFoundException(TExamExceptionConstant.PRACTICE_PART_E002);
         }
         List<PartTest> partTests = partTestRepository.findByPracticePartId(practicePartId);
-        List<PartTestDto> testDtoList = partTests.stream().map(partTestMapper::convertModelToDto).toList();
-        testDtoList.parallelStream().forEach(testDto -> this.getTestHistoriesByPartTestId(userId, testDto));
+        List<PartTestDto> testDtoList = partTests.stream().map(partTestMapper::convertModelToDto).collect(Collectors.toCollection(CopyOnWriteArrayList::new));
+
+        testDtoList.parallelStream().forEachOrdered(testDto -> {
+            List<TestHistory> testHistories = testHistoryService.getTestHistoriesByTestIdAndUserId(userId, testDto.getId());
+
+            if (!testHistories.isEmpty()) {
+                int lastIndex = testHistories.size() - 1;
+                List<QuestionDto> questions = questionService.getQuestionsByObjectTypeId(testHistories.get(lastIndex).getTestId());
+                int count = (int) testHistories.get(lastIndex).getUserAnswers().stream().filter(UserAnswer::isCorrect).count();
+
+                testDto.setCorrectAnswer(count);
+                testDto.setTotalQuestion(questions.size());
+            }
+        });
+
         return testDtoList;
-    }
-
-    private void getTestHistoriesByPartTestId(UUID userId, @NotNull PartTestDto testDto) {
-        List<TestHistory> allTestHistories = testHistoryService.getTestHistoryOfTestIdByStatus(userId, testDto.getId());
-
-        if (!allTestHistories.isEmpty()) {
-            int lastIndex = allTestHistories.size() - 1;
-            List<QuestionDto> questions = questionService.getQuestionsByObjectTypeId(allTestHistories.get(lastIndex).getTestId());
-            int count = (int) allTestHistories.get(lastIndex).getUserAnswers().stream().filter(UserAnswer::isCorrect).count();
-            testDto.setCorrectAnswer(count);
-            testDto.setTotalQuestion(questions.size());
-        }
     }
 
     public void updatePartTest(UUID partTestId, PartTestDto partTestDto) {

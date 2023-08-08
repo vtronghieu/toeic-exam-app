@@ -13,19 +13,19 @@ public enum TestHistoryStatus {
 
     private String value;
 
-    public static TestHistoryStatus getType(String value) {
-        for (TestHistoryStatus status : TestHistoryStatus.values()) {
-            if (value.equalsIgnoreCase(status.getValue())) {
-                return status;
+    public static TestHistoryStatus getStatus(String status) {
+        for (TestHistoryStatus testHistoryStatus : TestHistoryStatus.values()) {
+            if (status.equalsIgnoreCase(testHistoryStatus.getValue())) {
+                return testHistoryStatus;
             }
         }
         return null;
     }
 
-    public static String getValueType(TestHistoryStatus level) {
-        for (TestHistoryStatus TestHistoryStatus : TestHistoryStatus.values()) {
-            if (level.equals(TestHistoryStatus)) {
-                return TestHistoryStatus.value;
+    public static String getValueStatus(TestHistoryStatus status) {
+        for (TestHistoryStatus testHistoryStatus : TestHistoryStatus.values()) {
+            if (status.equals(testHistoryStatus)) {
+                return testHistoryStatus.value;
             }
         }
         return null;

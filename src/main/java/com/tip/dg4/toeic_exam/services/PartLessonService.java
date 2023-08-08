@@ -10,5 +10,5 @@ public interface PartLessonService {
     List<PartLessonDto> getPartLessonsByPartId(UUID practicePartId);
     void updatePartLesson(UUID partLessonId, PartLessonDto partLessonDto);
     void deletePartLesson(UUID partLessonId);
-    PartLessonDto getPartLessonsById(UUID practicePartId, UUID lessonId);
+    PartLessonDto getPartLessonById(UUID lessonId);
 }

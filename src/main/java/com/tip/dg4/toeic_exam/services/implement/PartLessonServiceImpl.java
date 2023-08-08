@@ -72,7 +72,6 @@ public class PartLessonServiceImpl implements PartLessonService {
         }
         partLesson.setPracticePartId(partLessonDto.getPracticePartId());
         partLesson.setName(partLessonDto.getName());
-        partLesson.setLessonContents(partLessonDto.getLessonContents());
         partLessonRepository.save(partLesson);
     }
 
@@ -85,10 +84,7 @@ public class PartLessonServiceImpl implements PartLessonService {
     }
 
     @Override
-    public PartLessonDto getPartLessonsById(UUID practicePartId, UUID partLessonId) {
-        if (!practicePartService.existsById(practicePartId)) {
-            throw new NotFoundException(TExamExceptionConstant.PRACTICE_PART_E002);
-        }
+    public PartLessonDto getPartLessonById(UUID partLessonId) {
         Optional<PartLesson> optionalPartLesson = partLessonRepository.findById(partLessonId);
         if (optionalPartLesson.isEmpty()) {
             throw new NotFoundException(TExamExceptionConstant.PART_LESSON_E002);

@@ -19,6 +19,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Log4j2
 @Service
@@ -63,7 +64,7 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public List<QuestionDto> getAllQuestions() {
         List<Question> questions = questionRepository.findAll();
-        List<QuestionDto> questionDTOs = new ArrayList<>();
+        List<QuestionDto> questionDTOs = new CopyOnWriteArrayList<>();
 
         for (Question question : questions) {
             Optional<Question> optionalQuestion = questionRepository.findById(question.getId());

@@ -11,5 +11,4 @@ import java.util.UUID;
 public interface TestHistoryRepository extends MongoRepository<TestHistory, UUID> {
     Optional<TestHistory> findByUserIdAndTestIdAndStatus(UUID userId, UUID testId, TestHistoryStatus status);
     List<TestHistory> findListByUserIdAndTestId(UUID userId, UUID testId);
-
 }

@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.FieldType;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,7 +27,6 @@ public class TestHistory {
     @Field(targetType = FieldType.STRING)
     private UUID testId;
     private TestHistoryStatus status;
-    private Date date;
+    private LocalDate date;
     private List<UserAnswer> userAnswers;
-
 }

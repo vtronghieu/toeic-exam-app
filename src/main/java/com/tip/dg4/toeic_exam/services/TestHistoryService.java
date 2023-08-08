@@ -9,6 +9,5 @@ import java.util.UUID;
 
 public interface TestHistoryService {
     ReplyAnswerDto sendAnswer(SendAnswerDto sendAnswerDto);
-    List<TestHistory> getTestHistoryOfTestIdByStatus(UUID userId, UUID testId);
-
+    List<TestHistory> getTestHistoriesByTestIdAndUserId(UUID userId, UUID testId);
 }
