@@ -1,16 +1,22 @@
 package com.tip.dg4.toeic_exam.mappers;
 
-import com.tip.dg4.toeic_exam.dto.SendAnswerDto;
+import com.tip.dg4.toeic_exam.dto.TestHistoryDto;
 import com.tip.dg4.toeic_exam.models.TestHistory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class TestHistoryMapper {
-    public TestHistory convertSendAnswerDtoToModel(SendAnswerDto sendAnswerDto) {
-        TestHistory testHistory = new TestHistory();
+    public TestHistoryDto convertModelTesthistoryDto(TestHistory history) {
+        TestHistoryDto testHistoryDto = new TestHistoryDto();
 
-        testHistory.setUserId(sendAnswerDto.getUserId());
+        testHistoryDto.setUserId(history.getUserId());
+        testHistoryDto.setId(history.getId());
+        testHistoryDto.setDate(history.getDate());
+        testHistoryDto.setTestId(history.getTestId());
+        testHistoryDto.setQuestionType(history.getQuestionType());
+        testHistoryDto.setStatus(history.getStatus());
+        testHistoryDto.setUserAnswers(history.getUserAnswers());
 
-        return testHistory;
+        return testHistoryDto;
     }
 }

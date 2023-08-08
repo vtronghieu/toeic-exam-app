@@ -17,4 +17,6 @@ public class PartTestDto {
     private UUID practicePartId;
     private String type;
     private String name;
+    private Integer correctAnswer;
+    private int totalQuestion;
 }

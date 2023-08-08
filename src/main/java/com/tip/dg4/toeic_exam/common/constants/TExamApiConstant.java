@@ -43,5 +43,7 @@ public class TExamApiConstant {
     //  Test history
     public static final String TEST_HISTORY_API_ROOT = API_ROOT + API_VERSION_1 + "/testHistories";
     public static final String SEND_ANSWER_API = "/sendAnswer";
+    public static final String GET_TEST_HISTORY_BY_STATUS = "/getTestHistoryByStatus";
+    public static final String GET_TEST_HISTORY_OF_TEST_ID_BY_STATUS = "/getTestHistoryOfTestIdByStatus";
 }
 

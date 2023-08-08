@@ -8,10 +8,9 @@ import com.tip.dg4.toeic_exam.services.TestHistoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping(path = TExamApiConstant.TEST_HISTORY_API_ROOT)
@@ -35,4 +34,21 @@ public class TestHistoryController {
 
         return new ResponseEntity<>(result, httpStatus);
     }
+
+    @GetMapping(path = TExamApiConstant.GET_TEST_HISTORY_OF_TEST_ID_BY_STATUS,
+            params = {"testId", "userId"},
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseData> getTestHistoryOfTestIdByStatus(@RequestParam("testId") UUID testId,
+                                                                       @RequestParam("userId") UUID userId) {
+        HttpStatus httpStatus = HttpStatus.OK;
+        ResponseData result = new ResponseData(
+                httpStatus.value(),
+                httpStatus.getReasonPhrase(),
+                TExamSuccessfulConstant.TEST_HISTORY_S001,
+                testHistoryService.getTestHistoryOfTestIdByStatus(userId, testId)
+        );
+
+        return new ResponseEntity<>(result, httpStatus);
+    }
+
 }

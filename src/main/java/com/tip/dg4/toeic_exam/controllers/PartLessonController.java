@@ -53,6 +53,23 @@ public class PartLessonController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
+
+    @GetMapping(path = TExamApiConstant.API_EMPTY,
+            params = {TExamParamConstant.PRACTICE_PART_ID, TExamParamConstant.PART_LESSON_ID},
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<ResponseData> getPartLessonsById(@RequestParam(TExamParamConstant.PRACTICE_PART_ID) UUID practicePartId,
+                                                    @RequestParam(TExamParamConstant.PART_LESSON_ID) UUID partLessonId) {
+        HttpStatus httpStatus = HttpStatus.OK;
+        ResponseData result = new ResponseData(
+                httpStatus.value(),
+                httpStatus.getReasonPhrase(),
+                TExamSuccessfulConstant.PART_LESSON_S002,
+                partLessonService.getPartLessonsById(practicePartId, partLessonId)
+        );
+
+        return new ResponseEntity<>(result, httpStatus);
+    }
+
     @PutMapping(path = TExamApiConstant.API_EMPTY,
                 params = TExamParamConstant.ID,
                 produces = MediaType.APPLICATION_JSON_VALUE)

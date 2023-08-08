@@ -39,15 +39,15 @@ public class PartTestController {
     }
 
     @GetMapping(path = TExamApiConstant.API_EMPTY,
-                params = TExamParamConstant.PRACTICE_PART_ID,
+            params = {TExamParamConstant.PRACTICE_PART_ID, "userId"},
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseData> getPartTestsByPartId(@RequestParam(TExamParamConstant.PRACTICE_PART_ID) UUID partId) {
+    public ResponseEntity<ResponseData> getPartTestsByPartId(@RequestParam("userId") UUID userId, @RequestParam(TExamParamConstant.PRACTICE_PART_ID) UUID partId) {
         HttpStatus httpStatus = HttpStatus.OK;
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
                 TExamSuccessfulConstant.PART_TEST_S004,
-                partTestService.getPartTestsByPartId(partId)
+                partTestService.getPartTestsByPartId(partId, userId)
         );
 
         return new ResponseEntity<>(result, httpStatus);

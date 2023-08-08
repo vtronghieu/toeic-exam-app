@@ -5,10 +5,8 @@ import com.tip.dg4.toeic_exam.dto.ReplyAnswerDto;
 import com.tip.dg4.toeic_exam.dto.SendAnswerDto;
 import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
 import com.tip.dg4.toeic_exam.mappers.QuestionMapper;
-import com.tip.dg4.toeic_exam.models.ChildQuestion;
-import com.tip.dg4.toeic_exam.models.Question;
-import com.tip.dg4.toeic_exam.models.TestHistory;
-import com.tip.dg4.toeic_exam.models.UserAnswer;
+import com.tip.dg4.toeic_exam.mappers.TestHistoryMapper;
+import com.tip.dg4.toeic_exam.models.*;
 import com.tip.dg4.toeic_exam.repositories.TestHistoryRepository;
 import com.tip.dg4.toeic_exam.services.ChildQuestionService;
 import com.tip.dg4.toeic_exam.services.QuestionService;
@@ -17,10 +15,7 @@ import com.tip.dg4.toeic_exam.services.UserService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Log4j2
 @Service
@@ -30,17 +25,19 @@ public class TestHistoryServiceImpl implements TestHistoryService {
     private final UserService userService;
     private final ChildQuestionService childQuestionService;
     private final QuestionMapper questionMapper;
+    private final TestHistoryMapper testHistoryMapper;
 
     public TestHistoryServiceImpl(TestHistoryRepository testHistoryRepository,
                                   QuestionService questionService,
                                   UserService userService,
                                   ChildQuestionService childQuestionService,
-                                  QuestionMapper questionMapper) {
+                                  QuestionMapper questionMapper, TestHistoryMapper testHistoryMapper) {
         this.testHistoryRepository = testHistoryRepository;
         this.questionService = questionService;
         this.userService = userService;
         this.childQuestionService = childQuestionService;
         this.questionMapper = questionMapper;
+        this.testHistoryMapper = testHistoryMapper;
     }
 
     @Override
@@ -59,7 +56,7 @@ public class TestHistoryServiceImpl implements TestHistoryService {
         Question question = optionalQuestion.get();
         ChildQuestion childQuestion = optionalChildQuestion.get();
         ReplyAnswerDto replyAnswerDto = new ReplyAnswerDto();
-        if (question.getId().equals(childQuestion.getQuestionId())){
+        if (question.getId().equals(childQuestion.getQuestionId())) {
             replyAnswerDto.setQuestionId(sendAnswerDto.getQuestionId());
             replyAnswerDto.setChildQuestionId(sendAnswerDto.getChildQuestionId());
             replyAnswerDto.setUserAnswer(sendAnswerDto.getUserAnswer());
@@ -67,17 +64,20 @@ public class TestHistoryServiceImpl implements TestHistoryService {
             replyAnswerDto.setCorrect(sendAnswerDto.getUserAnswer().equals(childQuestion.getCorrectAnswer()));
         }
 
-        Optional<TestHistory> optionalTestHistory = testHistoryRepository.findByUserIdAndTestId(sendAnswerDto.getUserId(), question.getObjectTypeId());
+        Optional<TestHistory> optionalTestHistory = testHistoryRepository.findByUserIdAndTestIdAndStatus(sendAnswerDto.getUserId(), question.getObjectTypeId(), TestHistoryStatus.getType("testing"));
         boolean isDoNotTest = optionalTestHistory.isEmpty();
         List<Question> questions = questionService.getQuestionsByObjectTypeId(question.getObjectTypeId())
-                                   .stream().map(questionMapper::convertDtoToModel).toList();
+                .stream().map(questionMapper::convertDtoToModel).toList();
         boolean isDoneTest = !isDoNotTest && (questions.size() == optionalTestHistory.get().getUserAnswers().size());
+        Date currentDate = new Date();
         if (isDoNotTest || isDoneTest) {
-            TestHistory testHistory = new TestHistory();
+            TestHistory newTestHistory = new TestHistory();
 
-            testHistory.setQuestionType(question.getType());
-            testHistory.setUserId(sendAnswerDto.getUserId());
-            testHistory.setTestId(question.getObjectTypeId());
+            newTestHistory.setQuestionType(question.getType());
+            newTestHistory.setStatus(TestHistoryStatus.TESTING);
+            newTestHistory.setDate(currentDate);
+            newTestHistory.setUserId(sendAnswerDto.getUserId());
+            newTestHistory.setTestId(question.getObjectTypeId());
 
             List<UserAnswer> userAnswers = new ArrayList<>();
             UserAnswer userAnswer = new UserAnswer();
@@ -88,8 +88,8 @@ public class TestHistoryServiceImpl implements TestHistoryService {
             userAnswer.setCorrect(replyAnswerDto.isCorrect());
 
             userAnswers.add(userAnswer);
-            testHistory.setUserAnswers(userAnswers);
-            testHistoryRepository.save(testHistory);
+            newTestHistory.setUserAnswers(userAnswers);
+            testHistoryRepository.save(newTestHistory);
         } else {
             TestHistory testHistory = optionalTestHistory.get();
             for (UserAnswer userAnswer : testHistory.getUserAnswers()) {
@@ -107,6 +107,11 @@ public class TestHistoryServiceImpl implements TestHistoryService {
 
                     userAnswers.add(newUserAnswer);
                     testHistory.setUserAnswers(userAnswers);
+                    if (questions.size() == optionalTestHistory.get().getUserAnswers().size()) {
+                        testHistory.setStatus(TestHistoryStatus.DONE);
+                        testHistory.setDate(currentDate);
+
+                    }
                     testHistoryRepository.save(testHistory);
                 } else {
                     List<UserAnswer> userAnswers = testHistory.getUserAnswers();
@@ -119,6 +124,10 @@ public class TestHistoryServiceImpl implements TestHistoryService {
 
                     userAnswers.add(newUserAnswer);
                     testHistory.setUserAnswers(userAnswers);
+                    if (questions.size() == optionalTestHistory.get().getUserAnswers().size()) {
+                        testHistory.setStatus(TestHistoryStatus.DONE);
+                        testHistory.setDate(currentDate);
+                    }
                     testHistoryRepository.save(testHistory);
                     break;
                 }
@@ -126,5 +135,10 @@ public class TestHistoryServiceImpl implements TestHistoryService {
         }
 
         return replyAnswerDto;
+    }
+
+    @Override
+    public List<TestHistory> getTestHistoryOfTestIdByStatus(UUID userId, UUID testId) {
+        return testHistoryRepository.findListByUserIdAndTestId(userId, testId);
     }
 }

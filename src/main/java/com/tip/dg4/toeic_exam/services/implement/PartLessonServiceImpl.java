@@ -11,6 +11,7 @@ import com.tip.dg4.toeic_exam.services.PartLessonService;
 import com.tip.dg4.toeic_exam.services.PracticePartService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -71,6 +72,7 @@ public class PartLessonServiceImpl implements PartLessonService {
         }
         partLesson.setPracticePartId(partLessonDto.getPracticePartId());
         partLesson.setName(partLessonDto.getName());
+        partLesson.setLessonContents(partLessonDto.getLessonContents());
         partLessonRepository.save(partLesson);
     }
 
@@ -80,5 +82,17 @@ public class PartLessonServiceImpl implements PartLessonService {
             throw new NotFoundException(TExamExceptionConstant.PART_LESSON_E002);
         }
         partLessonRepository.deleteById(partLessonId);
+    }
+
+    @Override
+    public PartLessonDto getPartLessonsById(UUID practicePartId, UUID partLessonId) {
+        if (!practicePartService.existsById(practicePartId)) {
+            throw new NotFoundException(TExamExceptionConstant.PRACTICE_PART_E002);
+        }
+        Optional<PartLesson> optionalPartLesson = partLessonRepository.findById(partLessonId);
+        if (optionalPartLesson.isEmpty()) {
+            throw new NotFoundException(TExamExceptionConstant.PART_LESSON_E002);
+        }
+        return partLessonMapper.convertModelDto(optionalPartLesson.get());
     }
 }
