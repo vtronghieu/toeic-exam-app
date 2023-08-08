@@ -12,4 +12,5 @@ public class TExamParamConstant {
     public static final String OBJECT_TYPE_ID = "objectTypeId";
     public static final String TYPE = "type";
     public static final String TEST_ID = "testId";
+    public static final String ACCOUNT_ID = "accountId";
 }

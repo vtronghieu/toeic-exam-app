@@ -12,6 +12,8 @@ public class TExamSuccessfulConstant {
     public static final String ACCOUNT_S004 = "Get all accounts successfully";
     public static final String ACCOUNT_S005 = "Account logged out successfully";
     public static final String ACCOUNT_S006 = "Password changed successfully";
+    //  User
+    public static final String USER_S001 = "Get the user successfully";
     //  Vocabulary category
     public static final String VOCABULARY_CATEGORY_S001 = "Vocabulary category was created successfully";
     public static final String VOCABULARY_CATEGORY_S002 = "Get all vocabulary categories successfully";
@@ -30,6 +32,7 @@ public class TExamSuccessfulConstant {
     public static final String QUESTION_S003 = "Get questions successfully";
     public static final String QUESTION_S004 = "Question was updated successfully";
     public static final String QUESTION_S005 = "Question was deleted successfully";
+    public static final String QUESTION_S006 = "Get the question successfully";
     //  Quiz test history
     public static final String QUIZ_TEST_HISTORY_S001 = "Quiz test history was created successfully";
     //  Practice

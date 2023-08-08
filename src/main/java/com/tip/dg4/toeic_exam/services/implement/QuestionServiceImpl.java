@@ -1,7 +1,6 @@
 package com.tip.dg4.toeic_exam.services.implement;
 
 import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
-import com.tip.dg4.toeic_exam.dto.ChildQuestionDto;
 import com.tip.dg4.toeic_exam.dto.QuestionDto;
 import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
 import com.tip.dg4.toeic_exam.exceptions.NotFoundException;
@@ -57,6 +56,7 @@ public class QuestionServiceImpl implements QuestionService {
             throw new NotFoundException(TExamExceptionConstant.PART_TEST_E003);
         }
         Question question = questionMapper.convertDtoToModel(questionDto);
+
         questionRepository.save(question);
         childQuestionService.createChildQuestions(question.getId(), questionDto.getQuestions());
     }
@@ -64,17 +64,17 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public List<QuestionDto> getAllQuestions() {
         List<Question> questions = questionRepository.findAll();
-        List<QuestionDto> questionDTOs = new CopyOnWriteArrayList<>();
+        List<QuestionDto> questionDTOs = new CopyOnWriteArrayList<>(Collections.nCopies(questions.size(), null));
 
-        for (Question question : questions) {
+        questions.parallelStream().forEach(question -> {
             Optional<Question> optionalQuestion = questionRepository.findById(question.getId());
             if (optionalQuestion.isPresent()) {
                 List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(question.getId());
                 QuestionDto questionDTO = questionMapper.convertModelToDto(optionalQuestion.get(), childQuestions);
 
-                questionDTOs.add(questionDTO);
+                questionDTOs.set(questions.indexOf(question), questionDTO);
             }
-        }
+        });
 
         return questionDTOs;
     }
@@ -82,23 +82,14 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public List<QuestionDto> getQuestionsByObjectTypeId(UUID objectTypeId) {
         List<Question> questions = questionRepository.findByObjectTypeId(objectTypeId);
-        if (questions.isEmpty()) {
-            throw new NotFoundException(TExamExceptionConstant.QUESTION_E006);
-        }
-        List<QuestionDto> questionDTOs = new ArrayList<>();
+        if (questions.isEmpty()) return Collections.emptyList();
 
-        for (Question question : questions) {
-            Optional<Question> optionalQuestion = questionRepository.findById(question.getId());
-            if (optionalQuestion.isPresent()) {
-                List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(question.getId());
-                QuestionDto questionDTO = questionMapper.convertModelToDto(optionalQuestion.get(), childQuestions);
+        List<QuestionDto> questionDTOs = new CopyOnWriteArrayList<>(Collections.nCopies(questions.size(), null));
+        questions.parallelStream().forEachOrdered(question -> {
+            List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(question.getId());
 
-                for (ChildQuestionDto childQuestionDto : questionDTO.getQuestions()) {
-                    childQuestionDto.setCorrectAnswer(null);
-                }
-                questionDTOs.add(questionDTO);
-            }
-        }
+            questionDTOs.set(questions.indexOf(question), questionMapper.convertModelToDto(question, childQuestions));
+        });
 
         return questionDTOs;
     }
@@ -110,43 +101,51 @@ public class QuestionServiceImpl implements QuestionService {
             throw new BadRequestException(TExamExceptionConstant.QUESTION_E002);
         }
         List<Question> questions = questionRepository.findByType(questionType);
-        List<QuestionDto> questionDTOs = new ArrayList<>();
-
-        for (Question question : questions) {
+        List<QuestionDto> questionDTOs = new CopyOnWriteArrayList<>(Collections.nCopies(questions.size(), null));
+        questions.parallelStream().forEachOrdered(question -> {
             Optional<Question> optionalQuestion = questionRepository.findById(question.getId());
             if (optionalQuestion.isPresent()) {
                 List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(question.getId());
                 QuestionDto questionDTO = questionMapper.convertModelToDto(optionalQuestion.get(), childQuestions);
 
-                questionDTOs.add(questionDTO);
+                questionDTOs.set(questions.indexOf(question), questionDTO);
             }
-        }
+        });
 
         return questionDTOs;
     }
 
     @Override
     public List<QuestionDto> getQuestionsByObjectTypeIds(List<UUID> objectTypeIds) {
-        List<Question> questions = new ArrayList<>();
-        for (UUID objectTypeId : objectTypeIds) {
-            List<Question> localQuestions = questionRepository.findByObjectTypeId(objectTypeId);
-            if (!localQuestions.isEmpty()) {
-                questions.addAll(localQuestions);
-            }
-        }
-
-        List<QuestionDto> questionDTOs = new ArrayList<>();
-        for (Question question : questions) {
+        List<Question> questions = new CopyOnWriteArrayList<>();
+        objectTypeIds.parallelStream().forEachOrdered(objectTypeId -> {
+            List<Question> localQuestion = questionRepository.findByObjectTypeId(objectTypeId);
+            questions.addAll(localQuestion);
+        });
+        List<QuestionDto> questionDTOs = new CopyOnWriteArrayList<>(Collections.nCopies(questions.size(), null));
+        questions.parallelStream().forEachOrdered(question -> {
             Optional<Question> optionalQuestion = questionRepository.findById(question.getId());
             if (optionalQuestion.isPresent()) {
                 List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(question.getId());
                 QuestionDto questionDTO = questionMapper.convertModelToDto(optionalQuestion.get(), childQuestions);
 
-                questionDTOs.add(questionDTO);
+                questionDTOs.set(questions.indexOf(question), questionDTO);
             }
-        }
+        });
 
         return questionDTOs;
+    }
+
+    @Override
+    public QuestionDto getQuestionById(UUID questionId) {
+        Optional<Question> optionalQuestion = questionRepository.findById(questionId);
+        if (optionalQuestion.isEmpty()) {
+            throw new NotFoundException(TExamExceptionConstant.QUESTION_E006);
+        }
+        Question question = optionalQuestion.get();
+        List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(questionId);
+
+        return questionMapper.convertModelToDto(question, childQuestions);
     }
 
     @Override
