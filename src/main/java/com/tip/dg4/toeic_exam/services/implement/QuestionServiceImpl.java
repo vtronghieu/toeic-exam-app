@@ -18,6 +18,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Log4j2
 @Service
@@ -63,9 +64,9 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public List<QuestionDto> getAllQuestions() {
         List<Question> questions = questionRepository.findAll();
-        List<QuestionDto> questionDTOs = new ArrayList<>();
+        List<QuestionDto> questionDTOs = new CopyOnWriteArrayList<>();
 
-        questions.parallelStream().forEach(question -> {
+        questions.parallelStream().forEachOrdered(question -> {
             Optional<Question> optionalQuestion = questionRepository.findById(question.getId());
             if (optionalQuestion.isPresent()) {
                 List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(question.getId());
@@ -83,8 +84,8 @@ public class QuestionServiceImpl implements QuestionService {
         List<Question> questions = questionRepository.findByObjectTypeId(objectTypeId);
         if (questions.isEmpty()) return Collections.emptyList();
 
-        List<QuestionDto> questionDTOs = new ArrayList<>();
-        questions.parallelStream().forEach(question -> {
+        List<QuestionDto> questionDTOs = new CopyOnWriteArrayList<>();
+        questions.parallelStream().forEachOrdered(question -> {
             List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(question.getId());
 
             questionDTOs.add(questionMapper.convertModelToDto(question, childQuestions));
@@ -100,8 +101,8 @@ public class QuestionServiceImpl implements QuestionService {
             throw new BadRequestException(TExamExceptionConstant.QUESTION_E002);
         }
         List<Question> questions = questionRepository.findByType(questionType);
-        List<QuestionDto> questionDTOs = new ArrayList<>();
-        questions.parallelStream().forEach(question -> {
+        List<QuestionDto> questionDTOs = new CopyOnWriteArrayList<>();
+        questions.parallelStream().forEachOrdered(question -> {
             Optional<Question> optionalQuestion = questionRepository.findById(question.getId());
             if (optionalQuestion.isPresent()) {
                 List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(question.getId());
@@ -116,13 +117,13 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public List<QuestionDto> getQuestionsByObjectTypeIds(List<UUID> objectTypeIds) {
-        List<Question> questions = new ArrayList<>();
-        objectTypeIds.parallelStream().forEach(objectTypeId -> {
+        List<Question> questions = new CopyOnWriteArrayList<>();
+        objectTypeIds.parallelStream().forEachOrdered(objectTypeId -> {
             List<Question> localQuestion = questionRepository.findByObjectTypeId(objectTypeId);
             questions.addAll(localQuestion);
         });
-        List<QuestionDto> questionDTOs = new ArrayList<>();
-        questions.parallelStream().forEach(question -> {
+        List<QuestionDto> questionDTOs = new CopyOnWriteArrayList<>();
+        questions.parallelStream().forEachOrdered(question -> {
             Optional<Question> optionalQuestion = questionRepository.findById(question.getId());
             if (optionalQuestion.isPresent()) {
                 List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(question.getId());
