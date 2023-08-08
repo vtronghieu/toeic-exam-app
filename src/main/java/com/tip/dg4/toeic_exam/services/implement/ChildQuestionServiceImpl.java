@@ -45,24 +45,6 @@ public class ChildQuestionServiceImpl implements ChildQuestionService {
         if (childQuestionDTOs.isEmpty()) return;
         this.deleteChildQuestionsByQuestionId(questionId);
         this.createChildQuestions(questionId, childQuestionDTOs);
-//        List<ChildQuestion> childQuestions = childQuestionRepository.findByQuestionId(questionId);
-//        for (int i = 0; i < childQuestions.size(); i++) {
-//            Optional<ChildQuestion> optionalChildQuestion = childQuestionRepository.findById(childQuestions.get(i).getId());
-//            if (optionalChildQuestion.isPresent()) {
-//                ChildQuestion childQuestion = optionalChildQuestion.get();
-//                ChildQuestionDto childQuestionDTO = childQuestionDTOs.get(i);
-//
-//                childQuestion.setQuestionId(childQuestionDTO.getQuestionId());
-//                childQuestion.setTextQuestion(childQuestionDTO.getTextQuestion());
-//                childQuestion.setAnswerA(childQuestionDTO.getAnswerA());
-//                childQuestion.setAnswerB(childQuestionDTO.getAnswerB());
-//                childQuestion.setAnswerC(childQuestionDTO.getAnswerC());
-//                childQuestion.setAnswerD(childQuestionDTO.getAnswerD());
-//                childQuestion.setCorrectAnswer(childQuestionDTO.getCorrectAnswer());
-//
-//                childQuestionRepository.save(childQuestion);
-//            }
-//        }
     }
 
     @Override
