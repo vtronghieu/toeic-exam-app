@@ -69,24 +69,29 @@ public class TestHistoryServiceImpl implements TestHistoryService {
     private void saveTestHistory(SendAnswerDto sendAnswerDto, Question question, ChildQuestion childQuestion, ReplyAnswerDto replyAnswerDto) {
         Optional<TestHistory> optionalTestHistory = testHistoryRepository.findByUserIdAndTestIdAndStatus(sendAnswerDto.getUserId(), question.getObjectTypeId(), TestHistoryStatus.getStatus("testing"));
         boolean isDoNotTest = optionalTestHistory.isEmpty();
+
         List<Question> questions = questionService.getQuestionsByObjectTypeId(question.getObjectTypeId())
                 .stream().map(questionMapper::convertDtoToModel).toList();
-        boolean isDoneTest = !isDoNotTest && (questions.size() == optionalTestHistory.get().getUserAnswers().size());
+
+        int totalQuestions = questions.parallelStream()
+                .mapToInt(quest -> {
+                    List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(quest.getId());
+                    return childQuestions.size();
+                })
+                .sum();
+        int totalQuestionsAnswer = 0;
+        if (!isDoNotTest) {
+            totalQuestionsAnswer = optionalTestHistory.get().getUserAnswers()
+                    .parallelStream()
+                    .mapToInt(userAnswer -> userAnswer.getChildQuestions().size())
+                    .sum();
+        }
+        boolean isDoneTest = !isDoNotTest && (totalQuestions == totalQuestionsAnswer);
         if (isDoNotTest || isDoneTest) {
             this.createNewTestHistory(question, sendAnswerDto, childQuestion, replyAnswerDto);
         } else {
             TestHistory testHistory = optionalTestHistory.get();
-            for (UserAnswer userAnswer : testHistory.getUserAnswers()) {
-                if (userAnswer.getQuestionId().equals(sendAnswerDto.getQuestionId())) {
-                    if (userAnswer.getChildQuestions().stream().anyMatch(cQuestion -> sendAnswerDto.getChildQuestionId().equals(cQuestion.getId()))) {
-                        break;
-                    }
-                    this.updateTestHistory(testHistory, question, sendAnswerDto, childQuestion, replyAnswerDto, questions);
-                } else {
-                    this.updateTestHistory(testHistory, question, sendAnswerDto, childQuestion, replyAnswerDto, questions);
-                    break;
-                }
-            }
+            this.updateTestHistory(totalQuestions,testHistory, question, sendAnswerDto, childQuestion, replyAnswerDto, questions);
         }
     }
 
@@ -110,7 +115,7 @@ public class TestHistoryServiceImpl implements TestHistoryService {
         testHistoryRepository.save(newTestHistory);
     }
 
-    private void updateTestHistory(TestHistory testHistory, Question question, SendAnswerDto sendAnswerDto, ChildQuestion childQuestion, ReplyAnswerDto replyAnswerDto, List<Question> questions) {
+    private void updateTestHistory(int totalQuestions,TestHistory testHistory, Question question, SendAnswerDto sendAnswerDto, ChildQuestion childQuestion, ReplyAnswerDto replyAnswerDto, List<Question> questions) {
         UserAnswer newUserAnswer = new UserAnswer();
         newUserAnswer.setQuestionId(question.getId());
         newUserAnswer.setChildQuestions(new ArrayList<>(Collections.singletonList(childQuestion)));
@@ -121,7 +126,7 @@ public class TestHistoryServiceImpl implements TestHistoryService {
         userAnswers.add(newUserAnswer);
 
         testHistory.setUserAnswers(userAnswers);
-        if (questions.size() == testHistory.getUserAnswers().size()) {
+        if (totalQuestions == testHistory.getUserAnswers().size()) {
             testHistory.setStatus(TestHistoryStatus.DONE);
             testHistory.setDate(LocalDate.now());
         }

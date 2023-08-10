@@ -25,6 +25,7 @@ public class QuestionMapper {
         question.setType(QuestionType.getType(questionDto.getType()));
         question.setObjectTypeId(questionDto.getObjectTypeId());
         question.setLevel(QuestionLevel.getLevel(questionDto.getLevel()));
+        question.setTranscript(questionDto.getTranscript());
         question.setAudioQuestion(questionDto.getAudioQuestion());
         question.setImages(questionDto.getImages());
 
@@ -40,6 +41,7 @@ public class QuestionMapper {
         questionDto.setObjectTypeId(question.getObjectTypeId());
         questionDto.setLevel(QuestionLevel.getValueLevel(question.getLevel()));
         questionDto.setAudioQuestion(question.getAudioQuestion());
+        questionDto.setTranscript(question.getTranscript());
         questionDto.setImages(question.getImages());
         questionDto.setQuestions(questionDTOs);
 

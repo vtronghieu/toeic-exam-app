@@ -24,5 +24,6 @@ public class Question {
     @Field(targetType = FieldType.STRING)
     private QuestionLevel level;
     private String audioQuestion;
+    private String transcript;
     private List<String> images;
 }

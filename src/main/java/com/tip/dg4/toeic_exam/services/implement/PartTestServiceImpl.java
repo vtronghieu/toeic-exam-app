@@ -7,15 +7,9 @@ import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
 import com.tip.dg4.toeic_exam.exceptions.ConflictException;
 import com.tip.dg4.toeic_exam.exceptions.NotFoundException;
 import com.tip.dg4.toeic_exam.mappers.PartTestMapper;
-import com.tip.dg4.toeic_exam.models.PartTest;
-import com.tip.dg4.toeic_exam.models.PracticeType;
-import com.tip.dg4.toeic_exam.models.TestHistory;
-import com.tip.dg4.toeic_exam.models.UserAnswer;
+import com.tip.dg4.toeic_exam.models.*;
 import com.tip.dg4.toeic_exam.repositories.PartTestRepository;
-import com.tip.dg4.toeic_exam.services.PartTestService;
-import com.tip.dg4.toeic_exam.services.PracticePartService;
-import com.tip.dg4.toeic_exam.services.QuestionService;
-import com.tip.dg4.toeic_exam.services.TestHistoryService;
+import com.tip.dg4.toeic_exam.services.*;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -35,18 +29,20 @@ public class PartTestServiceImpl implements PartTestService {
     private final PartTestMapper partTestMapper;
     private final TestHistoryService testHistoryService;
     private final QuestionService questionService;
+    private final ChildQuestionService childQuestionService;
 
     @Lazy
     public PartTestServiceImpl(PartTestRepository partTestRepository,
                                PracticePartService practicePartService,
                                PartTestMapper partTestMapper,
                                TestHistoryService testHistoryService,
-                               QuestionService questionService) {
+                               QuestionService questionService, ChildQuestionService childQuestionService) {
         this.partTestRepository = partTestRepository;
         this.practicePartService = practicePartService;
         this.partTestMapper = partTestMapper;
         this.testHistoryService = testHistoryService;
         this.questionService = questionService;
+        this.childQuestionService = childQuestionService;
     }
 
     @Override
@@ -74,19 +70,28 @@ public class PartTestServiceImpl implements PartTestService {
         List<PartTest> partTests = partTestRepository.findByPracticePartId(practicePartId);
         List<PartTestDto> testDtoList = partTests.stream().map(partTestMapper::convertModelToDto).collect(Collectors.toCollection(CopyOnWriteArrayList::new));
 
-        testDtoList.parallelStream().forEachOrdered(testDto -> {
+        testDtoList.parallelStream().forEach(testDto -> {
             List<TestHistory> testHistories = testHistoryService.getTestHistoriesByTestIdAndUserId(userId, testDto.getId());
 
             if (!testHistories.isEmpty()) {
                 int lastIndex = testHistories.size() - 1;
                 List<QuestionDto> questions = questionService.getQuestionsByObjectTypeId(testHistories.get(lastIndex).getTestId());
-                int count = (int) testHistories.get(lastIndex).getUserAnswers().stream().filter(UserAnswer::isCorrect).count();
+
+                int totalQuestions = questions.parallelStream()
+                        .mapToInt(quest -> {
+                            List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(quest.getId());
+                            return childQuestions.size();
+                        })
+                        .sum();
+
+                int count = (int) testHistories.get(lastIndex).getUserAnswers().parallelStream()
+                        .filter(UserAnswer::isCorrect)
+                        .count();
 
                 testDto.setCorrectAnswer(count);
-                testDto.setTotalQuestion(questions.size());
+                testDto.setTotalQuestion(totalQuestions);
             }
         });
-
         return testDtoList;
     }
 

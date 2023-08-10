@@ -18,5 +18,5 @@ public class PartTestDto {
     private String type;
     private String name;
     private Integer correctAnswer;
-    private int totalQuestion;
+    private int totalQuestions;
 }

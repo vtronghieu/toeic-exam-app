@@ -62,8 +62,10 @@ public class AccountServiceImpl implements AccountService {
         Cookie authCookie = new Cookie(TExamConstant.ACCESS_TOKEN, accessToken);
         authCookie.setMaxAge(TIME_TOKEN_ACTIVE);
         authCookie.setPath(TExamConstant.SLASH);
+//        authCookie.setDomain("192.168.227.93");
         authCookie.setDomain(null);
         authCookie.setHttpOnly(true);
+//        authCookie.setSecure(false);
         authCookie.setSecure(true);
         response.addCookie(authCookie);
 
