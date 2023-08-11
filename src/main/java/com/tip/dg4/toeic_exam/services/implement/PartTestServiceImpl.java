@@ -89,7 +89,7 @@ public class PartTestServiceImpl implements PartTestService {
                         .count();
 
                 testDto.setCorrectAnswer(count);
-                testDto.setTotalQuestion(totalQuestions);
+                testDto.setTotalQuestions(totalQuestions);
             }
         });
         return testDtoList;
