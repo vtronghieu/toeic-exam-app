@@ -191,4 +191,9 @@ public class QuestionServiceImpl implements QuestionService {
     public boolean existsById(UUID questionId) {
         return questionRepository.existsById(questionId);
     }
+
+    @Override
+    public Optional<Question> findById(UUID questionId) {
+        return questionRepository.findById(questionId);
+    }
 }

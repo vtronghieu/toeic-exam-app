@@ -12,6 +12,7 @@ public class PartLessonMapper {
         partLesson.setId(partLessonDto.getId());
         partLesson.setPracticePartId(partLessonDto.getPracticePartId());
         partLesson.setName(partLessonDto.getName());
+        partLesson.setLessonContents(partLessonDto.getLessonContents());
 
         return partLesson;
     }
@@ -22,7 +23,9 @@ public class PartLessonMapper {
         partLessonDto.setId(partLesson.getId());
         partLessonDto.setPracticePartId(partLesson.getPracticePartId());
         partLessonDto.setName(partLesson.getName());
+        partLessonDto.setLessonContents(partLesson.getLessonContents());
 
         return partLessonDto;
     }
+
 }

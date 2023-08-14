@@ -10,4 +10,6 @@ public class TExamConstant {
     public static final String DATE_FORMAT = "dd-MM-yyyy";
     public static final String DATE_TIME_FORMAT = "dd-MM-yyyy HH:mm:ss";
     public static final String ACCESS_TOKEN = "access-token";
+    public static final int ORDER_TO_INDEX_CONVERTING_FACTOR = 1;
+
 }

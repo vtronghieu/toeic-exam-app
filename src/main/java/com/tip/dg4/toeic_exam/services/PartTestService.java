@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public interface PartTestService {
     void createPartTest(PartTestDto partTestDto);
-    List<PartTestDto> getPartTestsByPartId(UUID partId);
+    List<PartTestDto> getPartTestsByPartId(UUID partId, UUID userId);
     void updatePartTest(UUID partTestId, PartTestDto partTestDto);
     void deletePartTestById(UUID partTestId);
     boolean existsById(UUID partTestId);

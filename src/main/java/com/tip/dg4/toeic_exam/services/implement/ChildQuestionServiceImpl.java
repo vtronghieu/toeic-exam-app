@@ -9,6 +9,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Log4j2
@@ -50,5 +51,10 @@ public class ChildQuestionServiceImpl implements ChildQuestionService {
     @Override
     public void deleteChildQuestionsByQuestionId(UUID questionId) {
         childQuestionRepository.deleteByQuestionId(questionId);
+    }
+
+    @Override
+    public Optional<ChildQuestion> findById(UUID childQuestionId) {
+        return childQuestionRepository.findById(childQuestionId);
     }
 }

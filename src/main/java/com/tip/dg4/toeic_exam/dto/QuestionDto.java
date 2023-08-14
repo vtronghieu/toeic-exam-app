@@ -19,6 +19,7 @@ public class QuestionDto {
     private UUID objectTypeId;
     private String level;
     private String audioQuestion;
+    private String transcript;
     private List<String> images;
     private List<ChildQuestionDto> questions;
 }

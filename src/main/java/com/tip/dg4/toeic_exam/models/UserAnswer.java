@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.FieldType;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -12,8 +13,7 @@ import java.util.UUID;
 public class UserAnswer {
     @Field(targetType = FieldType.STRING)
     private UUID questionId;
-    private String optionAnswer;
-    private ListenAnswer listenAnswer;
-    private String writeAnswer;
-    private Boolean isCorrect;
+    private List<ChildQuestion> childQuestions;
+    private String answerContent;
+    private boolean isCorrect;
 }

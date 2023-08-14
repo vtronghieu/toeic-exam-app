@@ -55,4 +55,8 @@ public class TExamSuccessfulConstant {
     public static final String PART_LESSON_S002 = "Get part lessons successfully";
     public static final String PART_LESSON_S003 = "Part lesson was updated successfully";
     public static final String PART_LESSON_S004 = "Part lesson was deleted successfully";
+    public static final String PART_LESSON_S005 = "Get the part lesson successfully";
+    //  Test history
+    public static final String TEST_HISTORY_S001 = "Send answer successfully";
+    public static final String TEST_HISTORY_S002 = "Get test histories successfully";
 }
