@@ -67,7 +67,7 @@ public class TestHistoryServiceImpl implements TestHistoryService {
     }
 
     private void saveTestHistory(SendAnswerDto sendAnswerDto, Question question, ChildQuestion childQuestion, ReplyAnswerDto replyAnswerDto) {
-        Optional<TestHistory> optionalTestHistory = testHistoryRepository.findByUserIdAndTestIdAndStatus(sendAnswerDto.getUserId(), question.getObjectTypeId(), TestHistoryStatus.getStatus("testing"));
+        Optional<TestHistory> optionalTestHistory = testHistoryRepository.findByUserIdAndTestIdAndStatus(sendAnswerDto.getUserId(), question.getObjectTypeId(), TestHistoryStatus.TESTING);
         boolean isDoNotTest = optionalTestHistory.isEmpty();
 
         List<Question> questions = questionService.getQuestionsByObjectTypeId(question.getObjectTypeId())
