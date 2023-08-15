@@ -26,15 +26,13 @@ public class AccountController {
 
     @PostMapping(path = TExamApiConstant.ACCOUNT_API_LOGIN,
                  produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseData> loginAccount(@RequestBody LoginDto loginDto,
-                                                     HttpServletRequest request,
-                                                     HttpServletResponse response) {
+    public ResponseEntity<ResponseData> loginAccount(@RequestBody LoginDto loginDto) {
         HttpStatus httpStatus = HttpStatus.OK;
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
                 TExamSuccessfulConstant.ACCOUNT_S003,
-                accountService.loginAccount(loginDto, request, response)
+                accountService.loginAccount(loginDto)
         );
 
         return new ResponseEntity<>(result, httpStatus);
