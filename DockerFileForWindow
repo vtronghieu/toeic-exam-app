@@ -1,0 +1,7 @@
+# Stage 3: Create the final image for Windows
+FROM mcr.microsoft.com/windows/servercore:ltsc2019
+WORKDIR /home/dmtrung/springBoot/toeic-exam-app
+COPY target/ToeicExam-0.0.1-SNAPSHOT.jar /app.jar
+EXPOSE 8080
+CMD ["java", "-jar", "/app.jar"]
+
