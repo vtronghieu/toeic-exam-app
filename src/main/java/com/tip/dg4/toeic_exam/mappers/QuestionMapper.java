@@ -1,12 +1,14 @@
 package com.tip.dg4.toeic_exam.mappers;
 
 import com.tip.dg4.toeic_exam.dto.ChildQuestionDto;
-import com.tip.dg4.toeic_exam.dto.QuestionDto;
+import com.tip.dg4.toeic_exam.dto.QuestionRequestDto;
+import com.tip.dg4.toeic_exam.dto.QuestionResponseDto;
 import com.tip.dg4.toeic_exam.models.ChildQuestion;
 import com.tip.dg4.toeic_exam.models.Question;
 import com.tip.dg4.toeic_exam.models.QuestionLevel;
 import com.tip.dg4.toeic_exam.models.QuestionType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -18,33 +20,48 @@ public class QuestionMapper {
         this.childQuestionMapper = childQuestionMapper;
     }
 
-    public Question convertDtoToModel(QuestionDto questionDto) {
+    public Question convertRequestDtoToModel(QuestionRequestDto questionRequestDto) {
         Question question = new Question();
+        List<String> imageUrls = questionRequestDto.getImages().stream().map(MultipartFile::getOriginalFilename).toList();
 
-        question.setId(questionDto.getId());
-        question.setType(QuestionType.getType(questionDto.getType()));
-        question.setObjectTypeId(questionDto.getObjectTypeId());
-        question.setLevel(QuestionLevel.getLevel(questionDto.getLevel()));
-        question.setTranscript(questionDto.getTranscript());
-        question.setAudioQuestion(questionDto.getAudioQuestion());
-        question.setImages(questionDto.getImages());
+        question.setId(questionRequestDto.getId());
+        question.setType(QuestionType.getType(questionRequestDto.getType()));
+        question.setObjectTypeId(questionRequestDto.getObjectTypeId());
+        question.setLevel(QuestionLevel.getLevel(questionRequestDto.getLevel()));
+        question.setTranscript(questionRequestDto.getTranscript());
+        question.setAudioQuestion(questionRequestDto.getAudioQuestion());
+        question.setImageUrls(imageUrls);
 
         return question;
     }
 
-    public QuestionDto convertModelToDto(Question question, List<ChildQuestion> childQuestions) {
-        QuestionDto questionDto = new QuestionDto();
+    public Question convertDtoToModel(QuestionResponseDto questionResponseDto) {
+        Question question = new Question();
+
+        question.setId(questionResponseDto.getId());
+        question.setType(QuestionType.getType(questionResponseDto.getType()));
+        question.setObjectTypeId(questionResponseDto.getObjectTypeId());
+        question.setLevel(QuestionLevel.getLevel(questionResponseDto.getLevel()));
+        question.setTranscript(questionResponseDto.getTranscript());
+        question.setAudioQuestion(questionResponseDto.getAudioQuestion());
+//        question.setImageUrls(questionDto.getImages());
+
+        return question;
+    }
+
+    public QuestionResponseDto convertModelToDto(Question question, List<ChildQuestion> childQuestions) {
+        QuestionResponseDto questionResponseDto = new QuestionResponseDto();
         List<ChildQuestionDto> questionDTOs = childQuestions.stream().map(childQuestionMapper::convertModelToDto).toList();
 
-        questionDto.setId(question.getId());
-        questionDto.setType(QuestionType.getValueType(question.getType()));
-        questionDto.setObjectTypeId(question.getObjectTypeId());
-        questionDto.setLevel(QuestionLevel.getValueLevel(question.getLevel()));
-        questionDto.setAudioQuestion(question.getAudioQuestion());
-        questionDto.setTranscript(question.getTranscript());
-        questionDto.setImages(question.getImages());
-        questionDto.setQuestions(questionDTOs);
+        questionResponseDto.setId(question.getId());
+        questionResponseDto.setType(QuestionType.getValueType(question.getType()));
+        questionResponseDto.setObjectTypeId(question.getObjectTypeId());
+        questionResponseDto.setLevel(QuestionLevel.getValueLevel(question.getLevel()));
+        questionResponseDto.setAudioQuestion(question.getAudioQuestion());
+        questionResponseDto.setTranscript(question.getTranscript());
+//        questionDto.setImages(question.getImages());
+        questionResponseDto.setQuestions(questionDTOs);
 
-        return questionDto;
+        return questionResponseDto;
     }
 }

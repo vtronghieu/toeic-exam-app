@@ -1,7 +1,8 @@
 package com.tip.dg4.toeic_exam.services.implement;
 
 import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
-import com.tip.dg4.toeic_exam.dto.QuestionDto;
+import com.tip.dg4.toeic_exam.dto.QuestionRequestDto;
+import com.tip.dg4.toeic_exam.dto.QuestionResponseDto;
 import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
 import com.tip.dg4.toeic_exam.exceptions.NotFoundException;
 import com.tip.dg4.toeic_exam.mappers.QuestionMapper;
@@ -14,9 +15,16 @@ import com.tip.dg4.toeic_exam.services.ChildQuestionService;
 import com.tip.dg4.toeic_exam.services.PartTestService;
 import com.tip.dg4.toeic_exam.services.QuestionService;
 import com.tip.dg4.toeic_exam.services.VocabularyService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -42,102 +50,128 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public void createQuestion(QuestionDto questionDto) {
-        QuestionType questionType = QuestionType.getType(questionDto.getType());
-        if (Objects.isNull(questionType)) {
-            throw new BadRequestException(TExamExceptionConstant.QUESTION_E002);
-        }
-        if (QuestionType.VOCABULARY.equals(questionType) &&
-                !vocabularyService.existsById(questionDto.getObjectTypeId())) {
-            throw new NotFoundException(TExamExceptionConstant.VOCABULARY_E003);
-        }
-        if (QuestionType.PRACTICE.equals(questionType) &&
-                !partTestService.existsById(questionDto.getObjectTypeId())) {
-            throw new NotFoundException(TExamExceptionConstant.PART_TEST_E003);
-        }
-        Question question = questionMapper.convertDtoToModel(questionDto);
+    public void createQuestion(QuestionRequestDto questionRequestDto) {
+        QuestionType questionType = QuestionType.getType(questionRequestDto.getType());
+//        if (Objects.isNull(questionType)) {
+//            throw new BadRequestException(TExamExceptionConstant.QUESTION_E002);
+//        }
+//        if (QuestionType.VOCABULARY.equals(questionType) &&
+//                !vocabularyService.existsById(questionDto.getObjectTypeId())) {
+//            throw new NotFoundException(TExamExceptionConstant.VOCABULARY_E003);
+//        }
+//        if (QuestionType.PRACTICE.equals(questionType) &&
+//                !partTestService.existsById(questionDto.getObjectTypeId())) {
+//            throw new NotFoundException(TExamExceptionConstant.PART_TEST_E003);
+//        }
+//        Question question = questionMapper.convertDtoToModel(questionRequestDto);
+
+//        questionRepository.save(question);
+//        childQuestionService.createChildQuestions(question.getId(), questionDto.getQuestions());
+        Question question = new Question();
+        List<String> imageUrls = questionRequestDto.getImages().stream()
+                                 .map(MultipartFile::getOriginalFilename).toList();
+
+        question.setId(questionRequestDto.getId());
+        question.setType(QuestionType.getType(questionRequestDto.getType()));
+        question.setObjectTypeId(questionRequestDto.getObjectTypeId());
+        question.setLevel(QuestionLevel.getLevel(questionRequestDto.getLevel()));
+        question.setTranscript(questionRequestDto.getTranscript());
+        question.setAudioQuestion(questionRequestDto.getAudioQuestion());
+        question.setImageUrls(imageUrls);
 
         questionRepository.save(question);
-        childQuestionService.createChildQuestions(question.getId(), questionDto.getQuestions());
+
+        questionRequestDto.getImages().forEach(multipartFile -> {
+            try {
+                Path directoryPath  = Paths.get("src/main/resources/images");
+                if (!Files.exists(directoryPath)) {
+                    Files.createDirectories(directoryPath );
+                }
+                Path path = directoryPath.resolve(Objects.requireNonNull(multipartFile.getOriginalFilename()));
+                Files.copy(multipartFile.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                // TODO
+            }
+        });
     }
 
     @Override
-    public List<QuestionDto> getAllQuestions() {
+    public List<QuestionResponseDto> getAllQuestions(HttpServletResponse response) {
         List<Question> questions = questionRepository.findAll();
-        List<QuestionDto> questionDTOs = new CopyOnWriteArrayList<>(Collections.nCopies(questions.size(), null));
+        List<QuestionResponseDto> questionResponseDTOS = new CopyOnWriteArrayList<>(Collections.nCopies(questions.size(), null));
 
         questions.parallelStream().forEach(question -> {
             Optional<Question> optionalQuestion = questionRepository.findById(question.getId());
             if (optionalQuestion.isPresent()) {
                 List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(question.getId());
-                QuestionDto questionDTO = questionMapper.convertModelToDto(optionalQuestion.get(), childQuestions);
+                QuestionResponseDto questionResponseDTO = questionMapper.convertModelToDto(optionalQuestion.get(), childQuestions);
 
-                questionDTOs.set(questions.indexOf(question), questionDTO);
+                questionResponseDTOS.set(questions.indexOf(question), questionResponseDTO);
             }
         });
 
-        return questionDTOs;
+        return questionResponseDTOS;
     }
 
     @Override
-    public List<QuestionDto> getQuestionsByObjectTypeId(UUID objectTypeId) {
+    public List<QuestionResponseDto> getQuestionsByObjectTypeId(UUID objectTypeId) {
         List<Question> questions = questionRepository.findByObjectTypeId(objectTypeId);
         if (questions.isEmpty()) return Collections.emptyList();
 
-        List<QuestionDto> questionDTOs = new CopyOnWriteArrayList<>(Collections.nCopies(questions.size(), null));
+        List<QuestionResponseDto> questionResponseDTOS = new CopyOnWriteArrayList<>(Collections.nCopies(questions.size(), null));
         questions.parallelStream().forEachOrdered(question -> {
             List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(question.getId());
 
-            questionDTOs.set(questions.indexOf(question), questionMapper.convertModelToDto(question, childQuestions));
+            questionResponseDTOS.set(questions.indexOf(question), questionMapper.convertModelToDto(question, childQuestions));
         });
 
-        return questionDTOs;
+        return questionResponseDTOS;
     }
 
     @Override
-    public List<QuestionDto> getQuestionsByType(String type) {
+    public List<QuestionResponseDto> getQuestionsByType(String type) {
         QuestionType questionType = QuestionType.getType(type);
         if (Objects.isNull(questionType)) {
             throw new BadRequestException(TExamExceptionConstant.QUESTION_E002);
         }
         List<Question> questions = questionRepository.findByType(questionType);
-        List<QuestionDto> questionDTOs = new CopyOnWriteArrayList<>(Collections.nCopies(questions.size(), null));
+        List<QuestionResponseDto> questionResponseDTOS = new CopyOnWriteArrayList<>(Collections.nCopies(questions.size(), null));
         questions.parallelStream().forEachOrdered(question -> {
             Optional<Question> optionalQuestion = questionRepository.findById(question.getId());
             if (optionalQuestion.isPresent()) {
                 List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(question.getId());
-                QuestionDto questionDTO = questionMapper.convertModelToDto(optionalQuestion.get(), childQuestions);
+                QuestionResponseDto questionResponseDTO = questionMapper.convertModelToDto(optionalQuestion.get(), childQuestions);
 
-                questionDTOs.set(questions.indexOf(question), questionDTO);
+                questionResponseDTOS.set(questions.indexOf(question), questionResponseDTO);
             }
         });
 
-        return questionDTOs;
+        return questionResponseDTOS;
     }
 
     @Override
-    public List<QuestionDto> getQuestionsByObjectTypeIds(List<UUID> objectTypeIds) {
+    public List<QuestionResponseDto> getQuestionsByObjectTypeIds(List<UUID> objectTypeIds) {
         List<Question> questions = new CopyOnWriteArrayList<>();
-        objectTypeIds.parallelStream().forEachOrdered(objectTypeId -> {
+        objectTypeIds.parallelStream().forEach(objectTypeId -> {
             List<Question> localQuestion = questionRepository.findByObjectTypeId(objectTypeId);
             questions.addAll(localQuestion);
         });
-        List<QuestionDto> questionDTOs = new CopyOnWriteArrayList<>(Collections.nCopies(questions.size(), null));
-        questions.parallelStream().forEachOrdered(question -> {
+        List<QuestionResponseDto> questionResponseDTOS = new CopyOnWriteArrayList<>(Collections.nCopies(questions.size(), null));
+        questions.parallelStream().forEach(question -> {
             Optional<Question> optionalQuestion = questionRepository.findById(question.getId());
             if (optionalQuestion.isPresent()) {
                 List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(question.getId());
-                QuestionDto questionDTO = questionMapper.convertModelToDto(optionalQuestion.get(), childQuestions);
+                QuestionResponseDto questionResponseDTO = questionMapper.convertModelToDto(optionalQuestion.get(), childQuestions);
 
-                questionDTOs.set(questions.indexOf(question), questionDTO);
+                questionResponseDTOS.set(questions.indexOf(question), questionResponseDTO);
             }
         });
 
-        return questionDTOs;
+        return questionResponseDTOS;
     }
 
     @Override
-    public QuestionDto getQuestionById(UUID questionId) {
+    public QuestionResponseDto getQuestionById(UUID questionId) {
         Optional<Question> optionalQuestion = questionRepository.findById(questionId);
         if (optionalQuestion.isEmpty()) {
             throw new NotFoundException(TExamExceptionConstant.QUESTION_E006);
@@ -149,31 +183,31 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public void updateQuestion(UUID questionId, QuestionDto questionDto) {
+    public void updateQuestion(UUID questionId, QuestionResponseDto questionResponseDto) {
         Optional<Question> optionalQuestion = questionRepository.findById(questionId);
         if (optionalQuestion.isEmpty()) {
             throw new NotFoundException(TExamExceptionConstant.QUESTION_E006);
         }
-        QuestionType questionDtoType = QuestionType.getType(questionDto.getType());
+        QuestionType questionDtoType = QuestionType.getType(questionResponseDto.getType());
         if (Objects.isNull(questionDtoType)) {
             throw new BadRequestException(TExamExceptionConstant.QUESTION_E002);
         }
         if (QuestionType.VOCABULARY.equals(questionDtoType) &&
-                !vocabularyService.existsById(questionDto.getObjectTypeId())) {
+                !vocabularyService.existsById(questionResponseDto.getObjectTypeId())) {
             throw new NotFoundException(TExamExceptionConstant.VOCABULARY_E003);
         }
         if (QuestionType.PRACTICE.equals(questionDtoType) &&
-                !partTestService.existsById(questionDto.getObjectTypeId())) {
+                !partTestService.existsById(questionResponseDto.getObjectTypeId())) {
             throw new NotFoundException(TExamExceptionConstant.PART_TEST_E003);
         }
         Question question = optionalQuestion.get();
         question.setType(questionDtoType);
-        question.setObjectTypeId(questionDto.getObjectTypeId());
-        question.setLevel(QuestionLevel.getLevel(questionDto.getLevel()));
-        question.setAudioQuestion(questionDto.getAudioQuestion());
-        question.setImages(questionDto.getImages());
+        question.setObjectTypeId(questionResponseDto.getObjectTypeId());
+        question.setLevel(QuestionLevel.getLevel(questionResponseDto.getLevel()));
+        question.setAudioQuestion(questionResponseDto.getAudioQuestion());
+//        question.setImages(questionResponseDto.);
 
-        childQuestionService.updateChildQuestion(question.getId(), questionDto.getQuestions());
+        childQuestionService.updateChildQuestion(question.getId(), questionResponseDto.getQuestions());
         questionRepository.save(question);
     }
 

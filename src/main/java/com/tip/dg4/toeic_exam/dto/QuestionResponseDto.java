@@ -11,7 +11,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class QuestionDto {
+public class QuestionResponseDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private UUID id;
     private String type;
@@ -20,6 +20,6 @@ public class QuestionDto {
     private String level;
     private String audioQuestion;
     private String transcript;
-    private List<String> images;
+    private List<String> imageUrls;
     private List<ChildQuestionDto> questions;
 }
