@@ -4,8 +4,11 @@ import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamParamConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamSuccessfulConstant;
 import com.tip.dg4.toeic_exam.common.responses.ResponseData;
-import com.tip.dg4.toeic_exam.dto.QuestionDto;
+import com.tip.dg4.toeic_exam.dto.QuestionRequestDto;
+import com.tip.dg4.toeic_exam.dto.QuestionResponseDto;
 import com.tip.dg4.toeic_exam.services.QuestionService;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,12 +27,11 @@ public class QuestionController {
         this.questionService = questionService;
     }
 
-    @PostMapping(path = TExamApiConstant.API_CREATE,
-                 produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = TExamApiConstant.API_CREATE)
     @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<ResponseData> createQuestion(@RequestBody QuestionDto questionDto) {
+    public ResponseEntity<ResponseData> createQuestion(@ModelAttribute QuestionRequestDto questionRequestDto) {
         HttpStatus httpStatus = HttpStatus.CREATED;
-        questionService.createQuestion(questionDto);
+        questionService.createQuestion(questionRequestDto);
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
@@ -39,18 +41,19 @@ public class QuestionController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @GetMapping(path = {TExamApiConstant.API_EMPTY, TExamApiConstant.API_SLASH},
-                produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseData> getAllQuestions() {
+    @GetMapping(path = {TExamApiConstant.API_EMPTY, TExamApiConstant.API_SLASH})
+    public ResponseEntity<ResponseData> getAllQuestions(HttpServletResponse response) {
         HttpStatus httpStatus = HttpStatus.OK;
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
                 TExamSuccessfulConstant.QUESTION_S002,
-                questionService.getAllQuestions()
+                questionService.getAllQuestions(response)
         );
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_PNG);
 
-        return new ResponseEntity<>(result, httpStatus);
+        return new ResponseEntity<>(result, headers, httpStatus);
     }
 
     @GetMapping(path = TExamApiConstant.API_EMPTY,
@@ -98,8 +101,7 @@ public class QuestionController {
     }
 
     @GetMapping(path = TExamApiConstant.API_EMPTY,
-                params = TExamParamConstant.ID,
-                produces = MediaType.APPLICATION_JSON_VALUE)
+                params = TExamParamConstant.ID)
     public ResponseEntity<ResponseData> getQuestionById(@RequestParam(TExamParamConstant.ID) UUID questionId) {
         HttpStatus httpStatus = HttpStatus.OK;
         ResponseData result = new ResponseData(
@@ -108,8 +110,10 @@ public class QuestionController {
                 TExamSuccessfulConstant.QUESTION_S006,
                 questionService.getQuestionById(questionId)
         );
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_MIXED);
 
-        return new ResponseEntity<>(result, httpStatus);
+        return new ResponseEntity<>(result, headers, httpStatus);
     }
 
     @PutMapping(path = TExamApiConstant.API_EMPTY,
@@ -117,9 +121,9 @@ public class QuestionController {
                 produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<ResponseData> updateQuestion(@RequestParam(TExamParamConstant.ID) UUID questionId,
-                                                       @RequestBody QuestionDto questionDto) {
+                                                       @RequestBody QuestionResponseDto questionResponseDto) {
         HttpStatus httpStatus = HttpStatus.OK;
-        questionService.updateQuestion(questionId, questionDto);
+        questionService.updateQuestion(questionId, questionResponseDto);
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),

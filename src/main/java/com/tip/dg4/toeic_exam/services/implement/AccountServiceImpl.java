@@ -2,16 +2,14 @@ package com.tip.dg4.toeic_exam.services.implement;
 
 import com.tip.dg4.toeic_exam.common.constants.TExamConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
-import com.tip.dg4.toeic_exam.dto.AccountDto;
-import com.tip.dg4.toeic_exam.dto.ChangePasswordDto;
-import com.tip.dg4.toeic_exam.dto.LoginDto;
-import com.tip.dg4.toeic_exam.dto.RegisterDto;
+import com.tip.dg4.toeic_exam.dto.*;
 import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
 import com.tip.dg4.toeic_exam.exceptions.ConflictException;
 import com.tip.dg4.toeic_exam.exceptions.NotFoundException;
 import com.tip.dg4.toeic_exam.exceptions.UnauthorizedException;
 import com.tip.dg4.toeic_exam.mappers.AccountMapper;
 import com.tip.dg4.toeic_exam.models.Account;
+import com.tip.dg4.toeic_exam.models.AccountRole;
 import com.tip.dg4.toeic_exam.repositories.AccountRepository;
 import com.tip.dg4.toeic_exam.services.AccountService;
 import com.tip.dg4.toeic_exam.services.JwtService;
@@ -31,8 +29,6 @@ import java.util.Optional;
 @Log4j2
 @Service
 public class AccountServiceImpl implements AccountService {
-    private static final int TIME_TOKEN_ACTIVE = 60 * 60 * 24 * 7; // 7 days
-
     private final AccountRepository accountRepository;
     private final AccountMapper accountMapper;
     private final JwtService jwtService;
@@ -52,24 +48,21 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountDto loginAccount(LoginDto loginDto, HttpServletRequest request, HttpServletResponse response) {
+    public AuthenticationDto loginAccount(LoginDto loginDto) {
         Optional<Account> optionalAccount = findOneByUsernameAndPassword(loginDto.getUsername(), loginDto.getPassword());
         if (optionalAccount.isEmpty()) {
             throw new UnauthorizedException(TExamExceptionConstant.ACCOUNT_E004);
         }
 
-        String accessToken = jwtService.generateToken(loginDto.getUsername());
-        Cookie authCookie = new Cookie(TExamConstant.ACCESS_TOKEN, accessToken);
-        authCookie.setMaxAge(TIME_TOKEN_ACTIVE);
-        authCookie.setPath(TExamConstant.SLASH);
-//        authCookie.setDomain("192.168.227.93");
-        authCookie.setDomain(null);
-        authCookie.setHttpOnly(true);
-//        authCookie.setSecure(false);
-        authCookie.setSecure(true);
-        response.addCookie(authCookie);
+        Account account = optionalAccount.get();
+        String token = jwtService.generateToken(loginDto.getUsername());
 
-        return accountMapper.convertModelToDto(optionalAccount.get());
+        AuthenticationDto authenticationDto = new AuthenticationDto();
+        authenticationDto.setUsername(account.getUsername());
+        authenticationDto.setRole(AccountRole.getValueRole(account.getRole()));
+        authenticationDto.setToken(token);
+
+        return authenticationDto;
     }
 
     @Override

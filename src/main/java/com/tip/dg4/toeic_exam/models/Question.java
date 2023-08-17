@@ -25,5 +25,5 @@ public class Question {
     private QuestionLevel level;
     private String audioQuestion;
     private String transcript;
-    private List<String> images;
+    private List<String> imageUrls;
 }

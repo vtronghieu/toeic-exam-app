@@ -3,7 +3,7 @@ package com.tip.dg4.toeic_exam.services.implement;
 import com.tip.dg4.toeic_exam.common.constants.TExamConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
 import com.tip.dg4.toeic_exam.dto.PartTestDto;
-import com.tip.dg4.toeic_exam.dto.QuestionDto;
+import com.tip.dg4.toeic_exam.dto.QuestionResponseDto;
 import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
 import com.tip.dg4.toeic_exam.exceptions.ConflictException;
 import com.tip.dg4.toeic_exam.exceptions.NotFoundException;
@@ -76,7 +76,7 @@ public class PartTestServiceImpl implements PartTestService {
 
             if (!testHistories.isEmpty()) {
                 int lastIndex = testHistories.size() - TExamConstant.ORDER_TO_INDEX_CONVERTING_FACTOR;
-                List<QuestionDto> questions = questionService.getQuestionsByObjectTypeId(testHistories.get(lastIndex).getTestId());
+                List<QuestionResponseDto> questions = questionService.getQuestionsByObjectTypeId(testHistories.get(lastIndex).getTestId());
 
                 int totalQuestions = questions.parallelStream()
                         .mapToInt(quest -> {
