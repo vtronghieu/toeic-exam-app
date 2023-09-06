@@ -3,6 +3,10 @@ package com.tip.dg4.toeic_exam.common.constants;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TExamApiConstant {
     private static final String API_ROOT = "/api";
@@ -47,5 +51,6 @@ public class TExamApiConstant {
     public static final String SEND_ANSWER_API = "/sendAnswer";
     public static final String GET_TEST_HISTORY_BY_STATUS = "/getTestHistoryByStatus";
     public static final String GET_TEST_HISTORY_OF_TEST_ID_BY_STATUS = "/getTestHistoryOfTestIdByStatus";
+    public static final String UPLOAD_API_ROOT = API_ROOT + API_VERSION_1 + "/upload";
 }
 

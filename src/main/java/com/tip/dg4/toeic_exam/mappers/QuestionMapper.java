@@ -44,7 +44,7 @@ public class QuestionMapper {
         question.setLevel(QuestionLevel.getLevel(questionResponseDto.getLevel()));
         question.setTranscript(questionResponseDto.getTranscript());
         question.setAudioQuestion(questionResponseDto.getAudioQuestion());
-//        question.setImageUrls(questionDto.getImages());
+        question.setImageUrls(questionResponseDto.getImageUrls());
 
         return question;
     }
@@ -59,7 +59,7 @@ public class QuestionMapper {
         questionResponseDto.setLevel(QuestionLevel.getValueLevel(question.getLevel()));
         questionResponseDto.setAudioQuestion(question.getAudioQuestion());
         questionResponseDto.setTranscript(question.getTranscript());
-//        questionDto.setImages(question.getImages());
+        questionResponseDto.setImageUrls(question.getImageUrls());
         questionResponseDto.setQuestions(questionDTOs);
 
         return questionResponseDto;

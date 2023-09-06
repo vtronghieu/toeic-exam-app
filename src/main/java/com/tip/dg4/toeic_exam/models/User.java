@@ -23,6 +23,7 @@ public class User {
     private LocalDate dateOfBirth;
     private String address;
     private String phone;
+    private String image;
     private Integer age;
     @Field(targetType = FieldType.STRING)
     private UUID accountId;

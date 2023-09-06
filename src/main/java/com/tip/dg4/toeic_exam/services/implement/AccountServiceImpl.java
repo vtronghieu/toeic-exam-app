@@ -14,17 +14,20 @@ import com.tip.dg4.toeic_exam.repositories.AccountRepository;
 import com.tip.dg4.toeic_exam.services.AccountService;
 import com.tip.dg4.toeic_exam.services.JwtService;
 import com.tip.dg4.toeic_exam.services.UserService;
+import com.tip.dg4.toeic_exam.utils.ApiUtil;
 import com.tip.dg4.toeic_exam.utils.TExamUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 @Log4j2
 @Service
@@ -59,6 +62,7 @@ public class AccountServiceImpl implements AccountService {
 
         AuthenticationDto authenticationDto = new AuthenticationDto();
         authenticationDto.setUsername(account.getUsername());
+        authenticationDto.setId(account.getId());
         authenticationDto.setRole(AccountRole.getValueRole(account.getRole()));
         authenticationDto.setToken(token);
 
@@ -105,9 +109,16 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    public AccountDto getAccountById(UUID idAccount) {
+        Account account = accountRepository.findById(idAccount)
+                .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.ACCOUNT_E001));
+
+        return accountMapper.convertModelToDto(account);
+    }
+
+    @Override
     public void changePasswordAccount(HttpServletRequest request, ChangePasswordDto changePasswordDto) {
-        String username = jwtService.extractUsername(TExamUtil.getAuthCookie(request).getValue());
-        Account account = accountRepository.findByUsername(username)
+        Account account = accountRepository.findById(changePasswordDto.getId())
                           .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.ACCOUNT_E006));
         if (!passwordEncoder.matches(changePasswordDto.getOldPassword(), account.getPassword())) {
             throw new BadRequestException(TExamExceptionConstant.ACCOUNT_E007);

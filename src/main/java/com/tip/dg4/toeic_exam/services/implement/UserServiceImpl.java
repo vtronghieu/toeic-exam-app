@@ -34,6 +34,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void updateUserByUserId(UUID userId, UserDto userDto) {
+        User user =  userRepository.findById(userId).orElseThrow(() -> new NotFoundException(TExamExceptionConstant.USER_E001));
+
+        user.setAccountId(userDto.getAccountId());
+        user.setName(userDto.getName());
+        user.setAge(userDto.getAge());
+        user.setEmail(userDto.getEmail());
+        user.setSurname(userDto.getSurname());
+        user.setAddress(userDto.getAddress());
+        user.setImage(userDto.getImage());
+        user.setPhone(userDto.getPhone());
+        user.setDateOfBirth(userDto.getDateOfBirth());
+        userRepository.save(user);
+    }
+
+
+
+    @Override
     public UserDto getUserByAccountId(UUID accountId) {
         User user = userRepository.findByAccountId(accountId)
                 .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.ACCOUNT_E006));

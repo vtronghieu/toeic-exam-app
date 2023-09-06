@@ -14,6 +14,7 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Component
 public class TExamUtil {
+
     public static String toTitleCase(String value) {
         String lowerCaseValue = value.toLowerCase();
 
@@ -29,4 +30,20 @@ public class TExamUtil {
     public static boolean isVocabularyTypeOrGrammarType(QuestionType questionType) {
         return QuestionType.VOCABULARY.equals(questionType) || QuestionType.GRAMMAR.equals(questionType);
     }
+
+//    public  static  void  uploadAccessTokenDropBox(String newAccessToken) throws IOException {
+//
+//        FileInputStream inputStream = new FileInputStream("src/main/resources/application.properties");
+//        Properties properties = new Properties();
+//        properties.load(inputStream);
+//
+//        // Thay đổi access token mới
+//        properties.setProperty("dropbox.accessToken", newAccessToken);
+//
+//        // Ghi lại tệp application.properties với giá trị mới
+//        FileOutputStream outputStream = new FileOutputStream("src/main/resources/application.properties");
+//        properties.store(outputStream, null);
+//        outputStream.close();
+//
+//    }
 }

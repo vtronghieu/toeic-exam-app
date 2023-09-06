@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface AccountService {
     AuthenticationDto loginAccount(LoginDto loginDto);
@@ -12,5 +13,6 @@ public interface AccountService {
     void registerAccount(RegisterDto registerDto);
     List<AccountDto> getAllAccounts();
     AccountDto getAccountByUsername(String username);
+    AccountDto getAccountById(UUID idAccount);
     void changePasswordAccount(HttpServletRequest request, ChangePasswordDto changePasswordDto);
 }

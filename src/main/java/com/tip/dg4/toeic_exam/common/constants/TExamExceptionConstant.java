@@ -51,4 +51,8 @@ public class TExamExceptionConstant {
     //  Part lesson
     public static final String PART_LESSON_E001 = "Part lesson name already exists";
     public static final String PART_LESSON_E002 = "Part lesson not found";
+
+    public static final String DROPBOX_E001 = "Invalid Access Token";
+    public static final String DROPBOX_E002 = "Image name already exists";
+    public static final String DROPBOX_E003 = "Please contact admin for support";
 }

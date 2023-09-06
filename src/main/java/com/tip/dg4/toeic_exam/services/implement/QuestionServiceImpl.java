@@ -205,7 +205,7 @@ public class QuestionServiceImpl implements QuestionService {
         question.setObjectTypeId(questionResponseDto.getObjectTypeId());
         question.setLevel(QuestionLevel.getLevel(questionResponseDto.getLevel()));
         question.setAudioQuestion(questionResponseDto.getAudioQuestion());
-//        question.setImages(questionResponseDto.);
+        question.setImageUrls(questionResponseDto.getImageUrls());
 
         childQuestionService.updateChildQuestion(question.getId(), questionResponseDto.getQuestions());
         questionRepository.save(question);

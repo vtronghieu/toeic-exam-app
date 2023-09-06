@@ -31,9 +31,26 @@ public class UserMapper {
         userDto.setDateOfBirth(user.getDateOfBirth());
         userDto.setAddress(user.getAddress());
         userDto.setPhone(user.getPhone());
+        userDto.setImage(user.getImage());
         userDto.setAge(user.getAge());
         userDto.setAccountId(user.getAccountId());
 
         return userDto;
     }
+
+//    public User convertDtoToModel(UserDto userDto) {
+//        User user = new User();
+//
+//        user.setId(userDto.getId());
+//        user.setSurname(userDto.getSurname());
+//        user.setName(userDto.getName());
+//        user.setEmail(userDto.getEmail());
+//        user.setDateOfBirth(userDto.getDateOfBirth());
+//        user.setAddress(userDto.getAddress());
+//        user.setPhone(userDto.getPhone());
+//        user.setAge(userDto.getAge());
+//        user.setAccountId(userDto.getAccountId());
+//
+//        return user;
+//    }
 }

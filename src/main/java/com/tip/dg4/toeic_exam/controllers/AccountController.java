@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping(path = TExamApiConstant.ACCOUNT_API_ROOT)
 public class AccountController {
@@ -91,6 +93,21 @@ public class AccountController {
                 httpStatus.getReasonPhrase(),
                 TExamSuccessfulConstant.ACCOUNT_S002,
                 accountService.getAccountByUsername(username)
+        );
+
+        return new ResponseEntity<>(result, httpStatus);
+    }
+
+    @GetMapping(path = TExamApiConstant.API_EMPTY,
+            params = "idAccount",
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseData> getAccountById(@RequestParam UUID idAccount) {
+        HttpStatus httpStatus = HttpStatus.OK;
+        ResponseData result = new ResponseData(
+                httpStatus.value(),
+                httpStatus.getReasonPhrase(),
+                TExamSuccessfulConstant.ACCOUNT_S002,
+                accountService.getAccountById(idAccount)
         );
 
         return new ResponseEntity<>(result, httpStatus);

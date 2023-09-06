@@ -22,6 +22,7 @@ public class UserDto {
     private LocalDate dateOfBirth;
     private String address;
     private String phone;
+    private String image;
     private Integer age;
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private UUID accountId;
