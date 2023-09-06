@@ -1,6 +1,7 @@
 package com.tip.dg4.toeic_exam.config;
 
 import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
+import com.tip.dg4.toeic_exam.common.constants.TExamConstant;
 import com.tip.dg4.toeic_exam.services.implement.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,7 +41,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
+        httpSecurity
+                .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         auth -> auth.requestMatchers(HttpMethod.POST, this.getPermitAllAPIs()).permitAll()
@@ -62,10 +64,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.addAllowedOriginPattern("*");
-        corsConfig.addAllowedHeader("*");
-        corsConfig.addAllowedMethod("*");
-        corsConfig.setAllowCredentials(true);
+        corsConfig.addAllowedOrigin(TExamConstant.ASTERISK);
+//        corsConfig.addAllowedOriginPattern(TExamConstant.ASTERISK);
+        corsConfig.addAllowedHeader(TExamConstant.ASTERISK);
+        corsConfig.addAllowedMethod(TExamConstant.ASTERISK);
+//        corsConfig.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration(TExamApiConstant.ALL_API, corsConfig);

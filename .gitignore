@@ -34,3 +34,4 @@ build/
 
 ### Project ###
 src/main/resources/logs
+target/classes/logs
