@@ -68,7 +68,7 @@ public class SecurityConfig {
 //        corsConfig.addAllowedOriginPattern(TExamConstant.ASTERISK);
         corsConfig.addAllowedHeader(TExamConstant.ASTERISK);
         corsConfig.addAllowedMethod(TExamConstant.ASTERISK);
-//        corsConfig.setAllowCredentials(true);
+        corsConfig.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration(TExamApiConstant.ALL_API, corsConfig);
