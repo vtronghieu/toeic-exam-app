@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.tip.dg4.toeic_exam.ToeicExamApplicationTests
--------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.702 s - in com.tip.dg4.toeic_exam.ToeicExamApplicationTests
