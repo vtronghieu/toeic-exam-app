@@ -7,22 +7,29 @@ import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
 import com.tip.dg4.toeic_exam.common.responses.ResponseError;
 import com.tip.dg4.toeic_exam.exceptions.*;
 import com.tip.dg4.toeic_exam.utils.ApiUtil;
+import com.tip.dg4.toeic_exam.utils.TExamUtil;
+import jakarta.annotation.Nonnull;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.*;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.*;
 
 @Log4j2
 @ControllerAdvice
@@ -168,5 +175,99 @@ public class ExceptionConfig extends ResponseEntityExceptionHandler {
         );
 
         return new ResponseEntity<>(result, httpStatus);
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(@Nonnull MethodArgumentNotValidException exception,
+                                                                  @Nonnull HttpHeaders headers,
+                                                                  @Nonnull HttpStatusCode status,
+                                                                  @Nonnull WebRequest request) {
+        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+        Object validationErrors = Objects.requireNonNullElse(processValidException(exception), TExamExceptionConstant.TEXAM_E004);
+        ResponseError result = new ResponseError(
+                LocalDateTime.now(),
+                httpStatus.value(),
+                httpStatus.getReasonPhrase(),
+                validationErrors
+        );
+
+        return new ResponseEntity<>(result, httpStatus);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ResponseError> handleConstraintViolationException(ConstraintViolationException exception) {
+        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+        Object validationErrors = Objects.requireNonNullElse(processViolationException(exception), TExamExceptionConstant.TEXAM_E004);
+        ResponseError result = new ResponseError(
+                LocalDateTime.now(),
+                httpStatus.value(),
+                httpStatus.getReasonPhrase(),
+                validationErrors
+        );
+
+        return new ResponseEntity<>(result, httpStatus);
+    }
+
+    private Map<String, Object> processValidException(MethodArgumentNotValidException exception) {
+        try {
+            Map<String, Object> validationErrors = new WeakHashMap<>();
+            for (FieldError fieldError : exception.getFieldErrors()) {
+                String propertyName = fieldError.getField();
+                String errorMessage = Objects.requireNonNullElse(fieldError.getDefaultMessage(), TExamExceptionConstant.TEXAM_E004);
+                Object currentMessage = validationErrors.computeIfAbsent(propertyName, k -> errorMessage);
+
+                if (currentMessage instanceof String) {
+                    if (!Objects.equals(currentMessage, errorMessage)) {
+                        currentMessage = new ArrayList<>(List.of(currentMessage, errorMessage));
+                    }
+                } else if (currentMessage instanceof List<?>) {
+                    List<Object> messages = new ArrayList<>((List<?>) currentMessage);
+                    if (!messages.contains(errorMessage)) {
+                        messages.add(errorMessage);
+                        currentMessage = messages;
+                    }
+                }
+                validationErrors.put(propertyName, currentMessage);
+            }
+
+            return validationErrors;
+        } catch (Exception e) {
+            log.error(e, e.fillInStackTrace());
+            throw new InternalServerErrorException(TExamExceptionConstant.TEXAM_E001);
+        }
+    }
+
+    private Map<String, Map<String, Object>> processViolationException(ConstraintViolationException exception) {
+        try {
+            Map<String, Map<String, Object>> validationErrors = new TreeMap<>();
+            for (ConstraintViolation<?> constraintViolation : exception.getConstraintViolations()) {
+                String element = TExamUtil.extractElementFromPropertyPath(constraintViolation.getPropertyPath());
+
+                if (StringUtils.isNotEmpty(element)) {
+                    String propertyName = TExamUtil.extractElementFromPropertyPath(constraintViolation.getPropertyPath());
+                    String errorMessage = constraintViolation.getMessage();
+                    Map<String, Object> errorProperties = validationErrors.computeIfAbsent(element, k -> new LinkedHashMap<>());
+                    Object currentMessage = errorProperties.get(propertyName);
+
+                    if (currentMessage instanceof String && !currentMessage.equals(errorMessage)) {
+                        errorProperties.put(propertyName, new ArrayList<>(List.of(currentMessage, errorMessage)));
+                    } else if (currentMessage instanceof List<?>) {
+                        List<Object> values = new ArrayList<>((List<?>) currentMessage);
+                        if (!values.contains(errorMessage)) {
+                            values.add(errorMessage);
+                            errorProperties.put(propertyName, values);
+                        }
+                    } else {
+                        errorProperties.put(propertyName, errorMessage);
+                    }
+                    validationErrors.put(element, errorProperties);
+                }
+            }
+
+            return validationErrors;
+        } catch (Exception e) {
+            log.error(e, e.fillInStackTrace());
+            throw new InternalServerErrorException(TExamExceptionConstant.TEXAM_E001);
+        }
     }
 }

@@ -16,5 +16,7 @@ public class TExamConstant {
     public static final String IMAGE_RAW = "raw=1";
     public static final String SOURCE_FILE_NAME = "src/main/resources/application.properties";
     public static final String APP_DROPBOX = "ToeicDG4";
-
+    public static final String DOT_REGEX = "\\.";
+    public static final String DTO_REGEX = "\\D[Tt][Oo]";
+    public static final String UUID_REGEX = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
 }
