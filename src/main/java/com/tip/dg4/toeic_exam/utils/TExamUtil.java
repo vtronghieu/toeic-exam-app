@@ -51,4 +51,16 @@ public class TExamUtil {
                 .filter(str -> str.contains("[")).findFirst()
                 .orElse(TExamConstant.EMPTY).replaceAll(TExamConstant.DTO_REGEX, TExamConstant.EMPTY);
     }
+
+    /**
+     * Extracts the property name from the property path.
+     *
+     * @param path The property path.
+     * @return The property name.
+     */
+    public static String extractPropertyFromPropertyPath(Path path) {
+        String[] segments = path.toString().split(TExamConstant.DOT_REGEX);
+
+        return segments[segments.length - 1];
+    }
 }

@@ -244,7 +244,7 @@ public class ExceptionConfig extends ResponseEntityExceptionHandler {
                 String element = TExamUtil.extractElementFromPropertyPath(constraintViolation.getPropertyPath());
 
                 if (StringUtils.isNotEmpty(element)) {
-                    String propertyName = TExamUtil.extractElementFromPropertyPath(constraintViolation.getPropertyPath());
+                    String propertyName = TExamUtil.extractPropertyFromPropertyPath(constraintViolation.getPropertyPath());
                     String errorMessage = constraintViolation.getMessage();
                     Map<String, Object> errorProperties = validationErrors.computeIfAbsent(element, k -> new LinkedHashMap<>());
                     Object currentMessage = errorProperties.get(propertyName);
