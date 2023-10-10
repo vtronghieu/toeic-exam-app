@@ -9,6 +9,7 @@ import com.tip.dg4.toeic_exam.exceptions.*;
 import com.tip.dg4.toeic_exam.utils.ApiUtil;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,12 +26,9 @@ import java.time.LocalDateTime;
 
 @Log4j2
 @ControllerAdvice
+@RequiredArgsConstructor
 public class ExceptionConfig extends ResponseEntityExceptionHandler {
     private final RequestMappingHandlerMapping handlerMapping;
-
-    public ExceptionConfig(RequestMappingHandlerMapping handlerMapping) {
-        this.handlerMapping = handlerMapping;
-    }
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ResponseError> handleNotFoundException(NotFoundException exception) {
@@ -87,7 +85,7 @@ public class ExceptionConfig extends ResponseEntityExceptionHandler {
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.getWriter().write(mapper.writeValueAsString(result));
         } catch (IOException ioException) {
-            log.error(ioException);
+            log.error(ioException, ioException.fillInStackTrace());
             throw new InternalServerErrorException(TExamExceptionConstant.TEXAM_E001);
         }
     }
@@ -149,6 +147,19 @@ public class ExceptionConfig extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ConflictException.class)
     public ResponseEntity<ResponseError> handleConflictException(ConflictException exception) {
         HttpStatus httpStatus = HttpStatus.CONFLICT;
+        ResponseError result = new ResponseError(
+                LocalDateTime.now(),
+                httpStatus.value(),
+                httpStatus.getReasonPhrase(),
+                exception.getMessage()
+        );
+
+        return new ResponseEntity<>(result, httpStatus);
+    }
+
+    @ExceptionHandler(NotImplementedException.class)
+    public ResponseEntity<ResponseError> handleNotImplementedException(NotImplementedException exception) {
+        HttpStatus httpStatus = HttpStatus.NOT_IMPLEMENTED;
         ResponseError result = new ResponseError(
                 LocalDateTime.now(),
                 httpStatus.value(),
