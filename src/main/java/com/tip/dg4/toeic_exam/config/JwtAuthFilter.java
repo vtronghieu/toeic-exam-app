@@ -76,8 +76,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private boolean isRequestUriAllowed(String requestUri) {
         Set<String> requestUris = Set.of(
-                TExamApiConstant.ACCOUNT_API_ROOT_LOGIN,
-                TExamApiConstant.ACCOUNT_API_ROOT_REGISTER
+                TExamApiConstant.AUTH_API_LOGIN,
+                TExamApiConstant.AUTH_API_REGISTER
         );
         Set<String> swaggerUris = Set.of(
                 "/v2/api-docs",

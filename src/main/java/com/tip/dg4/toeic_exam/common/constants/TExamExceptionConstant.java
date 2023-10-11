@@ -10,16 +10,27 @@ public class TExamExceptionConstant {
     public static final String TEXAM_E003 = "Path not found: ";
     public static final String TEXAM_E004 = "Undefined validation error";
     //    Account
-    public static final String ACCOUNT_E001 = "Account does not exist by username: ";
-    public static final String ACCOUNT_E002 = "Account already exists by username: ";
-    public static final String ACCOUNT_E003 = "Password and confirm password do not match";
-    public static final String ACCOUNT_E004 = "Incorrect username or password";
     public static final String ACCOUNT_E005 = "This user is not have the permission to access this path";
-    public static final String ACCOUNT_E006 = "Account not found";
-    public static final String ACCOUNT_E007 = "Incorrect old password";
-    public static final String ACCOUNT_E008 = "New password and confirm password do not match";
+    //  Auth
+    public static final String AUTH_E001 = "The username is invalid";
+    public static final String AUTH_E002 = "The password is invalid";
+    public static final String AUTH_E003 = "The username or password is incorrect";
+    public static final String AUTH_E004 = "The user doesn't have access";
     //  User
-    public static final String USER_E001 = "User not found";
+    public static final String USER_E001 = "The user not found";
+    public static final String USER_E002 = "The user already exists";
+    public static final String USER_E003 = "The user role is undefined";
+    public static final String USER_E004 = "The user role is invalid";
+    public static final String USER_E005 = "The old password is invalid";
+    public static final String USER_E006 = "The new password is invalid";
+    public static final String USER_E007 = "The confirm new password is invalid";
+    public static final String USER_E008 = "The old password is incorrect";
+    public static final String USER_E009 = "The new password and confirm new password don't match";
+    //  User information
+    public static final String USER_INFO_E001 = "The surname is invalid";
+    public static final String USER_INFO_E002 = "The name is invalid";
+    public static final String USER_INFO_E003 = "The email is invalid";
+    public static final String USER_INFO_E004 = "The phone is invalid";
     //  Vocabulary category
     public static final String VOCABULARY_CATEGORY_E001 = "Vocabulary category already exists by name: ";
     public static final String VOCABULARY_CATEGORY_E002 = "Vocabulary category not found";

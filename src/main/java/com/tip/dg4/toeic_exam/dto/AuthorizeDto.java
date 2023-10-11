@@ -2,6 +2,7 @@ package com.tip.dg4.toeic_exam.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,9 +11,10 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthenticationDto {
+@Builder
+public class AuthorizeDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    private UUID id;
+    private UUID userId;
     private String username;
     private String role;
     private String token;

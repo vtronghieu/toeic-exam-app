@@ -98,8 +98,8 @@ public class SecurityConfig {
 
     private String[] getPermitAllAPIs() {
         return new String[] {
-                TExamApiConstant.ACCOUNT_API_ROOT_LOGIN,
-                TExamApiConstant.ACCOUNT_API_ROOT_REGISTER
+                TExamApiConstant.AUTH_API_LOGIN,
+                TExamApiConstant.AUTH_API_REGISTER
         };
     }
 

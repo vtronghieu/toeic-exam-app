@@ -5,15 +5,20 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TExamSuccessfulConstant {
-    //    Account
-    public static final String ACCOUNT_S001 = "Account registered successfully";
-    public static final String ACCOUNT_S002 = "Account found successfully";
-    public static final String ACCOUNT_S003 = "Account logged in successfully";
-    public static final String ACCOUNT_S004 = "Get all accounts successfully";
-    public static final String ACCOUNT_S005 = "Account logged out successfully";
-    public static final String ACCOUNT_S006 = "Password changed successfully";
+    //  Auth
+    public static final String AUTH_S001 = "Logged in successfully";
+    public static final String AUTH_S002 = "Registered successfully";
     //  User
-    public static final String USER_S001 = "Get the user successfully";
+    public static final String USER_S001 = "Get the users successfully";
+    public static final String USER_S002 = "The user was created successfully";
+    public static final String USER_S003 = "Get the user successfully";
+    public static final String USER_S004 = "The password was changed successfully";
+    public static final String USER_S005 = "The user was updated successfully";
+    public static final String USER_S006 = "The user was deleted successfully";
+    //  User information
+    public static final String USER_INFO_S001 = "Get the user information successfully";
+    public static final String USER_INFO_S002 = "Get the user information's successfully";
+    public static final String USER_INFO_S003 = "The user information was updated successfully";
     //  Vocabulary category
     public static final String VOCABULARY_CATEGORY_S001 = "Vocabulary category was created successfully";
     public static final String VOCABULARY_CATEGORY_S002 = "Get all vocabulary categories successfully";

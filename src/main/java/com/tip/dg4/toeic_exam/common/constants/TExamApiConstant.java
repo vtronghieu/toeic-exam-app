@@ -18,16 +18,16 @@ public class TExamApiConstant {
     public static final String API_ERROR = "/error";
     //  All
     public static final String ALL_API = API_ROOT + API_VERSION_1 + API_SLASH + "**";
-    //  Account
-    public static final String ACCOUNT_API_ROOT = API_ROOT + API_VERSION_1 + "/accounts";
-    public static final String ACCOUNT_API_LOGIN = "/login";
-    public static final String ACCOUNT_API_ROOT_LOGIN = ACCOUNT_API_ROOT + ACCOUNT_API_LOGIN;
-    public static final String ACCOUNT_API_LOGOUT = "/logout";
-    public static final String ACCOUNT_API_REGISTER = "/register";
-    public static final String ACCOUNT_API_CHANGE_PASSWORD = "/changePassword";
-    public static final String ACCOUNT_API_ROOT_REGISTER = ACCOUNT_API_ROOT + ACCOUNT_API_REGISTER;
+    // Auth
+    public static final String AUTH_API_ROOT = API_ROOT + API_VERSION_1 + "/auth";
+    public static final String AUTH_ENDPOINT_LOGIN = "/login";
+    public static final String AUTH_API_LOGIN = AUTH_API_ROOT + AUTH_ENDPOINT_LOGIN;
+    public static final String AUTH_ENDPOINT_REGISTER = "/register";
+    public static final String AUTH_API_REGISTER = AUTH_API_ROOT + AUTH_ENDPOINT_REGISTER;
     //  User
     public static final String USER_API_ROOT = API_ROOT + API_VERSION_1 + "/users";
+    //  User information
+    public static final String USER_INFO_API_ROOT = API_ROOT + API_VERSION_1 + "/user-infos";
     //  Vocabulary category
     public static final String VOCABULARY_CATEGORY_API_ROOT = API_ROOT + API_VERSION_1 + "/vocabularyCategories";
     //  Vocabulary
