@@ -9,7 +9,8 @@ public class TExamParamConstant {
     public static final String PRACTICE_ID = "practiceId";
     public static final String PRACTICE_PART_ID = "practicePartId";
     public static final String USER_ID = "user-id";
-    public static final String OBJECT_TYPE_ID = "objectTypeId";
+    public static final String QUESTION_ID = "question-id";
+    public static final String OBJECT_TYPE_ID = "object-type-id";
     public static final String TYPE = "type";
     public static final String TEST_ID = "testId";
     public static final String USERNAME = "username";

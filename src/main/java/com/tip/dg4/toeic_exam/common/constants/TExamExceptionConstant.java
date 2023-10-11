@@ -43,10 +43,21 @@ public class TExamExceptionConstant {
     public static final String VOCABULARY_E004 = "Vocabulary already exists by word: ";
     public static final String VOCABULARY_E005 = "Vocabulary not found by categoryId: ";
     //  Question
-    public static final String QUESTION_E001 = "Question already exists";
-    public static final String QUESTION_E002 = "Question type invalid";
-    public static final String QUESTION_E005 = "Question not found by id: ";
-    public static final String QUESTION_E006 = "Question not found";
+    public static final String QUESTION_E001 = "The question not found";
+    public static final String QUESTION_E002 = "The question type is invalid";
+    public static final String QUESTION_E003 = "The question type is undefined";
+    public static final String QUESTION_E004 = "The question level is invalid";
+    public static final String QUESTION_E005 = "The question level is undefined";
+    public static final String QUESTION_E006 = "The question id is invalid";
+    public static final String QUESTION_E007 = "The question(s) not found";
+    public static final String QUESTION_E008 = "The object type id is invalid";
+    //  Question detail
+    public static final String QUESTION_DETAIL_E001 = "The content question is invalid";
+    public static final String QUESTION_DETAIL_E002 = "The answers is invalid";
+    public static final String QUESTION_DETAIL_E003 = "The correct answer is invalid";
+    public static final String QUESTION_DETAIL_E004 = "The answers must have a minimum of two answers";
+    public static final String QUESTION_DETAIL_E005 = "The question details is invalid";
+    public static final String QUESTION_DETAIL_E006 = "The question detail not found";
     //  Quiz test history
     public static final String QUIZ_TEST_HISTORY_E001 = "Question type must be vocabulary or grammar";
     //  Practice

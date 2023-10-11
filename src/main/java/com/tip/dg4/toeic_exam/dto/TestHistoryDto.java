@@ -1,7 +1,7 @@
 package com.tip.dg4.toeic_exam.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.tip.dg4.toeic_exam.models.QuestionType;
+import com.tip.dg4.toeic_exam.models.enums.QuestionType;
 import com.tip.dg4.toeic_exam.models.TestHistoryStatus;
 import com.tip.dg4.toeic_exam.models.UserAnswer;
 import lombok.AllArgsConstructor;

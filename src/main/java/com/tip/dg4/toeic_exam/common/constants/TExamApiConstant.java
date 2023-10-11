@@ -3,10 +3,6 @@ package com.tip.dg4.toeic_exam.common.constants;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TExamApiConstant {
     private static final String API_ROOT = "/api";
@@ -35,6 +31,8 @@ public class TExamApiConstant {
     public static final String VOCABULARY_API_GET_BY_CATEGORY_IDS = "/getVocabulariesByCategoryId";
     //  Question
     public static final String QUESTION_API_ROOT = API_ROOT + API_VERSION_1 + "/questions";
+    //  Question detail
+    public static final String QUESTION_DETAIL_API_ROOT = API_ROOT + API_VERSION_1 + "/question-details";
     public static final String GET_BY_OBJECT_TYPE_IDS_API = "/getByObjectTypeIds";
     //  Quiz test history
     public static final String QUIZ_TEST_HISTORY_API_ROOT = API_ROOT + API_VERSION_1 + "/quizTestHistories";

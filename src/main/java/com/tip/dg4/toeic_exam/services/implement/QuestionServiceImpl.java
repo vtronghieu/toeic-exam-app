@@ -1,233 +1,274 @@
 package com.tip.dg4.toeic_exam.services.implement;
 
 import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
-import com.tip.dg4.toeic_exam.dto.QuestionRequestDto;
-import com.tip.dg4.toeic_exam.dto.QuestionResponseDto;
+import com.tip.dg4.toeic_exam.dto.QuestionDto;
+import com.tip.dg4.toeic_exam.dto.requests.QuestionReq;
 import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
 import com.tip.dg4.toeic_exam.exceptions.NotFoundException;
+import com.tip.dg4.toeic_exam.exceptions.TExamException;
+import com.tip.dg4.toeic_exam.mappers.QuestionDetailMapper;
 import com.tip.dg4.toeic_exam.mappers.QuestionMapper;
-import com.tip.dg4.toeic_exam.models.ChildQuestion;
 import com.tip.dg4.toeic_exam.models.Question;
-import com.tip.dg4.toeic_exam.models.QuestionLevel;
-import com.tip.dg4.toeic_exam.models.QuestionType;
+import com.tip.dg4.toeic_exam.models.QuestionDetail;
+import com.tip.dg4.toeic_exam.models.enums.QuestionLevel;
+import com.tip.dg4.toeic_exam.models.enums.QuestionType;
 import com.tip.dg4.toeic_exam.repositories.QuestionRepository;
-import com.tip.dg4.toeic_exam.services.ChildQuestionService;
-import com.tip.dg4.toeic_exam.services.PartTestService;
+import com.tip.dg4.toeic_exam.services.QuestionDetailService;
 import com.tip.dg4.toeic_exam.services.QuestionService;
-import com.tip.dg4.toeic_exam.services.VocabularyService;
-import jakarta.servlet.http.HttpServletResponse;
+import com.tip.dg4.toeic_exam.utils.TExamUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @Log4j2
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Lazy))
 public class QuestionServiceImpl implements QuestionService {
     private final QuestionRepository questionRepository;
     private final QuestionMapper questionMapper;
-    private final VocabularyService vocabularyService;
-    private final PartTestService partTestService;
-    private final ChildQuestionService childQuestionService;
+    private final QuestionDetailMapper questionDetailMapper;
+    @Lazy
+    private final QuestionDetailService questionDetailService;
 
-    public QuestionServiceImpl(QuestionRepository questionRepository,
-                               QuestionMapper questionMapper,
-                               VocabularyService vocabularyService,
-                               PartTestService partTestService,
-                               ChildQuestionService childQuestionService) {
-        this.questionRepository = questionRepository;
-        this.questionMapper = questionMapper;
-        this.vocabularyService = vocabularyService;
-        this.partTestService = partTestService;
-        this.childQuestionService = childQuestionService;
-    }
-
+    /**
+     * Creates a new question.
+     *
+     * @param questionReq The question request to create.
+     * @throws BadRequestException If the question type or level is invalid.
+     * @throws TExamException      If an unexpected error occurs.
+     */
     @Override
-    public void createQuestion(QuestionRequestDto questionRequestDto) {
-        QuestionType questionType = QuestionType.getType(questionRequestDto.getType());
-//        if (Objects.isNull(questionType)) {
-//            throw new BadRequestException(TExamExceptionConstant.QUESTION_E002);
-//        }
-//        if (QuestionType.VOCABULARY.equals(questionType) &&
-//                !vocabularyService.existsById(questionDto.getObjectTypeId())) {
-//            throw new NotFoundException(TExamExceptionConstant.VOCABULARY_E003);
-//        }
-//        if (QuestionType.PRACTICE.equals(questionType) &&
-//                !partTestService.existsById(questionDto.getObjectTypeId())) {
-//            throw new NotFoundException(TExamExceptionConstant.PART_TEST_E003);
-//        }
-//        Question question = questionMapper.convertDtoToModel(questionRequestDto);
-
-//        questionRepository.save(question);
-//        childQuestionService.createChildQuestions(question.getId(), questionDto.getQuestions());
-        Question question = new Question();
-        List<String> imageUrls = questionRequestDto.getImages().stream()
-                                 .map(MultipartFile::getOriginalFilename).toList();
-
-        question.setId(questionRequestDto.getId());
-        question.setType(QuestionType.getType(questionRequestDto.getType()));
-        question.setObjectTypeId(questionRequestDto.getObjectTypeId());
-        question.setLevel(QuestionLevel.getLevel(questionRequestDto.getLevel()));
-        question.setTranscript(questionRequestDto.getTranscript());
-        question.setAudioQuestion(questionRequestDto.getAudioQuestion());
-        question.setImageUrls(imageUrls);
-
-        questionRepository.save(question);
-
-        questionRequestDto.getImages().forEach(multipartFile -> {
-            try {
-                Path directoryPath  = Paths.get("src/main/resources/images");
-                if (!Files.exists(directoryPath)) {
-                    Files.createDirectories(directoryPath );
-                }
-                Path path = directoryPath.resolve(Objects.requireNonNull(multipartFile.getOriginalFilename()));
-                Files.copy(multipartFile.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
-                // TODO
+    public void createQuestion(QuestionReq questionReq) {
+        try {
+            if (Objects.equals(QuestionType.UNDEFINED, QuestionType.getType(questionReq.getType()))) {
+                throw new BadRequestException(TExamExceptionConstant.QUESTION_E003);
             }
-        });
-    }
-
-    @Override
-    public List<QuestionResponseDto> getAllQuestions(HttpServletResponse response) {
-        List<Question> questions = questionRepository.findAll();
-        List<QuestionResponseDto> questionResponseDTOS = new CopyOnWriteArrayList<>(Collections.nCopies(questions.size(), null));
-
-        questions.parallelStream().forEach(question -> {
-            Optional<Question> optionalQuestion = questionRepository.findById(question.getId());
-            if (optionalQuestion.isPresent()) {
-                List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(question.getId());
-                QuestionResponseDto questionResponseDTO = questionMapper.convertModelToDto(optionalQuestion.get(), childQuestions);
-
-                questionResponseDTOS.set(questions.indexOf(question), questionResponseDTO);
+            if (Objects.equals(QuestionLevel.UNDEFINED, QuestionLevel.getLevel(questionReq.getLevel()))) {
+                throw new BadRequestException(TExamExceptionConstant.QUESTION_E005);
             }
-        });
 
-        return questionResponseDTOS;
+            Question question = questionMapper.convertReqToModel(questionReq);
+            questionRepository.save(question);
+
+            List<QuestionDetail> questionDetails = questionDetailService.resolveQuestionDetailsForQuestion(question);
+            question.setQuestionDetails(questionDetails);
+            questionRepository.save(question);
+        } catch (Exception e) {
+            throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
+        }
     }
 
+    /**
+     * Gets a list of questions, paginated.
+     *
+     * @param page The page of questions to get.
+     * @param size The number of questions to get per page.
+     * @return A list of question DTOs.
+     * @throws TExamException If an unexpected error occurs.
+     */
     @Override
-    public List<QuestionResponseDto> getQuestionsByObjectTypeId(UUID objectTypeId) {
+    public List<QuestionDto> getQuestions(int page, int size) {
+        try {
+            long totalElements = questionRepository.count();
+            if (totalElements == 0) return Collections.emptyList();
+
+            int correctPage = TExamUtil.getCorrectPage(page, size, totalElements);
+            int correctSize = TExamUtil.getCorrectSize(size, totalElements);
+
+            return questionRepository.findAll(PageRequest.of(correctPage, correctSize))
+                    .map(questionMapper::convertModelToDto)
+                    .getContent();
+        } catch (Exception e) {
+            throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
+        }
+    }
+
+    /**
+     * Gets a question by ID.
+     *
+     * @param id The ID of the question to get.
+     * @return A question DTO.
+     * @throws NotFoundException If the question with the specified ID does not exist.
+     * @throws TExamException    If an unexpected error occurs.
+     */
+    @Override
+    public QuestionDto getQuestionById(UUID id) {
+        try {
+            Question question = questionRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.QUESTION_E001));
+
+            return questionMapper.convertModelToDto(question);
+        } catch (Exception e) {
+            throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
+        }
+    }
+
+    /**
+     * Gets a list of questions by type, paginated.
+     *
+     * @param type The type of question to get.
+     * @param page The page of questions to get.
+     * @param size The number of questions to get per page.
+     * @return A list of question DTOs.
+     * @throws BadRequestException If the question type is invalid.
+     * @throws TExamException      If an unexpected error occurs.
+     */
+    @Override
+    public List<QuestionDto> getQuestionsByType(String type, int page, int size) {
+        try {
+            QuestionType questionType = QuestionType.getType(type);
+            if (Objects.equals(QuestionType.UNDEFINED, questionType)) {
+                throw new BadRequestException(TExamExceptionConstant.QUESTION_E003);
+            }
+            long totalElements = questionRepository.countByType(questionType);
+            if (totalElements == 0) return Collections.emptyList();
+
+            int currentPage = TExamUtil.getCorrectPage(page, size, totalElements);
+            int currentSize = TExamUtil.getCorrectSize(size, totalElements);
+
+            return questionRepository.findByType(questionType, PageRequest.of(currentPage, currentSize))
+                    .map(questionMapper::convertModelToDto)
+                    .toList();
+        } catch (Exception e) {
+            throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
+        }
+    }
+
+    /**
+     * Get questions by object type ID, paginated.
+     *
+     * @param objectTypeId The object type ID.
+     * @param page         The page number.
+     * @param size         The page size.
+     * @return A list of question DTOs.
+     * @throws NotFoundException If no questions are found for the given object type ID.
+     * @throws TExamException    If an error occurs while getting the questions.
+     */
+    @Override
+    public List<QuestionDto> getQuestionsByObjectTypeId(UUID objectTypeId, int page, int size) {
+        try {
+            long totalElements = questionRepository.countByObjectTypeId(objectTypeId);
+            if (totalElements == 0) {
+                throw new NotFoundException(TExamExceptionConstant.QUESTION_E007);
+            }
+            int currentPage = TExamUtil.getCorrectPage(page, size, totalElements);
+            int currentSize = TExamUtil.getCorrectSize(size, totalElements);
+
+            return questionRepository.findByObjectTypeId(objectTypeId, PageRequest.of(currentPage, currentSize))
+                    .map(questionMapper::convertModelToDto)
+                    .toList();
+        } catch (Exception e) {
+            throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
+        }
+    }
+
+    /**
+     * Get questions by object type ID.
+     *
+     * @param objectTypeId The object type ID.
+     * @return A list of question DTOs.
+     * @throws NotFoundException If no questions are found for the given object type ID.
+     */
+    @Override
+    public List<QuestionDto> getQuestionsByObjectTypeId(UUID objectTypeId) {
         List<Question> questions = questionRepository.findByObjectTypeId(objectTypeId);
-        if (questions.isEmpty()) return Collections.emptyList();
+        if (questions.isEmpty()) {
+            throw new NotFoundException(TExamExceptionConstant.QUESTION_E007);
+        }
 
-        List<QuestionResponseDto> questionResponseDTOS = new CopyOnWriteArrayList<>(Collections.nCopies(questions.size(), null));
-        questions.parallelStream().forEachOrdered(question -> {
-            List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(question.getId());
-
-            questionResponseDTOS.set(questions.indexOf(question), questionMapper.convertModelToDto(question, childQuestions));
-        });
-
-        return questionResponseDTOS;
+        return questions.stream().map(questionMapper::convertModelToDto).toList();
     }
 
+    /**
+     * Updates a question by ID.
+     *
+     * @param id          The ID of the question to update.
+     * @param questionDto The question DTO to update.
+     * @throws BadRequestException If the question type or level is invalid.
+     * @throws NotFoundException   If the question with the specified ID does not exist.
+     * @throws TExamException      If an unexpected error occurs.
+     */
     @Override
-    public List<QuestionResponseDto> getQuestionsByType(String type) {
-        QuestionType questionType = QuestionType.getType(type);
-        if (Objects.isNull(questionType)) {
-            throw new BadRequestException(TExamExceptionConstant.QUESTION_E002);
-        }
-        List<Question> questions = questionRepository.findByType(questionType);
-        List<QuestionResponseDto> questionResponseDTOS = new CopyOnWriteArrayList<>(Collections.nCopies(questions.size(), null));
-        questions.parallelStream().forEachOrdered(question -> {
-            Optional<Question> optionalQuestion = questionRepository.findById(question.getId());
-            if (optionalQuestion.isPresent()) {
-                List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(question.getId());
-                QuestionResponseDto questionResponseDTO = questionMapper.convertModelToDto(optionalQuestion.get(), childQuestions);
-
-                questionResponseDTOS.set(questions.indexOf(question), questionResponseDTO);
+    public void updateQuestionById(UUID id, QuestionDto questionDto) {
+        try {
+            Question question = questionRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.QUESTION_E001));
+            QuestionType questionType = QuestionType.getType(questionDto.getType());
+            if (Objects.equals(QuestionType.UNDEFINED, questionType)) {
+                throw new BadRequestException(TExamExceptionConstant.QUESTION_E003);
             }
-        });
-
-        return questionResponseDTOS;
-    }
-
-    @Override
-    public List<QuestionResponseDto> getQuestionsByObjectTypeIds(List<UUID> objectTypeIds) {
-        List<Question> questions = new CopyOnWriteArrayList<>();
-        objectTypeIds.parallelStream().forEach(objectTypeId -> {
-            List<Question> localQuestion = questionRepository.findByObjectTypeId(objectTypeId);
-            questions.addAll(localQuestion);
-        });
-        List<QuestionResponseDto> questionResponseDTOS = new CopyOnWriteArrayList<>(Collections.nCopies(questions.size(), null));
-        questions.parallelStream().forEach(question -> {
-            Optional<Question> optionalQuestion = questionRepository.findById(question.getId());
-            if (optionalQuestion.isPresent()) {
-                List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(question.getId());
-                QuestionResponseDto questionResponseDTO = questionMapper.convertModelToDto(optionalQuestion.get(), childQuestions);
-
-                questionResponseDTOS.set(questions.indexOf(question), questionResponseDTO);
+            QuestionLevel questionLevel = QuestionLevel.getLevel(questionDto.getLevel());
+            if (Objects.equals(QuestionLevel.UNDEFINED, questionLevel)) {
+                throw new BadRequestException(TExamExceptionConstant.QUESTION_E005);
             }
-        });
 
-        return questionResponseDTOS;
+            question.setType(questionType);
+            question.setObjectTypeId(questionDto.getObjectTypeId());
+            question.setLevel(questionLevel);
+            question.setImageURLs(questionDto.getImageURLs());
+            question.setAudioURL(questionDto.getAudioURL());
+            question.setTranscript(questionDto.getTranscript());
+            question.setQuestionDetails(questionDetailMapper.convertDTOsToModels(questionDto.getQuestionDetails()));
+
+            questionRepository.save(question);
+        } catch (Exception e) {
+            throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
+        }
     }
 
+    /**
+     * Deletes a question by ID.
+     *
+     * @param id The ID of the question to delete.
+     * @throws NotFoundException If the question with the specified ID does not exist.
+     * @throws TExamException    If an unexpected error occurs.
+     */
     @Override
-    public QuestionResponseDto getQuestionById(UUID questionId) {
-        Optional<Question> optionalQuestion = questionRepository.findById(questionId);
-        if (optionalQuestion.isEmpty()) {
-            throw new NotFoundException(TExamExceptionConstant.QUESTION_E006);
-        }
-        Question question = optionalQuestion.get();
-        List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(questionId);
+    public void deleteQuestionById(UUID id) {
+        try {
+            if (!questionRepository.existsById(id)) {
+                throw new NotFoundException(TExamExceptionConstant.QUESTION_E001);
+            }
 
-        return questionMapper.convertModelToDto(question, childQuestions);
+            questionRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
+        }
     }
 
-    @Override
-    public void updateQuestion(UUID questionId, QuestionResponseDto questionResponseDto) {
-        Optional<Question> optionalQuestion = questionRepository.findById(questionId);
-        if (optionalQuestion.isEmpty()) {
-            throw new NotFoundException(TExamExceptionConstant.QUESTION_E006);
-        }
-        QuestionType questionDtoType = QuestionType.getType(questionResponseDto.getType());
-        if (Objects.isNull(questionDtoType)) {
-            throw new BadRequestException(TExamExceptionConstant.QUESTION_E002);
-        }
-        if (QuestionType.VOCABULARY.equals(questionDtoType) &&
-                !vocabularyService.existsById(questionResponseDto.getObjectTypeId())) {
-            throw new NotFoundException(TExamExceptionConstant.VOCABULARY_E003);
-        }
-        if (QuestionType.PRACTICE.equals(questionDtoType) &&
-                !partTestService.existsById(questionResponseDto.getObjectTypeId())) {
-            throw new NotFoundException(TExamExceptionConstant.PART_TEST_E003);
-        }
-        Question question = optionalQuestion.get();
-        question.setType(questionDtoType);
-        question.setObjectTypeId(questionResponseDto.getObjectTypeId());
-        question.setLevel(QuestionLevel.getLevel(questionResponseDto.getLevel()));
-        question.setAudioQuestion(questionResponseDto.getAudioQuestion());
-        question.setImageUrls(questionResponseDto.getImageUrls());
-
-        childQuestionService.updateChildQuestion(question.getId(), questionResponseDto.getQuestions());
-        questionRepository.save(question);
-    }
-
-    @Override
-    public void deleteQuestionById(UUID questionId) {
-        if (!questionRepository.existsById(questionId)) {
-            throw new NotFoundException(TExamExceptionConstant.QUESTION_E006);
-        }
-
-        childQuestionService.deleteChildQuestionsByQuestionId(questionId);
-        questionRepository.deleteById(questionId);
-    }
-
-    @Override
-    public boolean existsById(UUID questionId) {
-        return questionRepository.existsById(questionId);
-    }
-
+    /**
+     * Finds a question by ID.
+     *
+     * @param questionId The ID of the question to find.
+     * @return An optional question.
+     */
     @Override
     public Optional<Question> findById(UUID questionId) {
         return questionRepository.findById(questionId);
+    }
+
+    /**
+     * Finds all questions.
+     *
+     * @return A list of questions.
+     */
+    @Override
+    public List<Question> findAll() {
+        return questionRepository.findAll();
+    }
+
+    /**
+     * Saves a question.
+     *
+     * @param question The question to save.
+     * @return The saved question.
+     */
+    @Override
+    public Question save(Question question) {
+        return questionRepository.save(question);
     }
 }

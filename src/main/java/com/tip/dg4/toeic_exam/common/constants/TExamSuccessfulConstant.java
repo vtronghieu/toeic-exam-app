@@ -32,12 +32,18 @@ public class TExamSuccessfulConstant {
     public static final String VOCABULARY_S004 = "Vocabulary was delete successfully";
     public static final String VOCABULARY_S005 = "Get vocabularies by categories successfully";
     //  Question
-    public static final String QUESTION_S001 = "Question was created successfully";
-    public static final String QUESTION_S002 = "Get all questions successfully";
-    public static final String QUESTION_S003 = "Get questions successfully";
-    public static final String QUESTION_S004 = "Question was updated successfully";
-    public static final String QUESTION_S005 = "Question was deleted successfully";
-    public static final String QUESTION_S006 = "Get the question successfully";
+    public static final String QUESTION_S001 = "The question was created successfully";
+    public static final String QUESTION_S002 = "Get the questions successfully";
+    public static final String QUESTION_S003 = "Get the question successfully";
+    public static final String QUESTION_S004 = "The question was updated successfully";
+    public static final String QUESTION_S005 = "The question was deleted successfully";
+    //  Question detail
+    public static final String QUESTION_DETAIL_S001 = "The question detail(s) was created successfully";
+    public static final String QUESTION_DETAIL_S002 = "Get the question detail(s) successfully";
+    public static final String QUESTION_DETAIL_S003 = "Get the question detail successfully";
+    public static final String QUESTION_DETAIL_S004 = "Get the question details successfully";
+    public static final String QUESTION_DETAIL_S005 = "The question detail was updated successfully";
+    public static final String QUESTION_DETAIL_S006 = "The question detail was deleted successfully";
     //  Quiz test history
     public static final String QUIZ_TEST_HISTORY_S001 = "Quiz test history was created successfully";
     //  Practice

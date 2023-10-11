@@ -1,24 +1,13 @@
 package com.tip.dg4.toeic_exam.services.implement;
 
-import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
 import com.tip.dg4.toeic_exam.dto.QuizTestHistoryDto;
-import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
-import com.tip.dg4.toeic_exam.exceptions.NotFoundException;
 import com.tip.dg4.toeic_exam.mappers.QuizTestHistoryMapper;
-import com.tip.dg4.toeic_exam.models.Question;
-import com.tip.dg4.toeic_exam.models.QuestionType;
-import com.tip.dg4.toeic_exam.models.QuizTestHistory;
-import com.tip.dg4.toeic_exam.models.UserAnswer;
 import com.tip.dg4.toeic_exam.repositories.QuizTestHistoryRepository;
 import com.tip.dg4.toeic_exam.services.QuestionService;
 import com.tip.dg4.toeic_exam.services.QuizTestHistoryService;
 import com.tip.dg4.toeic_exam.services.UserService;
-import com.tip.dg4.toeic_exam.utils.TExamUtil;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
-
-import java.util.Objects;
-import java.util.Optional;
 
 @Log4j2
 @Service

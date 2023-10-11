@@ -8,7 +8,7 @@ import com.tip.dg4.toeic_exam.mappers.QuestionMapper;
 import com.tip.dg4.toeic_exam.mappers.ReplyAnswerMapper;
 import com.tip.dg4.toeic_exam.models.*;
 import com.tip.dg4.toeic_exam.repositories.TestHistoryRepository;
-import com.tip.dg4.toeic_exam.services.ChildQuestionService;
+import com.tip.dg4.toeic_exam.services.QuestionDetailService;
 import com.tip.dg4.toeic_exam.services.QuestionService;
 import com.tip.dg4.toeic_exam.services.TestHistoryService;
 import com.tip.dg4.toeic_exam.services.UserService;
@@ -24,20 +24,20 @@ public class TestHistoryServiceImpl implements TestHistoryService {
     private final TestHistoryRepository testHistoryRepository;
     private final QuestionService questionService;
     private final UserService userService;
-    private final ChildQuestionService childQuestionService;
+    private final QuestionDetailService questionDetailService;
     private final QuestionMapper questionMapper;
     private final ReplyAnswerMapper replyAnswerMapper;
 
     public TestHistoryServiceImpl(TestHistoryRepository testHistoryRepository,
                                   QuestionService questionService,
                                   UserService userService,
-                                  ChildQuestionService childQuestionService,
+                                  QuestionDetailService questionDetailService,
                                   QuestionMapper questionMapper,
                                   ReplyAnswerMapper replyAnswerMapper) {
         this.testHistoryRepository = testHistoryRepository;
         this.questionService = questionService;
         this.userService = userService;
-        this.childQuestionService = childQuestionService;
+        this.questionDetailService = questionDetailService;
         this.questionMapper = questionMapper;
         this.replyAnswerMapper = replyAnswerMapper;
     }
@@ -51,22 +51,22 @@ public class TestHistoryServiceImpl implements TestHistoryService {
         if (optionalQuestion.isEmpty()) {
             throw new BadRequestException(TExamExceptionConstant.USER_E001);
         }
-        Optional<ChildQuestion> optionalChildQuestion = childQuestionService.findById(sendAnswerDto.getChildQuestionId());
+        Optional<QuestionDetail> optionalChildQuestion = questionDetailService.findById(sendAnswerDto.getChildQuestionId());
         if (optionalChildQuestion.isEmpty()) {
             throw new BadRequestException(TExamExceptionConstant.QUESTION_E006);
         }
         Question question = optionalQuestion.get();
-        ChildQuestion childQuestion = optionalChildQuestion.get();
-        ReplyAnswerDto replyAnswerDto = question.getId().equals(childQuestion.getQuestionId()) ?
-                                        replyAnswerMapper.convertSendAnswerDtoToDto(sendAnswerDto, childQuestion) :
+        QuestionDetail questionDetail = optionalChildQuestion.get();
+        ReplyAnswerDto replyAnswerDto = question.getId().equals(questionDetail.getQuestionId()) ?
+                                        replyAnswerMapper.convertSendAnswerDtoToDto(sendAnswerDto, questionDetail) :
                                         new ReplyAnswerDto();
 
-        this.saveTestHistory(sendAnswerDto, question, childQuestion, replyAnswerDto);
+        this.saveTestHistory(sendAnswerDto, question, questionDetail, replyAnswerDto);
 
         return replyAnswerDto;
     }
 
-    private void saveTestHistory(SendAnswerDto sendAnswerDto, Question question, ChildQuestion childQuestion, ReplyAnswerDto replyAnswerDto) {
+    private void saveTestHistory(SendAnswerDto sendAnswerDto, Question question, QuestionDetail questionDetail, ReplyAnswerDto replyAnswerDto) {
         Optional<TestHistory> optionalTestHistory = testHistoryRepository.findByUserIdAndTestIdAndStatus(sendAnswerDto.getUserId(), question.getObjectTypeId(), TestHistoryStatus.TESTING);
         boolean isDoNotTest = optionalTestHistory.isEmpty();
 
@@ -75,27 +75,27 @@ public class TestHistoryServiceImpl implements TestHistoryService {
 
         int totalQuestions = questions.parallelStream()
                 .mapToInt(quest -> {
-                    List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(quest.getId());
-                    return childQuestions.size();
+                    List<QuestionDetail> questionDetails = questionDetailService.findByQuestionId(quest.getId());
+                    return questionDetails.size();
                 })
                 .sum();
         int totalQuestionsAnswer = 0;
         if (!isDoNotTest) {
             totalQuestionsAnswer = optionalTestHistory.get().getUserAnswers()
                     .parallelStream()
-                    .mapToInt(userAnswer -> userAnswer.getChildQuestions().size())
+                    .mapToInt(userAnswer -> userAnswer.getQuestionDetails().size())
                     .sum();
         }
         boolean isDoneTest = !isDoNotTest && (totalQuestions == totalQuestionsAnswer);
         if (isDoNotTest || isDoneTest) {
-            this.createNewTestHistory(question, sendAnswerDto, childQuestion, replyAnswerDto);
+            this.createNewTestHistory(question, sendAnswerDto, questionDetail, replyAnswerDto);
         } else {
             TestHistory testHistory = optionalTestHistory.get();
-            this.updateTestHistory(totalQuestions,testHistory, question, sendAnswerDto, childQuestion, replyAnswerDto, questions);
+            this.updateTestHistory(totalQuestions,testHistory, question, sendAnswerDto, questionDetail, replyAnswerDto, questions);
         }
     }
 
-    private void createNewTestHistory(Question question, SendAnswerDto sendAnswerDto, ChildQuestion childQuestion, ReplyAnswerDto replyAnswerDto) {
+    private void createNewTestHistory(Question question, SendAnswerDto sendAnswerDto, QuestionDetail questionDetail, ReplyAnswerDto replyAnswerDto) {
         TestHistory newTestHistory = new TestHistory();
         newTestHistory.setQuestionType(question.getType());
         newTestHistory.setStatus(TestHistoryStatus.TESTING);
@@ -106,7 +106,7 @@ public class TestHistoryServiceImpl implements TestHistoryService {
         List<UserAnswer> userAnswers = new ArrayList<>();
         UserAnswer userAnswer = new UserAnswer();
         userAnswer.setQuestionId(question.getId());
-        userAnswer.setChildQuestions(new ArrayList<>(Collections.singletonList(childQuestion)));
+        userAnswer.setQuestionDetails(new ArrayList<>(Collections.singletonList(questionDetail)));
         userAnswer.setAnswerContent(sendAnswerDto.getUserAnswer());
         userAnswer.setCorrect(replyAnswerDto.isCorrect());
         userAnswers.add(userAnswer);
@@ -115,10 +115,10 @@ public class TestHistoryServiceImpl implements TestHistoryService {
         testHistoryRepository.save(newTestHistory);
     }
 
-    private void updateTestHistory(int totalQuestions,TestHistory testHistory, Question question, SendAnswerDto sendAnswerDto, ChildQuestion childQuestion, ReplyAnswerDto replyAnswerDto, List<Question> questions) {
+    private void updateTestHistory(int totalQuestions, TestHistory testHistory, Question question, SendAnswerDto sendAnswerDto, QuestionDetail questionDetail, ReplyAnswerDto replyAnswerDto, List<Question> questions) {
         UserAnswer newUserAnswer = new UserAnswer();
         newUserAnswer.setQuestionId(question.getId());
-        newUserAnswer.setChildQuestions(new ArrayList<>(Collections.singletonList(childQuestion)));
+        newUserAnswer.setQuestionDetails(new ArrayList<>(Collections.singletonList(questionDetail)));
         newUserAnswer.setAnswerContent(sendAnswerDto.getUserAnswer());
         newUserAnswer.setCorrect(replyAnswerDto.isCorrect());
 

@@ -1,67 +1,73 @@
 package com.tip.dg4.toeic_exam.mappers;
 
-import com.tip.dg4.toeic_exam.dto.ChildQuestionDto;
-import com.tip.dg4.toeic_exam.dto.QuestionRequestDto;
-import com.tip.dg4.toeic_exam.dto.QuestionResponseDto;
-import com.tip.dg4.toeic_exam.models.ChildQuestion;
+import com.tip.dg4.toeic_exam.dto.QuestionDetailDto;
+import com.tip.dg4.toeic_exam.dto.QuestionDto;
+import com.tip.dg4.toeic_exam.dto.requests.QuestionReq;
 import com.tip.dg4.toeic_exam.models.Question;
-import com.tip.dg4.toeic_exam.models.QuestionLevel;
-import com.tip.dg4.toeic_exam.models.QuestionType;
+import com.tip.dg4.toeic_exam.models.QuestionDetail;
+import com.tip.dg4.toeic_exam.models.enums.QuestionLevel;
+import com.tip.dg4.toeic_exam.models.enums.QuestionType;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component
+@RequiredArgsConstructor
 public class QuestionMapper {
-    private final ChildQuestionMapper childQuestionMapper;
+    private final QuestionDetailMapper questionDetailMapper;
 
-    public QuestionMapper(ChildQuestionMapper childQuestionMapper) {
-        this.childQuestionMapper = childQuestionMapper;
+    public Question convertDtoToModel(QuestionDto questionDto) {
+        List<QuestionDetail> questionDetails = Optional.ofNullable(questionDto.getQuestionDetails())
+                .orElse(new ArrayList<>()).stream()
+                .map(questionDetailMapper::convertDtoToModel).toList();
+        List<String> imageURLs = Optional.ofNullable(questionDto.getImageURLs()).orElse(new ArrayList<>());
+
+        return Question.builder()
+                .id(questionDto.getId())
+                .type(QuestionType.getType(questionDto.getType()))
+                .objectTypeId(questionDto.getObjectTypeId())
+                .level(QuestionLevel.getLevel(questionDto.getLevel()))
+                .imageURLs(imageURLs)
+                .audioURL(questionDto.getAudioURL())
+                .transcript(questionDto.getTranscript())
+                .questionDetails(questionDetails)
+                .build();
     }
 
-    public Question convertRequestDtoToModel(QuestionRequestDto questionRequestDto) {
-        Question question = new Question();
-        List<String> imageUrls = questionRequestDto.getImages().stream().map(MultipartFile::getOriginalFilename).toList();
+    public QuestionDto convertModelToDto(Question question) {
+        List<QuestionDetailDto> questionDetails = Optional.ofNullable(question.getQuestionDetails())
+                .orElse(new ArrayList<>()).stream()
+                .map(questionDetailMapper::convertModelToDto).toList();
+        List<String> imageURLs = Optional.ofNullable(question.getImageURLs()).orElse(new ArrayList<>());
 
-        question.setId(questionRequestDto.getId());
-        question.setType(QuestionType.getType(questionRequestDto.getType()));
-        question.setObjectTypeId(questionRequestDto.getObjectTypeId());
-        question.setLevel(QuestionLevel.getLevel(questionRequestDto.getLevel()));
-        question.setTranscript(questionRequestDto.getTranscript());
-        question.setAudioQuestion(questionRequestDto.getAudioQuestion());
-        question.setImageUrls(imageUrls);
+        return QuestionDto.builder()
+                .id(question.getId())
+                .type(QuestionType.getValueType(question.getType()))
+                .objectTypeId(question.getObjectTypeId())
+                .level(QuestionLevel.getValueLevel(question.getLevel()))
+                .imageURLs(imageURLs)
+                .audioURL(question.getAudioURL())
+                .transcript(question.getTranscript())
+                .questionDetails(questionDetails)
 
-        return question;
+                .build();
     }
 
-    public Question convertDtoToModel(QuestionResponseDto questionResponseDto) {
-        Question question = new Question();
+    public Question convertReqToModel(QuestionReq questionReq) {
+        List<QuestionDetail> questionDetails = questionDetailMapper.convertREQsToModels(questionReq.getQuestionDetails());
+        List<String> imageURLs = Optional.ofNullable(questionReq.getImageURLs()).orElse(new ArrayList<>());
 
-        question.setId(questionResponseDto.getId());
-        question.setType(QuestionType.getType(questionResponseDto.getType()));
-        question.setObjectTypeId(questionResponseDto.getObjectTypeId());
-        question.setLevel(QuestionLevel.getLevel(questionResponseDto.getLevel()));
-        question.setTranscript(questionResponseDto.getTranscript());
-        question.setAudioQuestion(questionResponseDto.getAudioQuestion());
-        question.setImageUrls(questionResponseDto.getImageUrls());
-
-        return question;
-    }
-
-    public QuestionResponseDto convertModelToDto(Question question, List<ChildQuestion> childQuestions) {
-        QuestionResponseDto questionResponseDto = new QuestionResponseDto();
-        List<ChildQuestionDto> questionDTOs = childQuestions.stream().map(childQuestionMapper::convertModelToDto).toList();
-
-        questionResponseDto.setId(question.getId());
-        questionResponseDto.setType(QuestionType.getValueType(question.getType()));
-        questionResponseDto.setObjectTypeId(question.getObjectTypeId());
-        questionResponseDto.setLevel(QuestionLevel.getValueLevel(question.getLevel()));
-        questionResponseDto.setAudioQuestion(question.getAudioQuestion());
-        questionResponseDto.setTranscript(question.getTranscript());
-        questionResponseDto.setImageUrls(question.getImageUrls());
-        questionResponseDto.setQuestions(questionDTOs);
-
-        return questionResponseDto;
+        return Question.builder()
+                .type(QuestionType.getType(questionReq.getType()))
+                .objectTypeId(questionReq.getObjectTypeId())
+                .level(QuestionLevel.getLevel(questionReq.getLevel()))
+                .imageURLs(imageURLs)
+                .audioURL(questionReq.getAudioURL())
+                .transcript(questionReq.getTranscript())
+                .questionDetails(questionDetails)
+                .build();
     }
 }

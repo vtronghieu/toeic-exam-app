@@ -3,7 +3,7 @@ package com.tip.dg4.toeic_exam.services.implement;
 import com.tip.dg4.toeic_exam.common.constants.TExamConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
 import com.tip.dg4.toeic_exam.dto.PartTestDto;
-import com.tip.dg4.toeic_exam.dto.QuestionResponseDto;
+import com.tip.dg4.toeic_exam.dto.QuestionDto;
 import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
 import com.tip.dg4.toeic_exam.exceptions.ConflictException;
 import com.tip.dg4.toeic_exam.exceptions.NotFoundException;
@@ -30,20 +30,20 @@ public class PartTestServiceImpl implements PartTestService {
     private final PartTestMapper partTestMapper;
     private final TestHistoryService testHistoryService;
     private final QuestionService questionService;
-    private final ChildQuestionService childQuestionService;
+    private final QuestionDetailService questionDetailService;
 
     @Lazy
     public PartTestServiceImpl(PartTestRepository partTestRepository,
                                PracticePartService practicePartService,
                                PartTestMapper partTestMapper,
                                TestHistoryService testHistoryService,
-                               QuestionService questionService, ChildQuestionService childQuestionService) {
+                               QuestionService questionService, QuestionDetailService questionDetailService) {
         this.partTestRepository = partTestRepository;
         this.practicePartService = practicePartService;
         this.partTestMapper = partTestMapper;
         this.testHistoryService = testHistoryService;
         this.questionService = questionService;
-        this.childQuestionService = childQuestionService;
+        this.questionDetailService = questionDetailService;
     }
 
     @Override
@@ -76,12 +76,12 @@ public class PartTestServiceImpl implements PartTestService {
 
             if (!testHistories.isEmpty()) {
                 int lastIndex = testHistories.size() - TExamConstant.ORDER_TO_INDEX_CONVERTING_FACTOR;
-                List<QuestionResponseDto> questions = questionService.getQuestionsByObjectTypeId(testHistories.get(lastIndex).getTestId());
+                List<QuestionDto> questions = questionService.getQuestionsByObjectTypeId(testHistories.get(lastIndex).getTestId());
 
                 int totalQuestions = questions.parallelStream()
                         .mapToInt(quest -> {
-                            List<ChildQuestion> childQuestions = childQuestionService.getChildQuestionsByQuestionId(quest.getId());
-                            return childQuestions.size();
+                            List<QuestionDetail> questionDetails = questionDetailService.findByQuestionId(quest.getId());
+                            return questionDetails.size();
                         })
                         .sum();
 
