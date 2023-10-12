@@ -15,6 +15,7 @@ import com.tip.dg4.toeic_exam.models.enums.QuestionType;
 import com.tip.dg4.toeic_exam.repositories.QuestionRepository;
 import com.tip.dg4.toeic_exam.services.QuestionDetailService;
 import com.tip.dg4.toeic_exam.services.QuestionService;
+import com.tip.dg4.toeic_exam.services.UploadService;
 import com.tip.dg4.toeic_exam.utils.TExamUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -33,6 +34,7 @@ public class QuestionServiceImpl implements QuestionService {
     private final QuestionDetailMapper questionDetailMapper;
     @Lazy
     private final QuestionDetailService questionDetailService;
+    private final UploadService uploadService;
 
     /**
      * Creates a new question.
@@ -230,11 +232,12 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public void deleteQuestionById(UUID id) {
         try {
-            if (!questionRepository.existsById(id)) {
-                throw new NotFoundException(TExamExceptionConstant.QUESTION_E001);
-            }
+            Question question = questionRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.QUESTION_E001));
 
             questionRepository.deleteById(id);
+            uploadService.deleteFile(question.getAudioURL());
+            question.getImageURLs().parallelStream().forEach(uploadService::deleteFile);
         } catch (Exception e) {
             throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
         }

@@ -9,6 +9,8 @@ import com.tip.dg4.toeic_exam.models.PracticePart;
 import com.tip.dg4.toeic_exam.repositories.PracticePartRepository;
 import com.tip.dg4.toeic_exam.services.PracticePartService;
 import com.tip.dg4.toeic_exam.services.PracticeService;
+import com.tip.dg4.toeic_exam.services.UploadService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
@@ -18,19 +20,12 @@ import java.util.UUID;
 
 @Log4j2
 @Service
+@RequiredArgsConstructor
 public class PracticePartServiceImpl implements PracticePartService {
     private final PracticePartRepository practicePartRepository;
     private final PracticeService practiceService;
+    private final UploadService uploadService;
     private final PracticePartMapper practicePartMapper;
-
-
-    public PracticePartServiceImpl(PracticePartRepository practicePartRepository,
-                                   PracticeService practiceService,
-                                   PracticePartMapper practicePartMapper) {
-        this.practicePartRepository = practicePartRepository;
-        this.practiceService = practiceService;
-        this.practicePartMapper = practicePartMapper;
-    }
 
     @Override
     public void createPracticePart(PracticePartDto practicePartDto) {
@@ -81,11 +76,11 @@ public class PracticePartServiceImpl implements PracticePartService {
 
     @Override
     public void deletePracticePartById(UUID practicePartId) {
-        if (!practicePartRepository.existsById(practicePartId)) {
-            throw new NotFoundException(TExamExceptionConstant.PRACTICE_PART_E002);
-        }
+        PracticePart practicePart = practicePartRepository.findById(practicePartId)
+                .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PRACTICE_PART_E002));
 
         practicePartRepository.deleteById(practicePartId);
+        uploadService.deleteFile(practicePart.getImage());
     }
 
     @Override

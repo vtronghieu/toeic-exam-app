@@ -18,6 +18,7 @@ public class TExamConstant {
     public static final String APP_DROPBOX = "ToeicDG4";
     public static final String ADMIN_AUTHORIZED = "hasAuthority('Admin')";
     public static final String DOT_REGEX = "\\.";
+    public static final String QUESTION_MARK_REGEX = "\\?";
     public static final String DTO_REGEX = "\\D[Tt][Oo]";
     public static final String UUID_REGEX = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
     public static final String PHONE_REGEX = "^(?:\\+?\\d{1,3})?[-.\\s]?\\(?\\d{3}\\)?[-.\\s]?\\d{3}[-.\\s]?\\d{4}(?:\\s?x\\d+)?$";

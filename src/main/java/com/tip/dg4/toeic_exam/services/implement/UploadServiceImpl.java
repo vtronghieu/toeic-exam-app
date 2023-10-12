@@ -10,6 +10,7 @@ import com.dropbox.core.v2.sharing.SharedLinkSettings;
 import com.tip.dg4.toeic_exam.common.constants.TExamConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
 import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
+import com.tip.dg4.toeic_exam.exceptions.TExamException;
 import com.tip.dg4.toeic_exam.exceptions.UnauthorizedException;
 import com.tip.dg4.toeic_exam.services.UploadService;
 import lombok.extern.log4j.Log4j2;
@@ -27,8 +28,7 @@ import java.util.Properties;
 
 @Log4j2
 @Service
-public class uploadServiceImpl implements UploadService {
-
+public class UploadServiceImpl implements UploadService {
 
     @Override
     public List<String> uploadFile(List<MultipartFile> multipartFiles, String code, String uriPath) throws DbxException, IOException {
@@ -100,6 +100,26 @@ public class uploadServiceImpl implements UploadService {
         FileOutputStream outputStream = new FileOutputStream(TExamConstant.SOURCE_FILE_NAME);
         properties.store(outputStream, null);
         outputStream.close();
+    }
 
+    /**
+     * Deletes a file from Dropbox.
+     *
+     * @param url The URL of the file to delete.
+     * @throws TExamException If an error occurs while deleting the file.
+     */
+    public void deleteFile(String url) {
+        try {
+            DbxRequestConfig config = DbxRequestConfig.newBuilder(TExamConstant.APP_DROPBOX).build();
+            DbxClientV2 dbxClient = new DbxClientV2(config, this.readAccessTokenFromConfig());
+            String[] parts = url.split(TExamConstant.SLASH);
+            String fileNameWithQuery = parts[parts.length - 1];
+            String[] fileNameParts = fileNameWithQuery.split(TExamConstant.QUESTION_MARK_REGEX);
+            String fileName = fileNameParts[0];
+
+            dbxClient.files().deleteV2(TExamConstant.SLASH + fileName);
+        } catch (Exception e) {
+            throw new TExamException(e);
+        }
     }
 }
