@@ -169,8 +169,7 @@ public class UserServiceImpl implements UserService {
             }
 
             UserInfo userInfo = userInfoService.setUserInfo(userDto.getUserInfo(), user.getUserInfo());
-            user.setUsername(passwordEncoder.encode(userDto.getUsername()));
-            user.setPassword(userDto.getPassword());
+            user.setPassword(passwordEncoder.encode(userDto.getPassword()));
             user.setRole(userRole);
             user.setActive(userDto.isActive());
             user.setUserInfo(userInfo);

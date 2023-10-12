@@ -26,6 +26,8 @@ public class UserInfo {
 
     private String name;
 
+    private String imageURL;
+
     private String email;
 
     private LocalDate dateOfBirth;

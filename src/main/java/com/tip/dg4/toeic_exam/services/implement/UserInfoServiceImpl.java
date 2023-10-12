@@ -28,6 +28,14 @@ public class UserInfoServiceImpl implements UserInfoService {
     private final UserService userService;
     private final UserInfoMapper userInfoMapper;
 
+    /**
+     * Gets a list of user information DTOs, paginated.
+     *
+     * @param page The page number.
+     * @param size The page size.
+     * @return A list of user information DTOs, paginated.
+     * @throws TExamException If an error occurs while getting the user information.
+     */
     @Override
     public List<UserInfoDto> getUserInfos(int page, int size) {
         try {
@@ -46,6 +54,13 @@ public class UserInfoServiceImpl implements UserInfoService {
         }
     }
 
+    /**
+     * Gets the user information for the given user ID.
+     *
+     * @param userId The user ID.
+     * @return The user information DTO, or an empty DTO if the user does not exist.
+     * @throws TExamException If an error occurs while getting the user information.
+     */
     @Override
     public UserInfoDto getUserInfoByUserId(UUID userId) {
         try {
@@ -77,17 +92,7 @@ public class UserInfoServiceImpl implements UserInfoService {
                 throw new BadRequestException(TExamExceptionConstant.USER_INFO_E004);
             }
 
-            UserInfo userInfo = Optional.of(user.getUserInfo()).orElse(new UserInfo());
-
-            userInfo.setSurname(userInfoDto.getSurname());
-            userInfo.setName(userInfoDto.getName());
-            userInfo.setEmail(userInfoDto.getEmail());
-            userInfo.setDateOfBirth(userInfoDto.getDateOfBirth());
-            userInfo.setAge(userInfoDto.getAge());
-            userInfo.setAddress(userInfoDto.getAddress());
-            userInfo.setPhone(userInfoDto.getPhone());
-            user.setUserInfo(userInfo);
-
+            user.setUserInfo(setUserInfo(user, userInfoDto));
             userService.save(user);
         } catch (Exception e) {
             throw new TExamException(e);
@@ -126,14 +131,15 @@ public class UserInfoServiceImpl implements UserInfoService {
 
         UserInfo setedUserInfo = ObjectUtils.cloneIfPossible(userInfo);
 
-        setedUserInfo.setId(userInfo.getId());
-        setedUserInfo.setSurname(userInfo.getSurname());
+        setedUserInfo.setId(userInfoDto.getId());
+        setedUserInfo.setSurname(userInfoDto.getSurname());
         setedUserInfo.setName(userInfoDto.getName());
+        setedUserInfo.setImageURL(userInfoDto.getImageURL());
         setedUserInfo.setEmail(userInfoDto.getEmail());
         setedUserInfo.setDateOfBirth(userInfoDto.getDateOfBirth());
         setedUserInfo.setAge(userInfoDto.getAge());
-        setedUserInfo.setAddress(userInfo.getAddress());
-        setedUserInfo.setPhone(userInfo.getPhone());
+        setedUserInfo.setAddress(userInfoDto.getAddress());
+        setedUserInfo.setPhone(userInfoDto.getPhone());
 
         return setedUserInfo;
     }
@@ -159,5 +165,26 @@ public class UserInfoServiceImpl implements UserInfoService {
      */
     private boolean invalidPhone(String phone) {
         return !Objects.isNull(phone) && !phone.trim().matches(TExamConstant.PHONE_REGEX);
+    }
+
+    /**
+     * Sets the user information for the given user object from the given user information DTO.
+     *
+     * @param user        The user object.
+     * @param userInfoDto The user information DTO.
+     * @return The updated user object.
+     */
+    private UserInfo setUserInfo(User user, UserInfoDto userInfoDto) {
+        UserInfo userInfo = Optional.of(user.getUserInfo()).orElse(new UserInfo());
+
+        userInfo.setSurname(userInfoDto.getSurname());
+        userInfo.setName(userInfoDto.getName());
+        userInfo.setImageURL(userInfoDto.getImageURL());
+        userInfo.setEmail(userInfoDto.getEmail());
+        userInfo.setDateOfBirth(userInfoDto.getDateOfBirth());
+        userInfo.setAge(userInfoDto.getAge());
+        userInfo.setAddress(userInfoDto.getAddress());
+        userInfo.setPhone(userInfoDto.getPhone());
+        return userInfo;
     }
 }

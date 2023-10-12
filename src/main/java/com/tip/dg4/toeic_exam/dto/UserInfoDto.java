@@ -30,6 +30,10 @@ public class UserInfoDto {
     @NotBlank(message = TExamExceptionConstant.USER_INFO_E002)
     private String name;
 
+    @NotEmpty(message = TExamExceptionConstant.USER_INFO_E005)
+    @NotBlank(message = TExamExceptionConstant.USER_INFO_E005)
+    private String imageURL;
+
     @NotEmpty(message = TExamExceptionConstant.USER_INFO_E003)
     @NotBlank(message = TExamExceptionConstant.USER_INFO_E003)
     @Email(message = TExamExceptionConstant.USER_INFO_E003)

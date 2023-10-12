@@ -31,6 +31,7 @@ public class TExamExceptionConstant {
     public static final String USER_INFO_E002 = "The name is invalid";
     public static final String USER_INFO_E003 = "The email is invalid";
     public static final String USER_INFO_E004 = "The phone is invalid";
+    public static final String USER_INFO_E005 = "The imageURL is invalid";
     //  Vocabulary category
     public static final String VOCABULARY_CATEGORY_E001 = "Vocabulary category already exists by name: ";
     public static final String VOCABULARY_CATEGORY_E002 = "Vocabulary category not found";
