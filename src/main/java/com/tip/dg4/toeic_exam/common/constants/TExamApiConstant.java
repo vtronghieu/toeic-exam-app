@@ -33,17 +33,18 @@ public class TExamApiConstant {
     public static final String QUESTION_API_ROOT = API_ROOT + API_VERSION_1 + "/questions";
     //  Question detail
     public static final String QUESTION_DETAIL_API_ROOT = API_ROOT + API_VERSION_1 + "/question-details";
-    public static final String GET_BY_OBJECT_TYPE_IDS_API = "/getByObjectTypeIds";
     //  Quiz test history
     public static final String QUIZ_TEST_HISTORY_API_ROOT = API_ROOT + API_VERSION_1 + "/quizTestHistories";
     //  Practice
     public static final String PRACTICE_API_ROOT = API_ROOT + API_VERSION_1 + "/practices";
-    //  Practice part
-    public static final String PRACTICE_PART_API_ROOT = API_ROOT + API_VERSION_1 + "/practiceParts";
+    //  Part
+    public static final String PART_API_ROOT = API_ROOT + API_VERSION_1 + "/parts";
     //  Part test
     public static final String PART_TEST_API_ROOT = API_ROOT + API_VERSION_1 + "/partTests";
-    //  Part lesson
-    public static final String PART_LESSON_API_ROOT = API_ROOT + API_VERSION_1 + "/partLessons";
+    //  Lesson
+    public static final String LESSON_API_ROOT = API_ROOT + API_VERSION_1 + "/lessons";
+    //  Lesson content
+    public static final String CONTENT_API_ROOT = API_ROOT + API_VERSION_1 + "/contents";
     //  Test history
     public static final String TEST_HISTORY_API_ROOT = API_ROOT + API_VERSION_1 + "/testHistories";
     public static final String SEND_ANSWER_API = "/sendAnswer";

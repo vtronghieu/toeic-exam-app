@@ -62,20 +62,35 @@ public class TExamExceptionConstant {
     //  Quiz test history
     public static final String QUIZ_TEST_HISTORY_E001 = "Question type must be vocabulary or grammar";
     //  Practice
-    public static final String PRACTICE_E001 = "Practice name already exists";
-    public static final String PRACTICE_E002 = "Practice type invalid";
-    public static final String PRACTICE_E003 = "Practice not found";
-    //  Practice part
-    public static final String PRACTICE_PART_E001 = "Practice part name already exists";
-    public static final String PRACTICE_PART_E002 = "Practice part not found";
+    public static final String PRACTICE_E001 = "The practice already exists";
+    public static final String PRACTICE_E002 = "The practice type is invalid";
+    public static final String PRACTICE_E003 = "The practice not found";
+    public static final String PRACTICE_E004 = "The practice name is invalid";
+    public static final String PRACTICE_E005 = "The practice image is invalid";
+    public static final String PRACTICE_E006 = "The practice type is undefined";
+    //  Part
+    public static final String PART_E001 = "The part already exists";
+    public static final String PART_E002 = "The part not found";
+    public static final String PART_E003 = "The practice id is invalid";
+    public static final String PART_E004 = "The part name is invalid";
+    public static final String PART_E005 = "The part image is invalid";
     //  Part test
     public static final String PART_TEST_E001 = "Part test name already exists";
     public static final String PART_TEST_E002 = "Part test type invalid";
     public static final String PART_TEST_E003 = "Part test not found";
-    //  Part lesson
-    public static final String PART_LESSON_E001 = "Part lesson name already exists";
-    public static final String PART_LESSON_E002 = "Part lesson not found";
-
+    //  Lesson
+    public static final String LESSON_E001 = "The lesson already exists";
+    public static final String LESSON_E002 = "The lesson not found";
+    public static final String LESSON_E003 = "The part id is invalid";
+    public static final String LESSON_E004 = "The lesson name is invalid";
+    public static final String LESSON_E005 = "The lesson not found in the part";
+    //  Content
+    public static final String CONTENT_E001 = "The title is invalid";
+    public static final String CONTENT_E002 = "The content is invalid";
+    public static final String CONTENT_E003 = "The lesson id is invalid";
+    public static final String CONTENT_E004 = "The content already exists";
+    public static final String CONTENT_E005 = "The content not found";
+    //  Dropbox
     public static final String DROPBOX_E001 = "Invalid Access Token";
     public static final String DROPBOX_E002 = "Image name already exists";
     public static final String DROPBOX_E003 = "Please contact admin for support";

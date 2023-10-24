@@ -2,21 +2,25 @@ package com.tip.dg4.toeic_exam.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PartTestDto {
+@Builder
+public class LessonDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private UUID id;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    private UUID practicePartId;
-    private String type;
+    private UUID partId;
+
     private String name;
-    private Integer correctAnswer;
-    private int totalQuestions;
+
+    private List<ContentDto> contents;
 }

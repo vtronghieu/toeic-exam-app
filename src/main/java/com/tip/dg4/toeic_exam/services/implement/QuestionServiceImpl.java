@@ -254,6 +254,16 @@ public class QuestionServiceImpl implements QuestionService {
         return questionRepository.findById(questionId);
     }
 
+    @Override
+    public List<Question> findByIDs(List<UUID> questionIDs) {
+        return questionRepository.findAllById(questionIDs);
+    }
+
+    @Override
+    public List<UUID> getQuestionIDsByQuestions(List<QuestionDto> questions) {
+        return questions.parallelStream().map(QuestionDto::getId).toList();
+    }
+
     /**
      * Finds all questions.
      *

@@ -1,29 +1,18 @@
 package com.tip.dg4.toeic_exam.controllers;
 
 import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
-import com.tip.dg4.toeic_exam.common.constants.TExamParamConstant;
-import com.tip.dg4.toeic_exam.common.constants.TExamSuccessfulConstant;
-import com.tip.dg4.toeic_exam.common.responses.ResponseData;
-import com.tip.dg4.toeic_exam.dto.PartTestDto;
-import com.tip.dg4.toeic_exam.services.PartTestService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
+import com.tip.dg4.toeic_exam.services.TestService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(path = TExamApiConstant.PART_TEST_API_ROOT)
-public class PartTestController {
-    private final PartTestService partTestService;
+@RequiredArgsConstructor
+public class TestController {
+    private final TestService testService;
 
-    public PartTestController(PartTestService partTestService) {
-        this.partTestService = partTestService;
-    }
-
-    @PostMapping(path = TExamApiConstant.API_CREATE,
+    /*@PostMapping(path = TExamApiConstant.API_CREATE,
                  produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('admin')")
     public ResponseEntity<ResponseData> createPartTest(@RequestBody PartTestDto partTestDto) {
@@ -83,5 +72,5 @@ public class PartTestController {
         );
 
         return new ResponseEntity<>(result, httpStatus);
-    }
+    }*/
 }

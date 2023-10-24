@@ -27,6 +27,10 @@ public interface QuestionService {
 
     Optional<Question> findById(UUID questionId);
 
+    List<Question> findByIDs(List<UUID> questionIDs);
+
+    List<UUID> getQuestionIDsByQuestions(List<QuestionDto> questions);
+
     List<Question> findAll();
 
     Question save(Question question);

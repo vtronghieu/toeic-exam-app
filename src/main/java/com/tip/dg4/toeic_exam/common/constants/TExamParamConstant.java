@@ -6,8 +6,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TExamParamConstant {
     public static final String ID = "id";
-    public static final String PRACTICE_ID = "practiceId";
-    public static final String PRACTICE_PART_ID = "practicePartId";
+    public static final String PRACTICE_ID = "practice-id";
+    public static final String PART_ID = "part-id";
+    public static final String LESSON_ID = "lesson-id";
     public static final String USER_ID = "user-id";
     public static final String QUESTION_ID = "question-id";
     public static final String OBJECT_TYPE_ID = "object-type-id";

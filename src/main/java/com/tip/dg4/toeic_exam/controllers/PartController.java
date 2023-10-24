@@ -1,11 +1,14 @@
 package com.tip.dg4.toeic_exam.controllers;
 
 import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
+import com.tip.dg4.toeic_exam.common.constants.TExamConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamParamConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamSuccessfulConstant;
 import com.tip.dg4.toeic_exam.common.responses.ResponseData;
-import com.tip.dg4.toeic_exam.dto.PracticePartDto;
-import com.tip.dg4.toeic_exam.services.PracticePartService;
+import com.tip.dg4.toeic_exam.dto.requests.PartReq;
+import com.tip.dg4.toeic_exam.services.PartService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,20 +18,18 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(path = TExamApiConstant.PRACTICE_PART_API_ROOT)
-public class PracticePartController {
-    private final PracticePartService practicePartService;
+@RequestMapping(path = TExamApiConstant.PART_API_ROOT)
+@RequiredArgsConstructor
+public class PartController {
+    private final PartService partService;
 
-    public PracticePartController(PracticePartService practicePartService) {
-        this.practicePartService = practicePartService;
-    }
-
-    @PostMapping(path = TExamApiConstant.API_CREATE,
+    @PostMapping(path = TExamApiConstant.API_EMPTY,
                  produces = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<ResponseData> createPracticePart(@RequestBody PracticePartDto partWithoutLessonsAndTestsDto) {
+    @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
+    public ResponseEntity<ResponseData> createPart(@RequestBody @Valid PartReq partREQ) {
+        partService.createPart(partREQ);
+
         HttpStatus httpStatus = HttpStatus.CREATED;
-        practicePartService.createPracticePart(partWithoutLessonsAndTestsDto);
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
@@ -41,25 +42,25 @@ public class PracticePartController {
     @GetMapping(path = TExamApiConstant.API_EMPTY,
                 params = TExamParamConstant.PRACTICE_ID,
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseData> getPracticePartsByPracticeId(@RequestParam(TExamParamConstant.PRACTICE_ID) UUID practiceId) {
+    public ResponseEntity<ResponseData> getPartsByPracticeId(@RequestParam(TExamParamConstant.PRACTICE_ID) UUID practiceId) {
         HttpStatus httpStatus = HttpStatus.OK;
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
                 TExamSuccessfulConstant.PRACTICE_PART_S002,
-                practicePartService.getPracticePartsByPracticeId(practiceId)
+                partService.getPartsByPracticeId(practiceId)
         );
 
         return new ResponseEntity<>(result, httpStatus);
     }
 
     @PutMapping(path = TExamApiConstant.API_EMPTY,
-                params = TExamParamConstant.ID,
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseData> updatePracticePart(@RequestParam(name = TExamParamConstant.ID) UUID practicePartId,
-                                                           @RequestBody PracticePartDto dtoWithoutLessonsAndTests) {
+    @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
+    public ResponseEntity<ResponseData> updatePart(@RequestBody @Valid PartReq partREQ) {
+        partService.updatePart(partREQ);
+
         HttpStatus httpStatus = HttpStatus.OK;
-        practicePartService.updatePracticePart(practicePartId, dtoWithoutLessonsAndTests);
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
@@ -72,9 +73,29 @@ public class PracticePartController {
     @DeleteMapping(path = TExamApiConstant.API_EMPTY,
                    params = TExamParamConstant.ID,
                    produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseData> deletePracticePartById(@RequestParam(name = TExamParamConstant.ID) UUID practicePartId) {
+    @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
+    public ResponseEntity<ResponseData> deletePartById(@RequestParam(TExamParamConstant.ID) UUID id) {
+        partService.deletePartById(id);
+
         HttpStatus httpStatus = HttpStatus.OK;
-        practicePartService.deletePracticePartById( practicePartId);
+        ResponseData result = new ResponseData(
+                httpStatus.value(),
+                httpStatus.getReasonPhrase(),
+                TExamSuccessfulConstant.PRACTICE_PART_S004
+        );
+
+        return new ResponseEntity<>(result, httpStatus);
+    }
+
+    @DeleteMapping(path = TExamApiConstant.API_EMPTY,
+                   params = {TExamParamConstant.PRACTICE_ID, TExamParamConstant.PART_ID},
+                   produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
+    public ResponseEntity<ResponseData> deletePartByPracticeIdAndPartId(@RequestParam(TExamParamConstant.PRACTICE_ID) UUID practiceId,
+                                                                        @RequestParam(TExamParamConstant.PART_ID) UUID partId) {
+        partService.deletePartByPracticeIdAndPartId(practiceId, partId);
+
+        HttpStatus httpStatus = HttpStatus.OK;
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),

@@ -97,12 +97,13 @@ public class TExamUtil {
     /**
      * Paginates a list.
      *
+     * @param <E>      The element.
      * @param list     The list to paginate.
      * @param pageable The pagination information.
      * @return A page of the list.
      */
-    public static <L> Page<L> paginateList(List<L> list, Pageable pageable) {
-        Page<L> listPages = new PageImpl<>(list, pageable, list.size());
+    public static <E> Page<E> paginateList(List<E> list, Pageable pageable) {
+        Page<E> listPages = new PageImpl<>(list, pageable, list.size());
 
         return Optional.of(listPages).orElse(new PageImpl<>(Collections.emptyList()));
     }

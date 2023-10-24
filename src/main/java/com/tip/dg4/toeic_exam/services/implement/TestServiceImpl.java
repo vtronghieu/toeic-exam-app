@@ -1,52 +1,22 @@
 package com.tip.dg4.toeic_exam.services.implement;
 
-import com.tip.dg4.toeic_exam.common.constants.TExamConstant;
-import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
-import com.tip.dg4.toeic_exam.dto.PartTestDto;
-import com.tip.dg4.toeic_exam.dto.QuestionDto;
-import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
-import com.tip.dg4.toeic_exam.exceptions.ConflictException;
-import com.tip.dg4.toeic_exam.exceptions.NotFoundException;
-import com.tip.dg4.toeic_exam.mappers.PartTestMapper;
-import com.tip.dg4.toeic_exam.models.*;
-import com.tip.dg4.toeic_exam.repositories.PartTestRepository;
+import com.tip.dg4.toeic_exam.mappers.TestMapper;
 import com.tip.dg4.toeic_exam.services.*;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 @Log4j2
 @Service
-public class PartTestServiceImpl implements PartTestService {
-    private final PartTestRepository partTestRepository;
-    private final PracticePartService practicePartService;
-    private final PartTestMapper partTestMapper;
+@RequiredArgsConstructor
+public class TestServiceImpl implements TestService {
+    private final PartService partService;
+    private final TestMapper testMapper;
     private final TestHistoryService testHistoryService;
     private final QuestionService questionService;
     private final QuestionDetailService questionDetailService;
 
-    @Lazy
-    public PartTestServiceImpl(PartTestRepository partTestRepository,
-                               PracticePartService practicePartService,
-                               PartTestMapper partTestMapper,
-                               TestHistoryService testHistoryService,
-                               QuestionService questionService, QuestionDetailService questionDetailService) {
-        this.partTestRepository = partTestRepository;
-        this.practicePartService = practicePartService;
-        this.partTestMapper = partTestMapper;
-        this.testHistoryService = testHistoryService;
-        this.questionService = questionService;
-        this.questionDetailService = questionDetailService;
-    }
-
-    @Override
+    /*@Override
     public void createPartTest(PartTestDto partTestDto) {
         if (!practicePartService.existsById(partTestDto.getPracticePartId())) {
             throw new NotFoundException(TExamExceptionConstant.PRACTICE_PART_E002);
@@ -113,7 +83,7 @@ public class PartTestServiceImpl implements PartTestService {
                 partTestRepository.existsByPracticePartIdAndName(partTestDto.getPracticePartId(), partTestDto.getName())){
             throw new ConflictException(TExamExceptionConstant.PART_TEST_E001);
         }
-        partTest.setPracticePartId(partTestDto.getPracticePartId());
+        partTest.setPartId(partTestDto.getPracticePartId());
         partTest.setName(partTestDto.getName());
         partTest.setType(practiceType);
 
@@ -132,5 +102,5 @@ public class PartTestServiceImpl implements PartTestService {
     @Override
     public boolean existsById(UUID partTestId) {
         return partTestRepository.existsById(partTestId);
-    }
+    }*/
 }

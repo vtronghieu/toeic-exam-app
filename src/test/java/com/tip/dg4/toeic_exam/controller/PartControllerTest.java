@@ -1,20 +1,20 @@
 package com.tip.dg4.toeic_exam.controller;
 
-import com.tip.dg4.toeic_exam.controllers.PracticePartController;
-import com.tip.dg4.toeic_exam.services.PracticePartService;
+import com.tip.dg4.toeic_exam.controllers.PartController;
+import com.tip.dg4.toeic_exam.services.PartService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-public class PracticePartControllerTest {
+public class PartControllerTest {
 
 	@Mock
-	private PracticePartService practicePartService;
+	private PartService partService;
 
 	@InjectMocks
-	private PracticePartController practicePartController;
+	private PartController partController;
 
 	@BeforeEach
 	void setUp() {

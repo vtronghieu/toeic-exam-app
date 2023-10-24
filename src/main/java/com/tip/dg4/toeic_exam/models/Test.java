@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.FieldType;
 
@@ -18,18 +17,18 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Document(collection = "practices")
-public class Practice {
+public class Test {
     @Id
     @GenerateID
     @Field(targetType = FieldType.STRING)
     private UUID id;
 
-    private String name;
+    @Field(targetType = FieldType.STRING)
+    private UUID partId;
 
     private PracticeType type;
 
-    private String imageURL;
+    private String name;
 
-    private List<Part> parts;
+    private List<UUID> questionIDs;
 }

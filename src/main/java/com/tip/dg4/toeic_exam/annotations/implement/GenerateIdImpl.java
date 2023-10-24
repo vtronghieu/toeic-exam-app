@@ -44,16 +44,11 @@ public class GenerateIdImpl extends AbstractMongoEventListener<Object> {
      *
      * @param source The object to check for the presence of an ID field.
      * @return true if the ID field is not set, false otherwise.
-     * @throws IllegalArgumentException If the ID field is required but not present.
      */
     private boolean isObjectCreated(Object source) {
         Field idField = this.getIdField(source);
 
-        if (Objects.isNull(idField)) {
-            throw new IllegalArgumentException(source.getClass().getCanonicalName() + ": The ID field is required");
-        }
-
-        return Objects.isNull(this.getFieldValue(idField, source));
+        return Objects.nonNull(idField) && Objects.isNull(this.getFieldValue(idField, source));
     }
 
     /**
