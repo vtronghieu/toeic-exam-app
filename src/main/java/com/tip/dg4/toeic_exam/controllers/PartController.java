@@ -33,7 +33,7 @@ public class PartController {
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.PRACTICE_PART_S001
+                TExamSuccessfulConstant.PART_S001
         );
 
         return new ResponseEntity<>(result, httpStatus);
@@ -47,7 +47,7 @@ public class PartController {
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.PRACTICE_PART_S002,
+                TExamSuccessfulConstant.PART_S002,
                 partService.getPartsByPracticeId(practiceId)
         );
 
@@ -64,7 +64,7 @@ public class PartController {
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.PRACTICE_PART_S003
+                TExamSuccessfulConstant.PART_S003
         );
 
         return new ResponseEntity<>(result, httpStatus);
@@ -81,7 +81,7 @@ public class PartController {
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.PRACTICE_PART_S004
+                TExamSuccessfulConstant.PART_S004
         );
 
         return new ResponseEntity<>(result, httpStatus);
@@ -99,7 +99,7 @@ public class PartController {
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.PRACTICE_PART_S004
+                TExamSuccessfulConstant.PART_S004
         );
 
         return new ResponseEntity<>(result, httpStatus);

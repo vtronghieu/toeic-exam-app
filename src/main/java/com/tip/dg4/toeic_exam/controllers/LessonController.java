@@ -33,7 +33,7 @@ public class LessonController {
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.PART_LESSON_S001
+                TExamSuccessfulConstant.LESSON_S001
         );
 
         return new ResponseEntity<>(result, httpStatus);
@@ -46,7 +46,7 @@ public class LessonController {
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.PART_LESSON_S002,
+                TExamSuccessfulConstant.LESSON_S002,
                 lessonService.getLessons()
         );
 
@@ -61,7 +61,7 @@ public class LessonController {
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.PART_LESSON_S002,
+                TExamSuccessfulConstant.LESSON_S002,
                 lessonService.getLessonsByPartId(partId)
         );
 
@@ -76,7 +76,7 @@ public class LessonController {
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.PART_LESSON_S005,
+                TExamSuccessfulConstant.LESSON_S005,
                 lessonService.getLessonById(id)
         );
 
@@ -93,7 +93,7 @@ public class LessonController {
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.PART_LESSON_S003
+                TExamSuccessfulConstant.LESSON_S003
         );
 
         return new ResponseEntity<>(result, httpStatus);
@@ -110,7 +110,7 @@ public class LessonController {
         ResponseData result = new ResponseData(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.PART_LESSON_S004
+                TExamSuccessfulConstant.LESSON_S004
         );
 
         return new ResponseEntity<>(result, httpStatus);

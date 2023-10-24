@@ -52,21 +52,21 @@ public class TExamSuccessfulConstant {
     public static final String PRACTICE_S003 = "The practice was updated successfully";
     public static final String PRACTICE_S004 = "The practice was deleted successfully";
     //  Practice part
-    public static final String PRACTICE_PART_S001 = "The part was created successfully";
-    public static final String PRACTICE_PART_S002 = "Get the parts successfully";
-    public static final String PRACTICE_PART_S003 = "The part was updated successfully";
-    public static final String PRACTICE_PART_S004 = "The part was deleted successfully";
+    public static final String PART_S001 = "The part was created successfully";
+    public static final String PART_S002 = "Get the parts successfully";
+    public static final String PART_S003 = "The part was updated successfully";
+    public static final String PART_S004 = "The part was deleted successfully";
     //  Part test
     public static final String PART_TEST_S001 = "Part test was created successfully";
     public static final String PART_TEST_S002 = "Part test was updated successfully";
     public static final String PART_TEST_S003 = "Part test was deleted successfully";
     public static final String PART_TEST_S004 = "Get part tests successfully";
-    //  Part lesson
-    public static final String PART_LESSON_S001 = "The lesson was created successfully";
-    public static final String PART_LESSON_S002 = "Get the lessons successfully";
-    public static final String PART_LESSON_S003 = "The lesson was updated successfully";
-    public static final String PART_LESSON_S004 = "The lesson was deleted successfully";
-    public static final String PART_LESSON_S005 = "Get the lesson successfully";
+    //  Lesson
+    public static final String LESSON_S001 = "The lesson was created successfully";
+    public static final String LESSON_S002 = "Get the lessons successfully";
+    public static final String LESSON_S003 = "The lesson was updated successfully";
+    public static final String LESSON_S004 = "The lesson was deleted successfully";
+    public static final String LESSON_S005 = "Get the lesson successfully";
     //  Content
     public static final String CONTENT_S001 = "The content was created successfully";
     public static final String CONTENT_S002 = "Get the contents successfully";
