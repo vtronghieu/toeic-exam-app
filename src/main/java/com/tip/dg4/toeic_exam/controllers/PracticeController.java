@@ -23,8 +23,7 @@ import java.util.UUID;
 public class PracticeController {
     private final PracticeService practiceService;
 
-    @PostMapping(path = TExamApiConstant.API_EMPTY,
-                 produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
     public ResponseEntity<ResponseData> createPractice(@RequestBody @Valid PracticeReq practiceReq) {
         practiceService.createPractice(practiceReq);
@@ -39,8 +38,7 @@ public class PracticeController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @GetMapping(path = TExamApiConstant.API_EMPTY,
-                produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseData> getAllPractices() {
         HttpStatus httpStatus = HttpStatus.OK;
         ResponseData result = new ResponseData(
@@ -53,8 +51,7 @@ public class PracticeController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @GetMapping(path = TExamApiConstant.API_EMPTY,
-                params = TExamParamConstant.ID,
+    @GetMapping(params = TExamParamConstant.ID,
                 produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseData> getPracticeById(@RequestParam(TExamParamConstant.ID) UUID id) {
         HttpStatus httpStatus = HttpStatus.OK;
@@ -68,8 +65,7 @@ public class PracticeController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @PutMapping(path = TExamApiConstant.API_EMPTY,
-                params = TExamParamConstant.ID,
+    @PutMapping(params = TExamParamConstant.ID,
                 produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
     public ResponseEntity<ResponseData> updatePractice(@RequestParam(TExamParamConstant.ID) UUID id,
@@ -86,8 +82,7 @@ public class PracticeController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @DeleteMapping(path = TExamApiConstant.API_EMPTY,
-                   params = TExamParamConstant.ID,
+    @DeleteMapping(params = TExamParamConstant.ID,
                    produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
     public ResponseEntity<ResponseData> deletePractice(@RequestParam(TExamParamConstant.ID) UUID id) {

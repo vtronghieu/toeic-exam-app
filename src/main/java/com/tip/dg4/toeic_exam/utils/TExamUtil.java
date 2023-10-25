@@ -6,15 +6,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Path;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.*;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Component
@@ -42,6 +43,72 @@ public class TExamUtil {
         return Arrays.stream(Optional.ofNullable(request.getCookies()).orElse(new Cookie[0]))
                 .filter(cookie -> TExamConstant.ACCESS_TOKEN.equals(cookie.getName()))
                 .findFirst().orElse(null);
+    }
+
+    /**
+     * Checks if the ID field is already set in the given object.
+     *
+     * @param source The object to check for the presence of an ID field.
+     * @return true if the ID field is not set, false otherwise.
+     */
+    public static boolean isObjectCreated(Object source) {
+        Field idField = TExamUtil.getIdField(source);
+
+        return Objects.nonNull(idField) && Objects.isNull(TExamUtil.getFieldValue(idField, source));
+    }
+
+    /**
+     * Retrieves the ID field for the given object.
+     *
+     * @param source The object to find the ID field in.
+     * @return The ID field of the object, null if not found.
+     */
+    public static Field getIdField(Object source) {
+        return Arrays.stream(source.getClass().getDeclaredFields())
+                .filter(field -> field.isAnnotationPresent(Id.class))
+                .findFirst().orElse(null);
+    }
+
+    /**
+     * Gets the value of a field in the given object.
+     *
+     * @param field  The field to retrieve the value from.
+     * @param source The object containing the field.
+     * @return The value of the field, or null if it cannot be accessed.
+     */
+    public static Object getFieldValue(Field field, Object source) {
+        try {
+            field.setAccessible(true);
+            return field.get(source);
+        } catch (IllegalArgumentException | IllegalAccessException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Checks if a field is part of a model class within the specified package.
+     *
+     * @param field The field to check.
+     * @return true if the field is part of a model class, false otherwise.
+     */
+    public static boolean isModelClassField(Field field) {
+        String fieldPackage = TExamConstant.EMPTY;
+        Class<?> fieldClass = field.getType();
+
+        if (field.getType().isPrimitive() || Enum.class.isAssignableFrom(fieldClass)) {
+            return false;
+        } else if (Collection.class.isAssignableFrom(fieldClass)) {
+            Type fieldType = field.getGenericType();
+            if (fieldType instanceof ParameterizedType parameterizedType) {
+                Type[] types = parameterizedType.getActualTypeArguments();
+                fieldClass = (Class<?>) types[0];
+                fieldPackage = fieldClass.getPackageName();
+            }
+        } else {
+            fieldPackage = fieldClass.getPackageName();
+        }
+
+        return fieldPackage.startsWith(TExamConstant.MODEL_PACKAGE);
     }
 
     /**

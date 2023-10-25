@@ -23,8 +23,7 @@ import java.util.UUID;
 public class ContentController {
     private final ContentService contentService;
 
-    @PostMapping(path = TExamApiConstant.API_EMPTY,
-                 produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
     public ResponseEntity<ResponseData> createContent(@RequestBody @Valid ContentDto contentDTO) {
         contentService.createContent(contentDTO);
@@ -39,8 +38,7 @@ public class ContentController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @GetMapping(path = TExamApiConstant.API_EMPTY,
-                produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseData> getContents() {
         HttpStatus httpStatus = HttpStatus.OK;
         ResponseData result = new ResponseData(
@@ -53,8 +51,7 @@ public class ContentController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @GetMapping(path = TExamApiConstant.API_EMPTY,
-                params = TExamParamConstant.ID,
+    @GetMapping(params = TExamParamConstant.ID,
                 produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseData> getContentById(@RequestParam(TExamParamConstant.ID) UUID id) {
         HttpStatus httpStatus = HttpStatus.OK;
@@ -68,8 +65,7 @@ public class ContentController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @GetMapping(path = TExamApiConstant.API_EMPTY,
-                params = TExamParamConstant.LESSON_ID,
+    @GetMapping(params = TExamParamConstant.LESSON_ID,
                 produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseData> getContentsByLessonId(@RequestParam(TExamParamConstant.LESSON_ID) UUID lessonId) {
         HttpStatus httpStatus = HttpStatus.OK;
@@ -83,8 +79,7 @@ public class ContentController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @PutMapping(path = TExamApiConstant.API_EMPTY,
-                produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
     public ResponseEntity<ResponseData> updateContent(@RequestBody @Valid ContentDto contentDTO) {
         contentService.updateContent(contentDTO);
@@ -99,8 +94,7 @@ public class ContentController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @DeleteMapping(path = TExamApiConstant.API_EMPTY,
-                   params = TExamParamConstant.ID,
+    @DeleteMapping(params = TExamParamConstant.ID,
                    produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
     public ResponseEntity<ResponseData> deleteContentById(@RequestParam(TExamParamConstant.ID) UUID id) {

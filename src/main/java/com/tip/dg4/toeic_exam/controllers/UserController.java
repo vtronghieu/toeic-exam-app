@@ -24,8 +24,7 @@ import java.util.UUID;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping(path = TExamApiConstant.API_EMPTY,
-                 produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
     public ResponseEntity<ResponseData> createUser(@RequestBody @Valid UserDto userDto) {
         userService.createUser(userDto);
@@ -40,8 +39,7 @@ public class UserController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @GetMapping(path = TExamApiConstant.API_EMPTY,
-                params = {TExamParamConstant.PAGE, TExamParamConstant.SIZE},
+    @GetMapping(params = {TExamParamConstant.PAGE, TExamParamConstant.SIZE},
                 produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
     public ResponseEntity<ResponseData> getUsers(@RequestParam(value = TExamParamConstant.PAGE,
@@ -59,8 +57,7 @@ public class UserController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @GetMapping(path = TExamApiConstant.API_EMPTY,
-                params = TExamParamConstant.ID,
+    @GetMapping(params = TExamParamConstant.ID,
                 produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseData> getUserById(@RequestParam(TExamParamConstant.ID) UUID id) {
         HttpStatus httpStatus = HttpStatus.OK;
@@ -74,8 +71,7 @@ public class UserController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @GetMapping(path = TExamApiConstant.API_EMPTY,
-                params = TExamParamConstant.USERNAME,
+    @GetMapping(params = TExamParamConstant.USERNAME,
                 produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseData> getUserByUsername(@RequestParam(TExamParamConstant.USERNAME) String username) {
         HttpStatus httpStatus = HttpStatus.OK;
@@ -106,8 +102,7 @@ public class UserController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @PutMapping(path = TExamApiConstant.API_EMPTY,
-                params = TExamParamConstant.ID,
+    @PutMapping(params = TExamParamConstant.ID,
                 produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
     public ResponseEntity<ResponseData> updateUserById(@RequestParam(TExamParamConstant.ID) UUID id,
@@ -124,8 +119,7 @@ public class UserController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @DeleteMapping(path = TExamApiConstant.API_EMPTY,
-                   params = TExamParamConstant.ID,
+    @DeleteMapping(params = TExamParamConstant.ID,
                    produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
     public ResponseEntity<ResponseData> deleteUserById(@RequestParam(TExamParamConstant.ID) UUID id) {

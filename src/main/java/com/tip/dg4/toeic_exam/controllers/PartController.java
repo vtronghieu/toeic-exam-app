@@ -23,8 +23,7 @@ import java.util.UUID;
 public class PartController {
     private final PartService partService;
 
-    @PostMapping(path = TExamApiConstant.API_EMPTY,
-                 produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
     public ResponseEntity<ResponseData> createPart(@RequestBody @Valid PartReq partREQ) {
         partService.createPart(partREQ);
@@ -39,8 +38,7 @@ public class PartController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @GetMapping(path = TExamApiConstant.API_EMPTY,
-                params = TExamParamConstant.PRACTICE_ID,
+    @GetMapping(params = TExamParamConstant.PRACTICE_ID,
                 produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseData> getPartsByPracticeId(@RequestParam(TExamParamConstant.PRACTICE_ID) UUID practiceId) {
         HttpStatus httpStatus = HttpStatus.OK;
@@ -54,8 +52,7 @@ public class PartController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @PutMapping(path = TExamApiConstant.API_EMPTY,
-                produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
     public ResponseEntity<ResponseData> updatePart(@RequestBody @Valid PartReq partREQ) {
         partService.updatePart(partREQ);
@@ -70,8 +67,7 @@ public class PartController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @DeleteMapping(path = TExamApiConstant.API_EMPTY,
-                   params = TExamParamConstant.ID,
+    @DeleteMapping(params = TExamParamConstant.ID,
                    produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
     public ResponseEntity<ResponseData> deletePartById(@RequestParam(TExamParamConstant.ID) UUID id) {
@@ -87,8 +83,7 @@ public class PartController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @DeleteMapping(path = TExamApiConstant.API_EMPTY,
-                   params = {TExamParamConstant.PRACTICE_ID, TExamParamConstant.PART_ID},
+    @DeleteMapping(params = {TExamParamConstant.PRACTICE_ID, TExamParamConstant.PART_ID},
                    produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
     public ResponseEntity<ResponseData> deletePartByPracticeIdAndPartId(@RequestParam(TExamParamConstant.PRACTICE_ID) UUID practiceId,

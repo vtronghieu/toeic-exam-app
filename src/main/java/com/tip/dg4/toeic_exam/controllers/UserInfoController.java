@@ -23,8 +23,7 @@ import java.util.UUID;
 public class UserInfoController {
     private final UserInfoService userInfoService;
 
-    @GetMapping(path = TExamApiConstant.API_EMPTY,
-                params = {TExamParamConstant.PAGE, TExamParamConstant.SIZE},
+    @GetMapping(params = {TExamParamConstant.PAGE, TExamParamConstant.SIZE},
                 produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
     public ResponseEntity<ResponseData> getUserInfos(@RequestParam(value = TExamParamConstant.PAGE,
@@ -42,8 +41,7 @@ public class UserInfoController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @GetMapping(path = TExamApiConstant.API_EMPTY,
-                params = TExamParamConstant.USER_ID,
+    @GetMapping(params = TExamParamConstant.USER_ID,
                 produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseData> getUserInfoByUserId(@RequestParam(TExamParamConstant.USER_ID) UUID userId) {
         HttpStatus httpStatus = HttpStatus.OK;
@@ -57,8 +55,7 @@ public class UserInfoController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @PutMapping(path = TExamApiConstant.API_EMPTY,
-                params = TExamParamConstant.USER_ID,
+    @PutMapping(params = TExamParamConstant.USER_ID,
                 produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseData> updateUserInfoByUserId(@RequestParam(TExamParamConstant.USER_ID) UUID userId,
                                                                @RequestBody @Valid UserInfoDto userInfoDto) {

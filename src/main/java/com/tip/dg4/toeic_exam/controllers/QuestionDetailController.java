@@ -26,8 +26,7 @@ import java.util.UUID;
 public class QuestionDetailController {
     private final QuestionDetailService questionDetailService;
 
-    @PostMapping(path = TExamApiConstant.API_EMPTY,
-                 produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
     public ResponseEntity<ResponseData> createQuestionDetails(@RequestBody @Valid List<QuestionDetailDto> questionDetailDTOs) {
         questionDetailService.createQuestionDetails(questionDetailDTOs);
@@ -42,8 +41,7 @@ public class QuestionDetailController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @GetMapping(path = TExamApiConstant.API_EMPTY,
-                params = {TExamParamConstant.PAGE, TExamParamConstant.SIZE},
+    @GetMapping(params = {TExamParamConstant.PAGE, TExamParamConstant.SIZE},
                 produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseData> getQuestionDetails(@RequestParam(name = TExamParamConstant.PAGE,
                                                                          defaultValue = TExamParamConstant.PAGE_DEFAULT) int page,
@@ -60,8 +58,7 @@ public class QuestionDetailController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @GetMapping(path = TExamApiConstant.API_EMPTY,
-                params = TExamParamConstant.QUESTION_ID,
+    @GetMapping(params = TExamParamConstant.QUESTION_ID,
                 produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseData> getQuestionDetailsByQuestionId(@RequestParam(TExamParamConstant.QUESTION_ID) UUID questionId) {
         HttpStatus httpStatus = HttpStatus.OK;
@@ -75,8 +72,7 @@ public class QuestionDetailController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @GetMapping(path = TExamApiConstant.API_EMPTY,
-                params = TExamParamConstant.ID,
+    @GetMapping(params = TExamParamConstant.ID,
                 produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseData> getQuestionDetailById(@RequestParam(TExamParamConstant.ID) UUID id) {
         HttpStatus httpStatus = HttpStatus.OK;
@@ -90,8 +86,7 @@ public class QuestionDetailController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @PutMapping(path = TExamApiConstant.API_EMPTY,
-                produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
     public ResponseEntity<ResponseData> updateQuestionDetail(@RequestBody @Valid QuestionDetailDto questionDetailDto) {
         questionDetailService.updateQuestionDetail(questionDetailDto);
@@ -106,8 +101,7 @@ public class QuestionDetailController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @DeleteMapping(path = TExamApiConstant.API_EMPTY,
-                   params = TExamParamConstant.ID,
+    @DeleteMapping(params = TExamParamConstant.ID,
                    produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
     public ResponseEntity<ResponseData> deleteQuestionDetailById(@RequestParam UUID id) {

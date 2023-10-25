@@ -16,6 +16,7 @@ public class TExamConstant {
     public static final String IMAGE_RAW = "raw=1";
     public static final String SOURCE_FILE_NAME = "src/main/resources/application.properties";
     public static final String APP_DROPBOX = "ToeicDG4";
+    public static final String MODEL_PACKAGE = "com.tip.dg4.toeic_exam.models";
     public static final String ADMIN_AUTHORIZED = "hasAuthority('Admin')";
     public static final String DOT_REGEX = "\\.";
     public static final String QUESTION_MARK_REGEX = "\\?";
