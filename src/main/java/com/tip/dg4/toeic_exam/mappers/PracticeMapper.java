@@ -21,6 +21,15 @@ public class PracticeMapper {
                 .build();
     }
 
+    public PracticeReq convertModelToReq(Practice practice) {
+        return PracticeReq.builder()
+                .id(practice.getId())
+                .name(practice.getName())
+                .type(PracticeType.getValueType(practice.getType()))
+                .imageURL(practice.getImageURL())
+                .build();
+    }
+
     public PracticeDto convertModelToDto(Practice practice) {
         return PracticeDto.builder()
                 .id(practice.getId())
@@ -30,16 +39,4 @@ public class PracticeMapper {
                 .parts(partMapper.convertModelsToDTOs(practice.getParts()))
                 .build();
     }
-
-    /*public Practice convertDtoToModel(PracticeDto practiceDto) {
-        Practice practice = new Practice();
-
-        practice.setId(practiceDto.getId());
-        practice.setName(practiceDto.getName());
-        practice.setType(PracticeType.getType(practiceDto.getType()));
-        practice.setImage(practiceDto.getImage());
-
-        return practice;
-    }
-    */
 }

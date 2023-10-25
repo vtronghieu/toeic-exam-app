@@ -13,7 +13,7 @@ import java.util.UUID;
 public interface PracticeService {
     void createPractice(PracticeReq practiceReq);
 
-    List<PracticeDto> getAllPractices();
+    List<PracticeReq> getAllPractices();
 
     PracticeDto getPracticeById(UUID id);
 

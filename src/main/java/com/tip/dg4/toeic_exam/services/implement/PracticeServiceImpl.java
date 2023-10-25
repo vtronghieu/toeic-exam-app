@@ -66,10 +66,10 @@ public class PracticeServiceImpl implements PracticeService {
      * @throws TExamException If an error occurs while getting the practices.
      */
     @Override
-    public List<PracticeDto> getAllPractices() {
+    public List<PracticeReq> getAllPractices() {
         try {
             return practiceRepository.findAll().stream()
-                    .map(practiceMapper::convertModelToDto).toList();
+                    .map(practiceMapper::convertModelToReq).toList();
         } catch (Exception e) {
             throw new TExamException(e);
         }
