@@ -25,6 +25,6 @@ public class NotUuidImpl implements ConstraintValidator<NotUUID, UUID> {
      */
     @Override
     public boolean isValid(UUID uuid, ConstraintValidatorContext constraintValidatorContext) {
-        return Objects.nonNull(uuid) && uuid.toString().matches(TExamConstant.UUID_REGEX);
+        return Objects.isNull(uuid) || uuid.toString().matches(TExamConstant.UUID_REGEX);
     }
 }

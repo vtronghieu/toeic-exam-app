@@ -62,7 +62,7 @@ public class PracticeServiceImpl implements PracticeService {
     /**
      * Gets all practices.
      *
-     * @return A list of practice DTOs.
+     * @return A list of practice REQs.
      * @throws TExamException If an error occurs while getting the practices.
      */
     @Override

@@ -74,10 +74,13 @@ public class TExamExceptionConstant {
     public static final String PART_E003 = "The practice id is invalid";
     public static final String PART_E004 = "The part name is invalid";
     public static final String PART_E005 = "The part image is invalid";
-    //  Part test
-    public static final String PART_TEST_E001 = "Part test name already exists";
-    public static final String PART_TEST_E002 = "Part test type invalid";
-    public static final String PART_TEST_E003 = "Part test not found";
+    //  Test
+    public static final String TEST_E001 = "The part id is invalid";
+    public static final String TEST_E002 = "The test type is invalid";
+    public static final String TEST_E003 = "The test name is invalid";
+    public static final String TEST_E004 = "The test already exists";
+    public static final String TEST_E005 = "The test not found";
+    public static final String TEST_E006 = "The test type is undefined";
     //  Lesson
     public static final String LESSON_E001 = "The lesson already exists";
     public static final String LESSON_E002 = "The lesson not found";

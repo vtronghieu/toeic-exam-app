@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,7 +19,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Validated
 public class QuestionReq {
+    private UUID id;
+
     @NotEmpty(message = TExamExceptionConstant.QUESTION_E002)
     @NotBlank(message = TExamExceptionConstant.QUESTION_E002)
     private String type;

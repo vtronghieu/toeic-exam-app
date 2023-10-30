@@ -30,5 +30,6 @@ public class Test {
 
     private String name;
 
+    @Field(targetType = FieldType.STRING)
     private List<UUID> questionIDs;
 }

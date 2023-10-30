@@ -40,7 +40,7 @@ public class TExamApiConstant {
     //  Part
     public static final String PART_API_ROOT = API_ROOT + API_VERSION_1 + "/parts";
     //  Part test
-    public static final String PART_TEST_API_ROOT = API_ROOT + API_VERSION_1 + "/partTests";
+    public static final String TEST_API_ROOT = API_ROOT + API_VERSION_1 + "/tests";
     //  Lesson
     public static final String LESSON_API_ROOT = API_ROOT + API_VERSION_1 + "/lessons";
     //  Content

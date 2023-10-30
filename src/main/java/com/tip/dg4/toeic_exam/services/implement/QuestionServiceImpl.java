@@ -10,6 +10,7 @@ import com.tip.dg4.toeic_exam.mappers.QuestionDetailMapper;
 import com.tip.dg4.toeic_exam.mappers.QuestionMapper;
 import com.tip.dg4.toeic_exam.models.Question;
 import com.tip.dg4.toeic_exam.models.QuestionDetail;
+import com.tip.dg4.toeic_exam.models.Test;
 import com.tip.dg4.toeic_exam.models.enums.QuestionLevel;
 import com.tip.dg4.toeic_exam.models.enums.QuestionType;
 import com.tip.dg4.toeic_exam.repositories.QuestionRepository;
@@ -22,6 +23,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
@@ -44,7 +46,7 @@ public class QuestionServiceImpl implements QuestionService {
      * @throws TExamException      If an unexpected error occurs.
      */
     @Override
-    public void createQuestion(QuestionReq questionReq) {
+    public Question createQuestion(QuestionReq questionReq) {
         try {
             if (Objects.equals(QuestionType.UNDEFINED, QuestionType.getType(questionReq.getType()))) {
                 throw new BadRequestException(TExamExceptionConstant.QUESTION_E003);
@@ -54,11 +56,11 @@ public class QuestionServiceImpl implements QuestionService {
             }
 
             Question question = questionMapper.convertReqToModel(questionReq);
-            questionRepository.save(question);
+            questionRepository.save(question); // The first save to generate question id
 
             List<QuestionDetail> questionDetails = questionDetailService.resolveQuestionDetailsForQuestion(question);
             question.setQuestionDetails(questionDetails);
-            questionRepository.save(question);
+            return questionRepository.save(question);
         } catch (Exception e) {
             throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
         }
@@ -188,38 +190,51 @@ public class QuestionServiceImpl implements QuestionService {
     /**
      * Updates a question by ID.
      *
-     * @param id          The ID of the question to update.
-     * @param questionDto The question DTO to update.
+     * @param questionReq The question REQ to update.
      * @throws BadRequestException If the question type or level is invalid.
      * @throws NotFoundException   If the question with the specified ID does not exist.
      * @throws TExamException      If an unexpected error occurs.
      */
     @Override
-    public void updateQuestionById(UUID id, QuestionDto questionDto) {
+    public Question updateQuestion(QuestionReq questionReq) {
         try {
-            Question question = questionRepository.findById(id)
+            Question question = questionRepository.findById(questionReq.getId())
                     .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.QUESTION_E001));
-            QuestionType questionType = QuestionType.getType(questionDto.getType());
+            QuestionType questionType = QuestionType.getType(questionReq.getType());
             if (Objects.equals(QuestionType.UNDEFINED, questionType)) {
                 throw new BadRequestException(TExamExceptionConstant.QUESTION_E003);
             }
-            QuestionLevel questionLevel = QuestionLevel.getLevel(questionDto.getLevel());
+            QuestionLevel questionLevel = QuestionLevel.getLevel(questionReq.getLevel());
             if (Objects.equals(QuestionLevel.UNDEFINED, questionLevel)) {
                 throw new BadRequestException(TExamExceptionConstant.QUESTION_E005);
             }
 
             question.setType(questionType);
-            question.setObjectTypeId(questionDto.getObjectTypeId());
+            question.setObjectTypeId(questionReq.getObjectTypeId());
             question.setLevel(questionLevel);
-            question.setImageURLs(questionDto.getImageURLs());
-            question.setAudioURL(questionDto.getAudioURL());
-            question.setTranscript(questionDto.getTranscript());
-            question.setQuestionDetails(questionDetailMapper.convertDTOsToModels(questionDto.getQuestionDetails()));
+            question.setImageURLs(questionReq.getImageURLs());
+            question.setAudioURL(questionReq.getAudioURL());
+            question.setTranscript(questionReq.getTranscript());
+            question.setQuestionDetails(questionDetailMapper.convertREQsToModels(questionReq.getQuestionDetails()));
 
-            questionRepository.save(question);
+            return questionRepository.save(question);
         } catch (Exception e) {
             throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
         }
+    }
+
+    /**
+     * Updates a list of questions.
+     *
+     * @param questionREQs the list of question requests
+     * @return a list of updated questions
+     * @throws TExamException if an error occurs while updating the questions
+     */
+    @Override
+    public List<Question> updateQuestions(List<QuestionReq> questionREQs) {
+        if (CollectionUtils.isEmpty(questionREQs)) return Collections.emptyList();
+
+        return questionREQs.parallelStream().map(this::updateQuestion).toList();
     }
 
     /**
@@ -244,6 +259,21 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     /**
+     * Creates a list of questions for a given test.
+     *
+     * @param test         the test
+     * @param questionREQs the list of question requests
+     * @return a list of created questions
+     * @throws TExamException if an error occurs while creating the questions
+     */
+    @Override
+    public List<Question> createQuestions(Test test, List<QuestionReq> questionREQs) {
+        return questionREQs.parallelStream()
+                .map(this::createQuestion)
+                .toList();
+    }
+
+    /**
      * Finds a question by ID.
      *
      * @param questionId The ID of the question to find.
@@ -254,14 +284,37 @@ public class QuestionServiceImpl implements QuestionService {
         return questionRepository.findById(questionId);
     }
 
+    /**
+     * Finds all questions by their IDs.
+     *
+     * @param questionIDs The IDs of the questions to find.
+     * @return A list of all questions with the given IDs, or an empty list if no questions are found.
+     */
     @Override
     public List<Question> findByIDs(List<UUID> questionIDs) {
         return questionRepository.findAllById(questionIDs);
     }
 
+    /**
+     * Gets the IDs of all questions in the given list.
+     *
+     * @param questionDTOs The list of questions.
+     * @return A list of all question IDs in the given list.
+     */
     @Override
-    public List<UUID> getQuestionIDsByQuestions(List<QuestionDto> questions) {
-        return questions.parallelStream().map(QuestionDto::getId).toList();
+    public List<UUID> getQuestionIDsByQuestionDTOs(List<QuestionDto> questionDTOs) {
+        return questionDTOs.parallelStream().map(QuestionDto::getId).toList();
+    }
+
+    /**
+     * Gets the IDs of all questions in the given list.
+     *
+     * @param questions The list of questions.
+     * @return A list of all question IDs in the given list.
+     */
+    @Override
+    public List<UUID> getQuestionIDsByQuestions(List<Question> questions) {
+        return questions.parallelStream().map(Question::getId).toList();
     }
 
     /**

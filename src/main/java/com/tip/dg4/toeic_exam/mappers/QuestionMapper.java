@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,6 +62,7 @@ public class QuestionMapper {
         List<String> imageURLs = Optional.ofNullable(questionReq.getImageURLs()).orElse(new ArrayList<>());
 
         return Question.builder()
+                .id(questionReq.getId())
                 .type(QuestionType.getType(questionReq.getType()))
                 .objectTypeId(questionReq.getObjectTypeId())
                 .level(QuestionLevel.getLevel(questionReq.getLevel()))
@@ -69,5 +71,15 @@ public class QuestionMapper {
                 .transcript(questionReq.getTranscript())
                 .questionDetails(questionDetails)
                 .build();
+    }
+
+    public List<Question> convertREQsToModels(List<QuestionReq> questionREQs) {
+        return Optional.ofNullable(questionREQs).orElse(Collections.emptyList()).stream()
+                .map(this::convertReqToModel).toList();
+    }
+
+    public List<Question> convertDTOsToModels(List<QuestionDto> questionDTOs) {
+        return Optional.ofNullable(questionDTOs).orElse(Collections.emptyList()).stream()
+                .map(this::convertDtoToModel).toList();
     }
 }

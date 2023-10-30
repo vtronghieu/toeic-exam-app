@@ -1,7 +1,8 @@
 package com.tip.dg4.toeic_exam.mappers;
 
-import com.tip.dg4.toeic_exam.dto.TestDto;
 import com.tip.dg4.toeic_exam.dto.QuestionDto;
+import com.tip.dg4.toeic_exam.dto.TestDto;
+import com.tip.dg4.toeic_exam.dto.requests.TestReq;
 import com.tip.dg4.toeic_exam.models.Test;
 import com.tip.dg4.toeic_exam.models.enums.PracticeType;
 import com.tip.dg4.toeic_exam.services.QuestionService;
@@ -19,8 +20,17 @@ public class TestMapper {
     private final QuestionMapper questionMapper;
     private final QuestionService questionService;
 
+    public Test convertReqToModel(TestReq testREQ) {
+        return Test.builder()
+                .id(testREQ.getId())
+                .partId(testREQ.getPartId())
+                .type(PracticeType.getType(testREQ.getType()))
+                .name(testREQ.getName())
+                .build();
+    }
+
     public Test convertDtoToModel(TestDto testDto) {
-        List<UUID> questionIDs = questionService.getQuestionIDsByQuestions(testDto.getQuestions());
+        List<UUID> questionIDs = questionService.getQuestionIDsByQuestionDTOs(testDto.getQuestions());
 
         return Test.builder()
                 .id(testDto.getId())

@@ -108,12 +108,10 @@ public class QuestionController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @PutMapping(params = TExamParamConstant.ID,
-                produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
-    public ResponseEntity<ResponseData> updateQuestionById(@RequestParam(TExamParamConstant.ID) UUID id,
-                                                           @RequestBody @Valid QuestionDto questionDto) {
-        questionService.updateQuestionById(id, questionDto);
+    public ResponseEntity<ResponseData> updateQuestion(@RequestBody @Valid QuestionReq questionREQ) {
+        questionService.updateQuestion(questionREQ);
 
         HttpStatus httpStatus = HttpStatus.OK;
         ResponseData result = new ResponseData(
