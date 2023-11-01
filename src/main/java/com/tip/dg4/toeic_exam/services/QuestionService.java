@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface QuestionService {
-    Question createQuestion(QuestionReq questionReq);
+    Question createQuestion(UUID objectTypeId, QuestionReq questionReq);
 
     List<QuestionDto> getQuestions(int page, int size);
 

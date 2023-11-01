@@ -26,10 +26,12 @@ import java.util.UUID;
 public class QuestionController {
     private final QuestionService questionService;
 
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(params = TExamParamConstant.OBJECT_TYPE_ID,
+                 produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
-    public ResponseEntity<ResponseData> createQuestion(@RequestBody @Valid QuestionReq questionReq) {
-        questionService.createQuestion(questionReq);
+    public ResponseEntity<ResponseData> createQuestion(@RequestParam(TExamParamConstant.OBJECT_TYPE_ID) UUID objectTypeId,
+                                                       @RequestBody @Valid QuestionReq questionReq) {
+        questionService.createQuestion(objectTypeId, questionReq);
 
         HttpStatus httpStatus = HttpStatus.CREATED;
         ResponseData result = new ResponseData(

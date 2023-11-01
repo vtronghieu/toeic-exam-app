@@ -41,12 +41,13 @@ public class QuestionServiceImpl implements QuestionService {
     /**
      * Creates a new question.
      *
+     * @param objectTypeId The id of the object type.
      * @param questionReq The question request to create.
      * @throws BadRequestException If the question type or level is invalid.
      * @throws TExamException      If an unexpected error occurs.
      */
     @Override
-    public Question createQuestion(QuestionReq questionReq) {
+    public Question createQuestion(UUID objectTypeId, QuestionReq questionReq) {
         try {
             if (Objects.equals(QuestionType.UNDEFINED, QuestionType.getType(questionReq.getType()))) {
                 throw new BadRequestException(TExamExceptionConstant.QUESTION_E003);
@@ -56,6 +57,7 @@ public class QuestionServiceImpl implements QuestionService {
             }
 
             Question question = questionMapper.convertReqToModel(questionReq);
+            question.setObjectTypeId(objectTypeId);
             questionRepository.save(question); // The first save to generate question id
 
             List<QuestionDetail> questionDetails = questionDetailService.resolveQuestionDetailsForQuestion(question);
@@ -210,7 +212,6 @@ public class QuestionServiceImpl implements QuestionService {
             }
 
             question.setType(questionType);
-            question.setObjectTypeId(questionReq.getObjectTypeId());
             question.setLevel(questionLevel);
             question.setImageURLs(questionReq.getImageURLs());
             question.setAudioURL(questionReq.getAudioURL());
@@ -269,7 +270,7 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public List<Question> createQuestions(Test test, List<QuestionReq> questionREQs) {
         return questionREQs.parallelStream()
-                .map(this::createQuestion)
+                .map(questionReq -> this.createQuestion(test.getId(), questionReq))
                 .toList();
     }
 

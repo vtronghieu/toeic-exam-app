@@ -1,6 +1,5 @@
 package com.tip.dg4.toeic_exam.dto.requests;
 
-import com.tip.dg4.toeic_exam.annotations.NotUUID;
 import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -26,9 +25,6 @@ public class QuestionReq {
     @NotEmpty(message = TExamExceptionConstant.QUESTION_E002)
     @NotBlank(message = TExamExceptionConstant.QUESTION_E002)
     private String type;
-
-    @NotUUID(message = TExamExceptionConstant.QUESTION_E008)
-    private UUID objectTypeId;
 
     @NotEmpty(message = TExamExceptionConstant.QUESTION_E004)
     private String level;

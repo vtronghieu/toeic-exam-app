@@ -64,7 +64,6 @@ public class QuestionMapper {
         return Question.builder()
                 .id(questionReq.getId())
                 .type(QuestionType.getType(questionReq.getType()))
-                .objectTypeId(questionReq.getObjectTypeId())
                 .level(QuestionLevel.getLevel(questionReq.getLevel()))
                 .imageURLs(imageURLs)
                 .audioURL(questionReq.getAudioURL())
