@@ -46,11 +46,14 @@ public class TestMapper {
                 .orElse(Collections.emptyList()).stream()
                 .map(questionMapper::convertModelToDto)
                 .toList();
+        int totalQuestions = questionService.getTotalQuestions(questionDTOs);
 
         return TestDto.builder()
                 .id(test.getId())
                 .partId(test.getPartId())
                 .type(PracticeType.getValueType(test.getType()))
+                .name(test.getName())
+                .totalQuestions(totalQuestions)
                 .questions(questionDTOs)
                 .build();
     }

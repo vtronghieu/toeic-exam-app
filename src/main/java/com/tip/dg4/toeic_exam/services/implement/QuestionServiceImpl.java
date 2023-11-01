@@ -1,6 +1,7 @@
 package com.tip.dg4.toeic_exam.services.implement;
 
 import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
+import com.tip.dg4.toeic_exam.dto.QuestionDetailDto;
 import com.tip.dg4.toeic_exam.dto.QuestionDto;
 import com.tip.dg4.toeic_exam.dto.requests.QuestionReq;
 import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
@@ -42,7 +43,7 @@ public class QuestionServiceImpl implements QuestionService {
      * Creates a new question.
      *
      * @param objectTypeId The id of the object type.
-     * @param questionReq The question request to create.
+     * @param questionReq  The question request to create.
      * @throws BadRequestException If the question type or level is invalid.
      * @throws TExamException      If an unexpected error occurs.
      */
@@ -272,6 +273,17 @@ public class QuestionServiceImpl implements QuestionService {
         return questionREQs.parallelStream()
                 .map(questionReq -> this.createQuestion(test.getId(), questionReq))
                 .toList();
+    }
+
+    /**
+     * Gets the total number of questions in the given list of question DTOs.
+     *
+     * @param questionDTOs The list of question DTOs.
+     * @return The total number of questions.
+     */
+    @Override
+    public int getTotalQuestions(List<QuestionDto> questionDTOs) {
+        return questionDTOs.stream().mapToInt(questionDto -> questionDto.getQuestionDetails().size()).sum();
     }
 
     /**

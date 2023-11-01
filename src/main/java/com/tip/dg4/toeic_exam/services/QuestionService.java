@@ -30,6 +30,8 @@ public interface QuestionService {
 
     List<Question> createQuestions(Test test, List<QuestionReq> questionREQs);
 
+    int getTotalQuestions(List<QuestionDto> questionDTOs);
+
     Optional<Question> findById(UUID questionId);
 
     List<Question> findByIDs(List<UUID> questionIDs);
