@@ -42,6 +42,7 @@ public class TestServiceImpl implements TestService {
      */
     @Override
     public void createTest(TestReq testREQ) {
+        UUID newTestID = null;
         try {
             Part part = partService.findById(testREQ.getPartId())
                     .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PART_E002));
@@ -56,14 +57,10 @@ public class TestServiceImpl implements TestService {
             List<Test> tests = Optional.ofNullable(part.getTests()).orElse(new ArrayList<>());
             Test newTest = testMapper.convertReqToModel(testREQ);
 
-            newTest.setId(UUID.randomUUID());
             tests.add(newTest);
             part.setTests(tests);
-            /*
-            tests.add(testMapper.convertReqToModel(testREQ));
-            part.setTests(tests);
-            practiceService.saveByPart(part); // The first save to generate ID for the test
-            */
+            practiceService.saveByPart(part);// The first save to generate ID for the test
+            newTestID = newTest.getId();
             if (!CollectionUtils.isEmpty(testREQ.getQuestions())) {
                 tests.stream()
                         .filter(test -> testREQ.getName().equals(test.getName()))
@@ -77,10 +74,11 @@ public class TestServiceImpl implements TestService {
                             test.setQuestionIDs(questionIDs);
                         });
                 part.setTests(tests);
-//                practiceService.saveByPart(part);
+                practiceService.saveByPart(part);
             }
-            practiceService.saveByPart(part);
         } catch (Exception e) {
+            if (Objects.nonNull(newTestID)) this.deleteTestById(newTestID);
+
             throw new TExamException(e);
         }
     }
@@ -185,7 +183,7 @@ public class TestServiceImpl implements TestService {
     }
 
     /**
-     * Deletes a test by its ID.
+     * Deletes a test by its ID, and remove all questions of this test.
      *
      * @param id the ID of the test
      * @throws NotFoundException if the test or the part does not exist
@@ -198,10 +196,15 @@ public class TestServiceImpl implements TestService {
             Part part = partService.findById(test.getPartId())
                     .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PART_E002));
 
-            part.getTests().parallelStream()
-                    .filter(t -> id.equals(t.getId()))
-                    .findFirst()
-                    .ifPresent(t -> t.getQuestionIDs().parallelStream().forEach(questionService::deleteQuestionById));
+            part.getTests().removeIf(t -> {
+                if (id.equals(t.getId())) {
+                    if (Objects.nonNull(t.getQuestionIDs())) {
+                        t.getQuestionIDs().parallelStream().forEach(questionService::deleteQuestionById);
+                    }
+                    return true;
+                }
+                return false;
+            });
             practiceService.saveByPart(part);
         } catch (Exception e) {
             throw new TExamException(e);
