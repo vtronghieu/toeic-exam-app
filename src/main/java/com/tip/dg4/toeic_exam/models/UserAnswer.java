@@ -13,7 +13,7 @@ import java.util.UUID;
 public class UserAnswer {
     @Field(targetType = FieldType.STRING)
     private UUID questionId;
-    private List<ChildQuestion> childQuestions;
+    private List<QuestionDetail> questionDetails;
     private String answerContent;
     private boolean isCorrect;
 }

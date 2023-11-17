@@ -1,5 +1,6 @@
 package com.tip.dg4.toeic_exam.models;
 
+import com.tip.dg4.toeic_exam.models.enums.QuestionType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;

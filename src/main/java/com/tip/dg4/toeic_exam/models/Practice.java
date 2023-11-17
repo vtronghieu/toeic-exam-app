@@ -1,6 +1,9 @@
 package com.tip.dg4.toeic_exam.models;
 
+import com.tip.dg4.toeic_exam.annotations.GenerateID;
+import com.tip.dg4.toeic_exam.models.enums.PracticeType;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
@@ -14,13 +17,19 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Document(collection = "practices")
 public class Practice {
     @Id
+    @GenerateID
     @Field(targetType = FieldType.STRING)
     private UUID id;
+
     private String name;
+
     private PracticeType type;
-    private String image;
-    private List<PracticePart> practiceParts;
+
+    private String imageURL;
+
+    private List<Part> parts;
 }

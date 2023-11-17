@@ -7,5 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface UserRepository extends MongoRepository<User, UUID> {
-    Optional<User> findByAccountId(UUID accountId);
+    Optional<User> findByUsername(String username);
+
+    boolean existsByUsername(String username);
 }

@@ -1,39 +1,35 @@
 package com.tip.dg4.toeic_exam.mappers;
 
-import com.tip.dg4.toeic_exam.dto.RegisterDto;
 import com.tip.dg4.toeic_exam.dto.UserDto;
 import com.tip.dg4.toeic_exam.models.User;
+import com.tip.dg4.toeic_exam.models.enums.UserRole;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class UserMapper {
-    public User convertRegisterDtoToUser(RegisterDto registerDto) {
-        User user = new User();
+    private final UserInfoMapper userInfoMapper;
 
-        user.setSurname(registerDto.getSurname());
-        user.setName(registerDto.getName());
-        user.setEmail(registerDto.getEmail());
-        user.setDateOfBirth(registerDto.getDateOfBirth());
-        user.setAddress(registerDto.getAddress());
-        user.setPhone(registerDto.getPhone());
-        user.setAge(registerDto.getAge());
-
-        return user;
+    public User convertDtoToModel(UserDto userDto) {
+        return User.builder()
+                .id(userDto.getId())
+                .username(userDto.getUsername())
+                .password(userDto.getPassword())
+                .role(UserRole.getRole(userDto.getRole()))
+                .isActive(userDto.isActive())
+                .userInfo(userInfoMapper.convertDtoToModel(userDto.getUserInfo()))
+                .build();
     }
 
     public UserDto convertModelToDto(User user) {
-        UserDto userDto = new UserDto();
-
-        userDto.setId(user.getId());
-        userDto.setSurname(user.getSurname());
-        userDto.setName(user.getName());
-        userDto.setEmail(user.getEmail());
-        userDto.setDateOfBirth(user.getDateOfBirth());
-        userDto.setAddress(user.getAddress());
-        userDto.setPhone(user.getPhone());
-        userDto.setAge(user.getAge());
-        userDto.setAccountId(user.getAccountId());
-
-        return userDto;
+        return UserDto.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .password(user.getPassword())
+                .role(UserRole.getValue(user.getRole()))
+                .isActive(user.isActive())
+                .userInfo(userInfoMapper.convertModelToDto(user.getUserInfo()))
+                .build();
     }
 }

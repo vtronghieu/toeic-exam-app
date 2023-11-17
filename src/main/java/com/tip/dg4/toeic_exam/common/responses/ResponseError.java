@@ -16,5 +16,5 @@ public class ResponseError {
     private LocalDateTime timestamp;
     private int code;
     private String status;
-    private String message;
+    private Object message;
 }

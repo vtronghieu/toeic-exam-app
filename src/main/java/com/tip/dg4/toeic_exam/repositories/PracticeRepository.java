@@ -6,5 +6,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.UUID;
 
 public interface PracticeRepository extends MongoRepository<Practice, UUID> {
-    boolean existsByNameIgnoreCase(String name);
+    boolean existsByName(String name);
 }
