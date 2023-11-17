@@ -305,7 +305,7 @@ public class QuestionServiceImpl implements QuestionService {
      */
     @Override
     public List<Question> findByIDs(List<UUID> questionIDs) {
-        return questionRepository.findAllById(questionIDs);
+        return Objects.nonNull(questionIDs) ? questionRepository.findAllById(questionIDs) : Collections.emptyList();
     }
 
     /**
