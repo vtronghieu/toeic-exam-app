@@ -1,7 +1,7 @@
 package com.tip.dg4.toeic_exam.dto.requests;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
+import com.tip.dg4.toeic_exam.common.constants.ExceptionConstant;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -21,15 +21,15 @@ public class QuestionDetailReq {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private UUID id;
 
-    @NotEmpty(message = TExamExceptionConstant.QUESTION_DETAIL_E001)
-    @NotBlank(message = TExamExceptionConstant.QUESTION_DETAIL_E001)
+    @NotEmpty(message = ExceptionConstant.QUESTION_DETAIL_E001)
+    @NotBlank(message = ExceptionConstant.QUESTION_DETAIL_E001)
     private String contentQuestion;
 
-    @NotEmpty(message = TExamExceptionConstant.QUESTION_DETAIL_E002)
-    @Size(min = 2, message = TExamExceptionConstant.QUESTION_DETAIL_E004)
+    @NotEmpty(message = ExceptionConstant.QUESTION_DETAIL_E002)
+    @Size(min = 2, message = ExceptionConstant.QUESTION_DETAIL_E004)
     private Map<String, String> answers;
 
-    @NotEmpty(message = TExamExceptionConstant.QUESTION_DETAIL_E003)
-    @NotBlank(message = TExamExceptionConstant.QUESTION_DETAIL_E003)
+    @NotEmpty(message = ExceptionConstant.QUESTION_DETAIL_E003)
+    @NotBlank(message = ExceptionConstant.QUESTION_DETAIL_E003)
     private String correctAnswer;
 }

@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class TExamSuccessfulConstant {
+public class SuccessfulConstant {
     //  Auth
     public static final String AUTH_S001 = "Logged in successfully";
     public static final String AUTH_S002 = "Registered successfully";
@@ -74,7 +74,7 @@ public class TExamSuccessfulConstant {
     public static final String CONTENT_S003 = "Get the content successfully";
     public static final String CONTENT_S004 = "The content was updated successfully";
     public static final String CONTENT_S005 = "The content was deleted successfully";
-    //  Test history
-    public static final String TEST_HISTORY_S001 = "Send answer successfully";
-    public static final String TEST_HISTORY_S002 = "Get test histories successfully";
+    //  Statistic
+    public static final String STATISTIC_S001 = "Get the statistic successfully";
+    public static final String STATISTIC_S002 = "Send answer successfully";
 }

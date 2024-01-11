@@ -1,6 +1,6 @@
 package com.tip.dg4.toeic_exam.services.implement;
 
-import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
+import com.tip.dg4.toeic_exam.common.constants.ExceptionConstant;
 import com.tip.dg4.toeic_exam.dto.PracticeDto;
 import com.tip.dg4.toeic_exam.dto.requests.PracticeReq;
 import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
@@ -46,10 +46,10 @@ public class PracticeServiceImpl implements PracticeService {
     public void createPractice(PracticeReq practiceReq) {
         try {
             if (practiceRepository.existsByName(practiceReq.getName())) {
-                throw new ConflictException(TExamExceptionConstant.PRACTICE_E001);
+                throw new ConflictException(ExceptionConstant.PRACTICE_E001);
             }
             if (Objects.equals(PracticeType.UNDEFINED, PracticeType.getType(practiceReq.getType()))) {
-                throw new BadRequestException(TExamExceptionConstant.PRACTICE_E006);
+                throw new BadRequestException(ExceptionConstant.PRACTICE_E006);
             }
 
             Practice practice = practiceMapper.convertReqToModel(practiceReq);
@@ -88,7 +88,7 @@ public class PracticeServiceImpl implements PracticeService {
         try {
             return practiceRepository.findById(id)
                     .map(practiceMapper::convertModelToDto)
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PRACTICE_E003));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.PRACTICE_E003));
         } catch (Exception e) {
             throw new TExamException(e);
         }
@@ -107,14 +107,14 @@ public class PracticeServiceImpl implements PracticeService {
     public void updatePractice(UUID id, PracticeReq practiceReq) {
         try {
             Practice practice = practiceRepository.findById(id)
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PRACTICE_E003));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.PRACTICE_E003));
             if (practiceRepository.existsByName(practiceReq.getName()) &&
                     !Objects.equals(practiceReq.getName(), practice.getName())) {
-                throw new BadRequestException(TExamExceptionConstant.PRACTICE_E001);
+                throw new BadRequestException(ExceptionConstant.PRACTICE_E001);
             }
             PracticeType practiceType = PracticeType.getType(practiceReq.getType());
             if (Objects.equals(PracticeType.UNDEFINED, practiceType)) {
-                throw new BadRequestException(TExamExceptionConstant.PRACTICE_E006);
+                throw new BadRequestException(ExceptionConstant.PRACTICE_E006);
             }
 
             practice.setName(practiceReq.getName());
@@ -137,7 +137,7 @@ public class PracticeServiceImpl implements PracticeService {
     public void deletePractice(UUID id) {
         try {
             if (!practiceRepository.existsById(id)) {
-                throw new NotFoundException(TExamExceptionConstant.PRACTICE_E003);
+                throw new NotFoundException(ExceptionConstant.PRACTICE_E003);
             }
             practiceRepository.deleteById(id);
         } catch (Exception e) {
@@ -196,7 +196,7 @@ public class PracticeServiceImpl implements PracticeService {
     @Override
     public void saveByPart(Part part) {
         Practice practice = practiceRepository.findById(part.getPracticeId())
-                .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PRACTICE_E003));
+                .orElseThrow(() -> new NotFoundException(ExceptionConstant.PRACTICE_E003));
 
         practice.getParts().stream()
                 .filter(localPart -> part.getId().equals(localPart.getId()))
@@ -210,7 +210,7 @@ public class PracticeServiceImpl implements PracticeService {
                     localPart.setTests(part.getTests());
 
                     return localPart;
-                }).orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PART_E002));
+                }).orElseThrow(() -> new NotFoundException(ExceptionConstant.PART_E002));
         practiceRepository.save(practice);
     }
 
@@ -222,7 +222,7 @@ public class PracticeServiceImpl implements PracticeService {
     @Override
     public void saveByLesson(Lesson lesson) {
         Part part = partService.findById(lesson.getPartId())
-                .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PART_E002));
+                .orElseThrow(() -> new NotFoundException(ExceptionConstant.PART_E002));
 
         part.getLessons().stream()
                 .filter(localLesson -> lesson.getId().equals(localLesson.getId()))
@@ -233,7 +233,7 @@ public class PracticeServiceImpl implements PracticeService {
                     localLesson.setContents(lesson.getContents());
 
                     return localLesson;
-                }).orElseThrow(() -> new NotFoundException(TExamExceptionConstant.LESSON_E002));
+                }).orElseThrow(() -> new NotFoundException(ExceptionConstant.LESSON_E002));
         this.saveByPart(part);
     }
 }

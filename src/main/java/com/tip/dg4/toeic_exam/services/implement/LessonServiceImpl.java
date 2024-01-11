@@ -1,6 +1,6 @@
 package com.tip.dg4.toeic_exam.services.implement;
 
-import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
+import com.tip.dg4.toeic_exam.common.constants.ExceptionConstant;
 import com.tip.dg4.toeic_exam.dto.LessonDto;
 import com.tip.dg4.toeic_exam.dto.requests.LessonReq;
 import com.tip.dg4.toeic_exam.exceptions.ConflictException;
@@ -38,9 +38,9 @@ public class LessonServiceImpl implements LessonService {
     public void createLesson(LessonReq lessonREQ) {
         try {
             Part part = partService.findById(lessonREQ.getPartId())
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PART_E002));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.PART_E002));
             if (existsInPartByName(lessonREQ.getPartId(), lessonREQ.getName())) {
-                throw new ConflictException(TExamExceptionConstant.LESSON_E001);
+                throw new ConflictException(ExceptionConstant.LESSON_E001);
             }
             Lesson newLesson = lessonMapper.convertReqToModel(lessonREQ);
             List<Lesson> lessons = Optional.ofNullable(part.getLessons()).orElse(new ArrayList<>());
@@ -80,7 +80,7 @@ public class LessonServiceImpl implements LessonService {
     public List<LessonDto> getLessonsByPartId(UUID partId) {
         try {
             Part part = partService.findById(partId)
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PART_E002));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.PART_E002));
 
             return part.getLessons().stream().map(lessonMapper::convertModelDto).toList();
         } catch (Exception e) {
@@ -100,7 +100,7 @@ public class LessonServiceImpl implements LessonService {
     public LessonDto getLessonById(UUID id) {
         try {
             Lesson lesson = this.findById(id)
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.LESSON_E002));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.LESSON_E002));
 
             return lessonMapper.convertModelDto(lesson);
         } catch (Exception e) {
@@ -120,10 +120,10 @@ public class LessonServiceImpl implements LessonService {
     public void updateLessonById(LessonReq lessonREQ) {
         try {
             if (!existsById(lessonREQ.getId())) {
-                throw new NotFoundException(TExamExceptionConstant.LESSON_E002);
+                throw new NotFoundException(ExceptionConstant.LESSON_E002);
             }
             Part part = partService.findById(lessonREQ.getPartId())
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PART_E002));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.PART_E002));
 
             part.getLessons().stream()
                     .filter(lesson -> lessonREQ.getId().equals(lesson.getId()))
@@ -131,13 +131,13 @@ public class LessonServiceImpl implements LessonService {
                     .map(lesson -> {
                         if (!Objects.equals(lessonREQ.getName(), lesson.getName()) &&
                                 existsInPartByName(lessonREQ.getPartId(), lessonREQ.getName())) {
-                            throw new ConflictException(TExamExceptionConstant.LESSON_E001);
+                            throw new ConflictException(ExceptionConstant.LESSON_E001);
                         }
                         lesson.setPartId(lessonREQ.getPartId());
                         lesson.setName(lessonREQ.getName());
 
                         return lesson;
-                    }).orElseThrow(() -> new NotFoundException(TExamExceptionConstant.LESSON_E005));
+                    }).orElseThrow(() -> new NotFoundException(ExceptionConstant.LESSON_E005));
             practiceService.saveByPart(part);
         } catch (Exception e) {
             throw new TExamException(e);
@@ -155,7 +155,7 @@ public class LessonServiceImpl implements LessonService {
     public void deleteLessonById(UUID id) {
         try {
             Lesson lesson = this.findById(id)
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.LESSON_E002));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.LESSON_E002));
 
             partService.findById(lesson.getPartId())
                     .ifPresent(part -> {

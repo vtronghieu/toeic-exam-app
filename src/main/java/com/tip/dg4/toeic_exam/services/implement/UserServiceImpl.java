@@ -1,8 +1,8 @@
 package com.tip.dg4.toeic_exam.services.implement;
 
-import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
-import com.tip.dg4.toeic_exam.dto.ChangePasswordDto;
-import com.tip.dg4.toeic_exam.dto.UserDto;
+import com.tip.dg4.toeic_exam.common.constants.ExceptionConstant;
+import com.tip.dg4.toeic_exam.dto.user.ChangePasswordDto;
+import com.tip.dg4.toeic_exam.dto.user.UserDto;
 import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
 import com.tip.dg4.toeic_exam.exceptions.ConflictException;
 import com.tip.dg4.toeic_exam.exceptions.NotFoundException;
@@ -46,10 +46,10 @@ public class UserServiceImpl implements UserService {
     public void createUser(UserDto userDto) {
         try {
             if (userRepository.existsByUsername(userDto.getUsername())) {
-                throw new ConflictException(TExamExceptionConstant.USER_E002);
+                throw new ConflictException(ExceptionConstant.USER_E002);
             }
             if (Objects.equals(UserRole.UNDEFINED, UserRole.getRole(userDto.getRole()))) {
-                throw new BadRequestException(TExamExceptionConstant.USER_E003);
+                throw new BadRequestException(ExceptionConstant.USER_E003);
             }
             User user = userMapper.convertDtoToModel(userDto);
 
@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService {
             user.setPassword(passwordEncoder.encode(userDto.getPassword()));
             userRepository.save(user);
         } catch (Exception e) {
-            throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
+            throw new TExamException(ExceptionConstant.TEXAM_E001, e);
         }
     }
 
@@ -82,7 +82,7 @@ public class UserServiceImpl implements UserService {
                     .map(userMapper::convertModelToDto)
                     .getContent();
         } catch (Exception e) {
-            throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
+            throw new TExamException(ExceptionConstant.TEXAM_E001, e);
         }
     }
 
@@ -97,9 +97,9 @@ public class UserServiceImpl implements UserService {
     public UserDto getUserById(UUID id) {
         try {
             return userRepository.findById(id).map(userMapper::convertModelToDto)
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.USER_E001));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.USER_E001));
         } catch (Exception e) {
-            throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
+            throw new TExamException(ExceptionConstant.TEXAM_E001, e);
         }
     }
 
@@ -115,9 +115,9 @@ public class UserServiceImpl implements UserService {
         try {
             return userRepository.findByUsername(username)
                     .map(userMapper::convertModelToDto)
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.USER_E001));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.USER_E001));
         } catch (Exception e) {
-            throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
+            throw new TExamException(ExceptionConstant.TEXAM_E001, e);
         }
     }
 
@@ -134,18 +134,18 @@ public class UserServiceImpl implements UserService {
     public void changePassword(UUID id, ChangePasswordDto changePasswordDto) {
         try {
             User user = userRepository.findById(id)
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.USER_E001));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.USER_E001));
             if (!passwordEncoder.matches(changePasswordDto.getOldPassword(), user.getPassword())) {
-                throw new BadRequestException(TExamExceptionConstant.USER_E008);
+                throw new BadRequestException(ExceptionConstant.USER_E008);
             }
             if (!Objects.equals(changePasswordDto.getNewPassword(), changePasswordDto.getConfirmNewPassword())) {
-                throw new BadRequestException(TExamExceptionConstant.USER_E009);
+                throw new BadRequestException(ExceptionConstant.USER_E009);
             }
 
             user.setPassword(passwordEncoder.encode(changePasswordDto.getNewPassword()));
             userRepository.save(user);
         } catch (Exception e) {
-            throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
+            throw new TExamException(ExceptionConstant.TEXAM_E001, e);
         }
     }
 
@@ -162,10 +162,10 @@ public class UserServiceImpl implements UserService {
     public void updateUserById(UUID id, UserDto userDto) {
         try {
             User user = userRepository.findById(id)
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.USER_E001));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.USER_E001));
             UserRole userRole = UserRole.getRole(userDto.getRole());
             if (Objects.equals(UserRole.UNDEFINED, userRole)) {
-                throw new BadRequestException(TExamExceptionConstant.USER_E003);
+                throw new BadRequestException(ExceptionConstant.USER_E003);
             }
 
             UserInfo userInfo = userInfoService.setUserInfo(userDto.getUserInfo(), user.getUserInfo());
@@ -176,7 +176,7 @@ public class UserServiceImpl implements UserService {
 
             userRepository.save(user);
         } catch (Exception e) {
-            throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
+            throw new TExamException(ExceptionConstant.TEXAM_E001, e);
         }
     }
 
@@ -191,7 +191,7 @@ public class UserServiceImpl implements UserService {
     public void deleteUserById(UUID id) {
         try {
             if (!userRepository.existsById(id)) {
-                throw new NotFoundException(TExamExceptionConstant.USER_E001);
+                throw new NotFoundException(ExceptionConstant.USER_E001);
             }
             userRepository.deleteById(id);
         } catch (Exception e) {

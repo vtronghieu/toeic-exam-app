@@ -1,6 +1,6 @@
 package com.tip.dg4.toeic_exam.services.implement;
 
-import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
+import com.tip.dg4.toeic_exam.common.constants.ExceptionConstant;
 import com.tip.dg4.toeic_exam.dto.VocabularyCategoryDto;
 import com.tip.dg4.toeic_exam.exceptions.ConflictException;
 import com.tip.dg4.toeic_exam.exceptions.NotFoundException;
@@ -36,7 +36,7 @@ public class VocabularyCategoryServiceImpl implements VocabularyCategoryService 
     public void createVocabularyCategory(VocabularyCategoryDto vocabularyCategoryDto) {
         String formatName = TExamUtil.toTitleCase(vocabularyCategoryDto.getName());
         if (vocabularyCategoryRepository.existsByName(formatName)) {
-            throw new ConflictException(TExamExceptionConstant.VOCABULARY_CATEGORY_E001 + formatName);
+            throw new ConflictException(ExceptionConstant.VOCABULARY_CATEGORY_E001 + formatName);
         }
 
         vocabularyCategoryDto.setName(formatName);
@@ -54,7 +54,7 @@ public class VocabularyCategoryServiceImpl implements VocabularyCategoryService 
     @Override
     public VocabularyCategoryDto getVocabularyCategoryById(UUID categoryId) {
         VocabularyCategory category = vocabularyCategoryRepository.findById(categoryId)
-                                      .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.VOCABULARY_CATEGORY_E002));
+                                      .orElseThrow(() -> new NotFoundException(ExceptionConstant.VOCABULARY_CATEGORY_E002));
 
         return vocabularyCategoryMapper.convertModelToDto(category);
     }
@@ -63,7 +63,7 @@ public class VocabularyCategoryServiceImpl implements VocabularyCategoryService 
     public VocabularyCategoryDto getVocabularyCategoryByName(String name) {
         Optional<VocabularyCategory> optionalCategory = vocabularyCategoryRepository.findOneByNameIgnoreCase(name);
         if (optionalCategory.isEmpty()) {
-            throw new NotFoundException(TExamExceptionConstant.VOCABULARY_CATEGORY_E004 + name);
+            throw new NotFoundException(ExceptionConstant.VOCABULARY_CATEGORY_E004 + name);
         }
 
         VocabularyCategory vocabularyCategory = optionalCategory.get();
@@ -74,15 +74,15 @@ public class VocabularyCategoryServiceImpl implements VocabularyCategoryService 
     public void updateVocabularyCategory(UUID vocabularyCategoryId, VocabularyCategoryDto vocabularyCategoryDto) {
         Optional<VocabularyCategory> optionalVocabularyCategory = vocabularyCategoryRepository.findById(vocabularyCategoryId);
         if (optionalVocabularyCategory.isEmpty()) {
-            log.error(TExamExceptionConstant.VOCABULARY_CATEGORY_E003 + vocabularyCategoryId);
-            throw new NotFoundException(TExamExceptionConstant.VOCABULARY_CATEGORY_E002);
+            log.error(ExceptionConstant.VOCABULARY_CATEGORY_E003 + vocabularyCategoryId);
+            throw new NotFoundException(ExceptionConstant.VOCABULARY_CATEGORY_E002);
         }
 
         VocabularyCategory vocabularyCategory = optionalVocabularyCategory.get();
         String formatName = TExamUtil.toTitleCase(vocabularyCategoryDto.getName());
         if (vocabularyCategory.isActive() == vocabularyCategoryDto.isActive() &&
             vocabularyCategoryRepository.existsByName(formatName)) {
-            throw new ConflictException(TExamExceptionConstant.VOCABULARY_CATEGORY_E001 + formatName);
+            throw new ConflictException(ExceptionConstant.VOCABULARY_CATEGORY_E001 + formatName);
         }
         vocabularyCategory.setName(vocabularyCategoryDto.getName());
         vocabularyCategory.setActive(vocabularyCategoryDto.isActive());
@@ -93,8 +93,8 @@ public class VocabularyCategoryServiceImpl implements VocabularyCategoryService 
     @Override
     public void deleteVocabularyCategoryById(UUID categoryId) {
         if (!vocabularyCategoryRepository.existsById(categoryId)) {
-            log.error(TExamExceptionConstant.VOCABULARY_CATEGORY_E003 + categoryId);
-            throw new NotFoundException(TExamExceptionConstant.VOCABULARY_CATEGORY_E002);
+            log.error(ExceptionConstant.VOCABULARY_CATEGORY_E003 + categoryId);
+            throw new NotFoundException(ExceptionConstant.VOCABULARY_CATEGORY_E002);
         }
         vocabularyService.deleteCategoryIdFromCategoryIds(categoryId);
         vocabularyCategoryRepository.deleteById(categoryId);

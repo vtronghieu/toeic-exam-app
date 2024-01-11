@@ -1,6 +1,6 @@
 package com.tip.dg4.toeic_exam.mappers;
 
-import com.tip.dg4.toeic_exam.dto.QuestionDto;
+import com.tip.dg4.toeic_exam.dto.question.QuestionDto;
 import com.tip.dg4.toeic_exam.dto.TestDto;
 import com.tip.dg4.toeic_exam.dto.requests.TestReq;
 import com.tip.dg4.toeic_exam.models.Test;
@@ -42,7 +42,7 @@ public class TestMapper {
     }
 
     public TestDto convertModelToDto(Test test) {
-        List<QuestionDto> questionDTOs = Optional.of(questionService.findByIDs(test.getQuestionIDs()))
+        List<QuestionDto> questionDTOs = Optional.ofNullable(questionService.findByIDs(test.getQuestionIDs()))
                 .orElse(Collections.emptyList()).stream()
                 .map(questionMapper::convertModelToDto)
                 .toList();

@@ -2,7 +2,7 @@ package com.tip.dg4.toeic_exam.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.tip.dg4.toeic_exam.annotations.NotUUID;
-import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
+import com.tip.dg4.toeic_exam.common.constants.ExceptionConstant;
 import com.tip.dg4.toeic_exam.models.Example;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -24,14 +24,14 @@ public class ContentDto {
     private UUID id;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    @NotUUID(message = TExamExceptionConstant.CONTENT_E003)
+    @NotUUID(message = ExceptionConstant.CONTENT_E003)
     private UUID lessonId;
 
-    @NotEmpty(message = TExamExceptionConstant.CONTENT_E001)
-    @NotBlank(message = TExamExceptionConstant.CONTENT_E001)
+    @NotEmpty(message = ExceptionConstant.CONTENT_E001)
+    @NotBlank(message = ExceptionConstant.CONTENT_E001)
     private String title;
 
-    @NotNull(message = TExamExceptionConstant.CONTENT_E002)
+    @NotNull(message = ExceptionConstant.CONTENT_E002)
     private Object content;
 
     private List<Example> examples;

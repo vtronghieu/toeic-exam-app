@@ -1,7 +1,7 @@
 package com.tip.dg4.toeic_exam.dto.requests;
 
 import com.tip.dg4.toeic_exam.annotations.NotUUID;
-import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
+import com.tip.dg4.toeic_exam.common.constants.ExceptionConstant;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
@@ -18,10 +18,10 @@ import java.util.UUID;
 public class LessonReq {
     private UUID id;
 
-    @NotUUID(message = TExamExceptionConstant.LESSON_E003)
+    @NotUUID(message = ExceptionConstant.LESSON_E003)
     private UUID partId;
 
-    @NotEmpty(message = TExamExceptionConstant.LESSON_E004)
-    @NotBlank(message = TExamExceptionConstant.LESSON_E004)
+    @NotEmpty(message = ExceptionConstant.LESSON_E004)
+    @NotBlank(message = ExceptionConstant.LESSON_E004)
     private String name;
 }

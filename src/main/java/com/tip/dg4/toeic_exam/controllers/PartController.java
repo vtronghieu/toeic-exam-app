@@ -1,10 +1,10 @@
 package com.tip.dg4.toeic_exam.controllers;
 
-import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
+import com.tip.dg4.toeic_exam.common.constants.ApiConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamConstant;
-import com.tip.dg4.toeic_exam.common.constants.TExamParamConstant;
-import com.tip.dg4.toeic_exam.common.constants.TExamSuccessfulConstant;
-import com.tip.dg4.toeic_exam.common.responses.ResponseData;
+import com.tip.dg4.toeic_exam.common.constants.ParamConstant;
+import com.tip.dg4.toeic_exam.common.constants.SuccessfulConstant;
+import com.tip.dg4.toeic_exam.common.responses.DataResponse;
 import com.tip.dg4.toeic_exam.dto.requests.PartReq;
 import com.tip.dg4.toeic_exam.services.PartService;
 import jakarta.validation.Valid;
@@ -18,34 +18,34 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(path = TExamApiConstant.PART_API_ROOT)
+@RequestMapping(path = ApiConstant.PART_API_ROOT)
 @RequiredArgsConstructor
 public class PartController {
     private final PartService partService;
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
-    public ResponseEntity<ResponseData> createPart(@RequestBody @Valid PartReq partREQ) {
+    public ResponseEntity<DataResponse> createPart(@RequestBody @Valid PartReq partREQ) {
         partService.createPart(partREQ);
 
         HttpStatus httpStatus = HttpStatus.CREATED;
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.PART_S001
+                SuccessfulConstant.PART_S001
         );
 
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @GetMapping(params = TExamParamConstant.PRACTICE_ID,
+    @GetMapping(params = ParamConstant.PRACTICE_ID,
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseData> getPartsByPracticeId(@RequestParam(TExamParamConstant.PRACTICE_ID) UUID practiceId) {
+    public ResponseEntity<DataResponse> getPartsByPracticeId(@RequestParam(ParamConstant.PRACTICE_ID) UUID practiceId) {
         HttpStatus httpStatus = HttpStatus.OK;
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.PART_S002,
+                SuccessfulConstant.PART_S002,
                 partService.getPartsByPracticeId(practiceId)
         );
 
@@ -54,47 +54,47 @@ public class PartController {
 
     @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
-    public ResponseEntity<ResponseData> updatePart(@RequestBody @Valid PartReq partREQ) {
+    public ResponseEntity<DataResponse> updatePart(@RequestBody @Valid PartReq partREQ) {
         partService.updatePart(partREQ);
 
         HttpStatus httpStatus = HttpStatus.OK;
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.PART_S003
+                SuccessfulConstant.PART_S003
         );
 
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @DeleteMapping(params = TExamParamConstant.ID,
+    @DeleteMapping(params = ParamConstant.ID,
                    produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
-    public ResponseEntity<ResponseData> deletePartById(@RequestParam(TExamParamConstant.ID) UUID id) {
+    public ResponseEntity<DataResponse> deletePartById(@RequestParam(ParamConstant.ID) UUID id) {
         partService.deletePartById(id);
 
         HttpStatus httpStatus = HttpStatus.OK;
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.PART_S004
+                SuccessfulConstant.PART_S004
         );
 
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @DeleteMapping(params = {TExamParamConstant.PRACTICE_ID, TExamParamConstant.PART_ID},
+    @DeleteMapping(params = {ParamConstant.PRACTICE_ID, ParamConstant.PART_ID},
                    produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
-    public ResponseEntity<ResponseData> deletePartByPracticeIdAndPartId(@RequestParam(TExamParamConstant.PRACTICE_ID) UUID practiceId,
-                                                                        @RequestParam(TExamParamConstant.PART_ID) UUID partId) {
+    public ResponseEntity<DataResponse> deletePartByPracticeIdAndPartId(@RequestParam(ParamConstant.PRACTICE_ID) UUID practiceId,
+                                                                        @RequestParam(ParamConstant.PART_ID) UUID partId) {
         partService.deletePartByPracticeIdAndPartId(practiceId, partId);
 
         HttpStatus httpStatus = HttpStatus.OK;
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.PART_S004
+                SuccessfulConstant.PART_S004
         );
 
         return new ResponseEntity<>(result, httpStatus);

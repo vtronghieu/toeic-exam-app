@@ -1,6 +1,6 @@
 package com.tip.dg4.toeic_exam.services.implement;
 
-import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
+import com.tip.dg4.toeic_exam.common.constants.ExceptionConstant;
 import com.tip.dg4.toeic_exam.dto.VocabularyDto;
 import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
 import com.tip.dg4.toeic_exam.exceptions.NotFoundException;
@@ -31,7 +31,7 @@ public class VocabularyServiceImpl implements VocabularyService {
     @Override
     public void createVocabulary(VocabularyDto vocabularyDto) {
         if (vocabularyRepository.existsByWord(vocabularyDto.getWord())) {
-            throw new BadRequestException(TExamExceptionConstant.VOCABULARY_E004 + vocabularyDto.getWord());
+            throw new BadRequestException(ExceptionConstant.VOCABULARY_E004 + vocabularyDto.getWord());
         }
 
         Vocabulary vocabulary = vocabularyMapper.convertDtoToModel(vocabularyDto);
@@ -48,8 +48,8 @@ public class VocabularyServiceImpl implements VocabularyService {
     public List<VocabularyDto> getVocabulariesByCategoryId(UUID categoryId) {
         List<Vocabulary> vocabularies = vocabularyRepository.findByCategoryIds(categoryId);
         if (vocabularies.isEmpty()) {
-            log.error(TExamExceptionConstant.VOCABULARY_E005 + categoryId);
-            throw new NotFoundException(TExamExceptionConstant.VOCABULARY_E003);
+            log.error(ExceptionConstant.VOCABULARY_E005 + categoryId);
+            throw new NotFoundException(ExceptionConstant.VOCABULARY_E003);
         }
 
         return vocabularies.stream().map(vocabularyMapper::convertModelToDto).toList();
@@ -59,13 +59,13 @@ public class VocabularyServiceImpl implements VocabularyService {
     public void updateVocabulary(UUID vocabularyId, VocabularyDto vocabularyDto) {
         Optional<Vocabulary> optionalVocabulary = vocabularyRepository.findById(vocabularyId);
         if (optionalVocabulary.isEmpty()) {
-            log.error(TExamExceptionConstant.VOCABULARY_E002 + vocabularyId);
-            throw new NotFoundException(TExamExceptionConstant.VOCABULARY_E003);
+            log.error(ExceptionConstant.VOCABULARY_E002 + vocabularyId);
+            throw new NotFoundException(ExceptionConstant.VOCABULARY_E003);
         }
         Vocabulary vocabulary = optionalVocabulary.get();
         if (!Objects.equals(vocabulary.getWord(), vocabularyDto.getWord()) &&
             vocabularyRepository.existsByWord(vocabularyDto.getWord())) {
-            throw new BadRequestException(TExamExceptionConstant.VOCABULARY_E004 + vocabularyDto.getWord());
+            throw new BadRequestException(ExceptionConstant.VOCABULARY_E004 + vocabularyDto.getWord());
         }
         vocabulary.setWord(vocabularyDto.getWord());
         vocabulary.setPronounce(vocabularyDto.getPronounce());
@@ -79,8 +79,8 @@ public class VocabularyServiceImpl implements VocabularyService {
     @Override
     public void deleteVocabularyById(UUID vocabularyId) {
         if (!vocabularyRepository.existsById(vocabularyId)) {
-            log.error(TExamExceptionConstant.VOCABULARY_E002 + vocabularyId);
-            throw new NotFoundException(TExamExceptionConstant.VOCABULARY_E003);
+            log.error(ExceptionConstant.VOCABULARY_E002 + vocabularyId);
+            throw new NotFoundException(ExceptionConstant.VOCABULARY_E003);
         }
 
         vocabularyRepository.deleteById(vocabularyId);

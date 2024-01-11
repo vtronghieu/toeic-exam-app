@@ -1,7 +1,7 @@
 package com.tip.dg4.toeic_exam.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
+import com.tip.dg4.toeic_exam.common.constants.ExceptionConstant;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
@@ -21,16 +21,16 @@ public class PartDto {
     private UUID id;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    @NotEmpty(message = TExamExceptionConstant.PART_E003)
-    @NotBlank(message = TExamExceptionConstant.PART_E003)
+    @NotEmpty(message = ExceptionConstant.PART_E003)
+    @NotBlank(message = ExceptionConstant.PART_E003)
     private UUID practiceId;
 
-    @NotEmpty(message = TExamExceptionConstant.PART_E004)
-    @NotBlank(message = TExamExceptionConstant.PART_E004)
+    @NotEmpty(message = ExceptionConstant.PART_E004)
+    @NotBlank(message = ExceptionConstant.PART_E004)
     private String name;
 
-    @NotEmpty(message = TExamExceptionConstant.PART_E005)
-    @NotBlank(message = TExamExceptionConstant.PART_E005)
+    @NotEmpty(message = ExceptionConstant.PART_E005)
+    @NotBlank(message = ExceptionConstant.PART_E005)
     private String imageURL;
 
     private String description;

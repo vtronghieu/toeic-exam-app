@@ -1,4 +1,4 @@
-package com.tip.dg4.toeic_exam.dto;
+package com.tip.dg4.toeic_exam.dto.question;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;

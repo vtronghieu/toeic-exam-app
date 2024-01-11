@@ -1,7 +1,7 @@
 package com.tip.dg4.toeic_exam.mappers;
 
-import com.tip.dg4.toeic_exam.dto.QuestionDetailDto;
-import com.tip.dg4.toeic_exam.dto.QuestionDto;
+import com.tip.dg4.toeic_exam.dto.question.QuestionDetailDto;
+import com.tip.dg4.toeic_exam.dto.question.QuestionDto;
 import com.tip.dg4.toeic_exam.dto.requests.QuestionReq;
 import com.tip.dg4.toeic_exam.models.Question;
 import com.tip.dg4.toeic_exam.models.QuestionDetail;

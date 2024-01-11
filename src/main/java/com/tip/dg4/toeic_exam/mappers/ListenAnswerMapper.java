@@ -1,6 +1,6 @@
 package com.tip.dg4.toeic_exam.mappers;
 
-import com.tip.dg4.toeic_exam.dto.ListenAnswerDto;
+import com.tip.dg4.toeic_exam.dto.question.ListenAnswerDto;
 import com.tip.dg4.toeic_exam.models.ListenAnswer;
 import org.springframework.stereotype.Component;
 

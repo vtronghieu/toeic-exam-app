@@ -1,6 +1,7 @@
 package com.tip.dg4.toeic_exam.utils;
 
 import com.tip.dg4.toeic_exam.common.constants.TExamConstant;
+import com.tip.dg4.toeic_exam.models.User;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Path;
@@ -69,6 +70,12 @@ public class TExamUtil {
                 .findFirst().orElse(null);
     }
 
+    public static Field getField(Object source, String fieldName) {
+        return Arrays.stream(source.getClass().getDeclaredFields())
+                .filter(field -> fieldName.equals(field.getName()))
+                .findFirst().orElse(null);
+    }
+
     /**
      * Gets the value of a field in the given object.
      *
@@ -78,6 +85,8 @@ public class TExamUtil {
      */
     public static Object getFieldValue(Field field, Object source) {
         try {
+            if (field == null) return null;
+
             field.setAccessible(true);
             return field.get(source);
         } catch (IllegalArgumentException | IllegalAccessException e) {
@@ -173,5 +182,16 @@ public class TExamUtil {
         Page<E> listPages = new PageImpl<>(list, pageable, list.size());
 
         return Optional.of(listPages).orElse(new PageImpl<>(Collections.emptyList()));
+    }
+
+    /**
+     * Constructs and returns the full name of the provided user by combining their surname and name,
+     * separated by a space.
+     *
+     * @param user The user whose full name is to be constructed.
+     * @return The full name of the provided user.
+     */
+    public static String getFullName(User user) {
+        return user.getUserInfo().getSurname() + TExamConstant.SPACE + user.getUserInfo().getName();
     }
 }

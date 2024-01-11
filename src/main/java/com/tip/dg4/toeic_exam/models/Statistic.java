@@ -6,9 +6,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.FieldType;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,7 +18,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TestHistory {
+@Document(collection = "statistics")
+public class Statistic {
     @Id
     @GenerateID
     @Field(targetType = FieldType.STRING)
@@ -25,8 +28,11 @@ public class TestHistory {
     @Field(targetType = FieldType.STRING)
     private UUID userId;
 
-    @Field(targetType = FieldType.STRING)
-    private UUID testId;
+    private LocalDateTime createDate;
 
-    private List<UserAnswer> userAnswers;
+    private LocalDateTime nearestTestDate;
+
+    private int practiceProgress;
+
+    private List<UUID> statisticDetailIDs;
 }

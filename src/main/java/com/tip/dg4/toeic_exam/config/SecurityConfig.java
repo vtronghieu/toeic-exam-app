@@ -1,6 +1,6 @@
 package com.tip.dg4.toeic_exam.config;
 
-import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
+import com.tip.dg4.toeic_exam.common.constants.ApiConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamConstant;
 import com.tip.dg4.toeic_exam.services.implement.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
@@ -71,7 +71,7 @@ public class SecurityConfig {
 //        corsConfig.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration(TExamApiConstant.ALL_API, corsConfig);
+        source.registerCorsConfiguration(ApiConstant.ALL_API, corsConfig);
 
         return source;
     }
@@ -98,8 +98,8 @@ public class SecurityConfig {
 
     private String[] getPermitAllAPIs() {
         return new String[] {
-                TExamApiConstant.AUTH_API_LOGIN,
-                TExamApiConstant.AUTH_API_REGISTER
+                ApiConstant.AUTH_API_LOGIN,
+                ApiConstant.AUTH_API_REGISTER
         };
     }
 

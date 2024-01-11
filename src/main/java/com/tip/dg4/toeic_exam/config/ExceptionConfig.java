@@ -2,10 +2,12 @@ package com.tip.dg4.toeic_exam.config;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
-import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
-import com.tip.dg4.toeic_exam.common.responses.ResponseError;
-import com.tip.dg4.toeic_exam.exceptions.*;
+import com.tip.dg4.toeic_exam.common.constants.ApiConstant;
+import com.tip.dg4.toeic_exam.common.constants.ExceptionConstant;
+import com.tip.dg4.toeic_exam.common.responses.ErrorResponse;
+import com.tip.dg4.toeic_exam.exceptions.InternalServerErrorException;
+import com.tip.dg4.toeic_exam.exceptions.TExamException;
+import com.tip.dg4.toeic_exam.exceptions.UnauthorizedException;
 import com.tip.dg4.toeic_exam.utils.ApiUtil;
 import com.tip.dg4.toeic_exam.utils.TExamUtil;
 import jakarta.annotation.Nonnull;
@@ -28,6 +30,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -37,41 +40,21 @@ import java.util.*;
 public class ExceptionConfig extends ResponseEntityExceptionHandler {
     private final RequestMappingHandlerMapping handlerMapping;
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ResponseError> handleNotFoundException(NotFoundException exception) {
-        HttpStatus httpStatus = HttpStatus.NOT_FOUND;
-        ResponseError result = new ResponseError(
-                LocalDateTime.now(),
-                httpStatus.value(),
-                httpStatus.getReasonPhrase(),
-                exception.getMessage()
+    @ExceptionHandler(Exception.class)
+    public <E extends Exception> ResponseEntity<ErrorResponse> handleException(E exception) {
+        HttpStatus httpStatus = HttpStatus.NOT_IMPLEMENTED;
+        String message = ExceptionConstant.TEXAM_E001;
+        if ((exception instanceof TExamException)
+                && (!exception.getCause().getClass().equals(TExamException.class))) {
+            Field httpStatusField = TExamUtil.getField(exception, "httpStatus");
+            httpStatus = (HttpStatus) Optional.ofNullable(TExamUtil.getFieldValue(httpStatusField, exception.getCause()))
+                    .orElse(HttpStatus.NOT_IMPLEMENTED);
+            message = exception.getCause().getMessage();
+        }
+        ErrorResponse result = new ErrorResponse(
+                LocalDateTime.now(), httpStatus.value(), httpStatus.getReasonPhrase(), message
         );
-
-        return new ResponseEntity<>(result, httpStatus);
-    }
-
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ResponseError> handleBadRequestException(BadRequestException exception) {
-        HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
-        ResponseError result = new ResponseError(
-                LocalDateTime.now(),
-                httpStatus.value(),
-                httpStatus.getReasonPhrase(),
-                exception.getMessage()
-        );
-
-        return new ResponseEntity<>(result, httpStatus);
-    }
-
-    @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<ResponseError> handleUnauthorizedException(UnauthorizedException exception) {
-        HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
-        ResponseError result = new ResponseError(
-                LocalDateTime.now(),
-                httpStatus.value(),
-                httpStatus.getReasonPhrase(),
-                exception.getMessage()
-        );
+        log.error(exception, exception.fillInStackTrace());
 
         return new ResponseEntity<>(result, httpStatus);
     }
@@ -79,7 +62,7 @@ public class ExceptionConfig extends ResponseEntityExceptionHandler {
     public void handleUnauthorizedException(HttpServletResponse response, UnauthorizedException exception) {
         try {
             HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
-            ResponseError result = new ResponseError();
+            ErrorResponse result = new ErrorResponse();
             result.setTimestamp(LocalDateTime.now());
             result.setCode(httpStatus.value());
             result.setStatus(httpStatus.getReasonPhrase());
@@ -93,17 +76,17 @@ public class ExceptionConfig extends ResponseEntityExceptionHandler {
             response.getWriter().write(mapper.writeValueAsString(result));
         } catch (IOException ioException) {
             log.error(ioException, ioException.fillInStackTrace());
-            throw new InternalServerErrorException(TExamExceptionConstant.TEXAM_E001);
+            throw new InternalServerErrorException(ExceptionConstant.TEXAM_E001);
         }
     }
 
     public AccessDeniedHandler handleAccessDenied() {
         HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
-        ResponseError result = new ResponseError(
+        ErrorResponse result = new ErrorResponse(
                 LocalDateTime.now(),
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamExceptionConstant.ACCOUNT_E005
+                ExceptionConstant.ACCOUNT_E005
         );
 
         return ((request, response, accessDeniedException) -> {
@@ -117,17 +100,17 @@ public class ExceptionConfig extends ResponseEntityExceptionHandler {
 
     public AuthenticationEntryPoint handleAuthenticationEntryPoint() {
         return (request, response, authException) -> {
-            String requestUri = TExamApiConstant.API_ERROR.equals(request.getRequestURI()) ?
-                                request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI).toString() :
-                                request.getRequestURI();
+            String requestUri = ApiConstant.API_ERROR.equals(request.getRequestURI()) ?
+                    request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI).toString() :
+                    request.getRequestURI();
             if (ApiUtil.existAPI(handlerMapping, requestUri)) return;
 
             HttpStatus httpStatus = HttpStatus.NOT_FOUND;
-            ResponseError result = new ResponseError();
+            ErrorResponse result = new ErrorResponse();
             result.setTimestamp(LocalDateTime.now());
             result.setCode(httpStatus.value());
             result.setStatus(httpStatus.getReasonPhrase());
-            result.setMessage(TExamExceptionConstant.TEXAM_E003 + requestUri);
+            result.setMessage(ExceptionConstant.TEXAM_E003 + requestUri);
 
             JsonMapper mapper = new JsonMapper();
             mapper.registerModule(new JavaTimeModule());
@@ -138,53 +121,14 @@ public class ExceptionConfig extends ResponseEntityExceptionHandler {
         };
     }
 
-    @ExceptionHandler(InternalServerErrorException.class)
-    public ResponseEntity<ResponseError> handleInternalServerErrorException(InternalServerErrorException exception) {
-        HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-        ResponseError result = new ResponseError(
-                LocalDateTime.now(),
-                httpStatus.value(),
-                httpStatus.getReasonPhrase(),
-                exception.getMessage()
-        );
-
-        return new ResponseEntity<>(result, httpStatus);
-    }
-
-    @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<ResponseError> handleConflictException(ConflictException exception) {
-        HttpStatus httpStatus = HttpStatus.CONFLICT;
-        ResponseError result = new ResponseError(
-                LocalDateTime.now(),
-                httpStatus.value(),
-                httpStatus.getReasonPhrase(),
-                exception.getMessage()
-        );
-
-        return new ResponseEntity<>(result, httpStatus);
-    }
-
-    @ExceptionHandler(NotImplementedException.class)
-    public ResponseEntity<ResponseError> handleNotImplementedException(NotImplementedException exception) {
-        HttpStatus httpStatus = HttpStatus.NOT_IMPLEMENTED;
-        ResponseError result = new ResponseError(
-                LocalDateTime.now(),
-                httpStatus.value(),
-                httpStatus.getReasonPhrase(),
-                exception.getMessage()
-        );
-
-        return new ResponseEntity<>(result, httpStatus);
-    }
-
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(@Nonnull MethodArgumentNotValidException exception,
                                                                   @Nonnull HttpHeaders headers,
                                                                   @Nonnull HttpStatusCode status,
                                                                   @Nonnull WebRequest request) {
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
-        Object validationErrors = Objects.requireNonNullElse(processValidException(exception), TExamExceptionConstant.TEXAM_E004);
-        ResponseError result = new ResponseError(
+        Object validationErrors = Objects.requireNonNullElse(processValidException(exception), ExceptionConstant.TEXAM_E004);
+        ErrorResponse result = new ErrorResponse(
                 LocalDateTime.now(),
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
@@ -195,10 +139,10 @@ public class ExceptionConfig extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ResponseError> handleConstraintViolationException(ConstraintViolationException exception) {
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException exception) {
         HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
-        Object validationErrors = Objects.requireNonNullElse(processViolationException(exception), TExamExceptionConstant.TEXAM_E004);
-        ResponseError result = new ResponseError(
+        Object validationErrors = Objects.requireNonNullElse(processViolationException(exception), ExceptionConstant.TEXAM_E004);
+        ErrorResponse result = new ErrorResponse(
                 LocalDateTime.now(),
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
@@ -213,7 +157,7 @@ public class ExceptionConfig extends ResponseEntityExceptionHandler {
             Map<String, Object> validationErrors = new WeakHashMap<>();
             for (FieldError fieldError : exception.getFieldErrors()) {
                 String propertyName = fieldError.getField();
-                String errorMessage = Objects.requireNonNullElse(fieldError.getDefaultMessage(), TExamExceptionConstant.TEXAM_E004);
+                String errorMessage = Objects.requireNonNullElse(fieldError.getDefaultMessage(), ExceptionConstant.TEXAM_E004);
                 Object currentMessage = validationErrors.computeIfAbsent(propertyName, k -> errorMessage);
 
                 if (currentMessage instanceof String) {
@@ -233,7 +177,7 @@ public class ExceptionConfig extends ResponseEntityExceptionHandler {
             return validationErrors;
         } catch (Exception e) {
             log.error(e, e.fillInStackTrace());
-            throw new InternalServerErrorException(TExamExceptionConstant.TEXAM_E001);
+            throw new InternalServerErrorException(ExceptionConstant.TEXAM_E001);
         }
     }
 
@@ -267,7 +211,7 @@ public class ExceptionConfig extends ResponseEntityExceptionHandler {
             return validationErrors;
         } catch (Exception e) {
             log.error(e, e.fillInStackTrace());
-            throw new InternalServerErrorException(TExamExceptionConstant.TEXAM_E001);
+            throw new InternalServerErrorException(ExceptionConstant.TEXAM_E001);
         }
     }
 }

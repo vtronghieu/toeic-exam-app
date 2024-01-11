@@ -1,9 +1,9 @@
 package com.tip.dg4.toeic_exam.controllers;
 
-import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
-import com.tip.dg4.toeic_exam.common.constants.TExamParamConstant;
-import com.tip.dg4.toeic_exam.common.constants.TExamSuccessfulConstant;
-import com.tip.dg4.toeic_exam.common.responses.ResponseData;
+import com.tip.dg4.toeic_exam.common.constants.ApiConstant;
+import com.tip.dg4.toeic_exam.common.constants.ParamConstant;
+import com.tip.dg4.toeic_exam.common.constants.SuccessfulConstant;
+import com.tip.dg4.toeic_exam.common.responses.DataResponse;
 import com.tip.dg4.toeic_exam.dto.VocabularyCategoryDto;
 import com.tip.dg4.toeic_exam.services.VocabularyCategoryService;
 import org.springframework.http.HttpStatus;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(path = TExamApiConstant.VOCABULARY_CATEGORY_API_ROOT)
+@RequestMapping(path = ApiConstant.VOCABULARY_CATEGORY_API_ROOT)
 public class VocabularyCategoryController {
     private final VocabularyCategoryService vocabularyCategoryService;
 
@@ -23,94 +23,94 @@ public class VocabularyCategoryController {
         this.vocabularyCategoryService = vocabularyCategoryService;
     }
 
-    @PostMapping(path = TExamApiConstant.API_CREATE,
+    @PostMapping(path = ApiConstant.API_CREATE,
                  produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<ResponseData> createVocabularyCategory(@RequestBody VocabularyCategoryDto vocabularyCategoryDto) {
+    public ResponseEntity<DataResponse> createVocabularyCategory(@RequestBody VocabularyCategoryDto vocabularyCategoryDto) {
         HttpStatus httpStatus = HttpStatus.CREATED;
         vocabularyCategoryService.createVocabularyCategory(vocabularyCategoryDto);
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.VOCABULARY_CATEGORY_S001
+                SuccessfulConstant.VOCABULARY_CATEGORY_S001
         );
 
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @GetMapping(path = {TExamApiConstant.API_EMPTY, TExamApiConstant.API_SLASH},
+    @GetMapping(path = {ApiConstant.API_EMPTY, ApiConstant.API_SLASH},
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseData> getAllVocabularyCategories() {
+    public ResponseEntity<DataResponse> getAllVocabularyCategories() {
         HttpStatus httpStatus = HttpStatus.OK;
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.VOCABULARY_CATEGORY_S002,
+                SuccessfulConstant.VOCABULARY_CATEGORY_S002,
                 vocabularyCategoryService.getAllVocabularyCategories()
         );
 
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @GetMapping(path = TExamApiConstant.API_EMPTY,
-                params = TExamParamConstant.ID,
+    @GetMapping(path = ApiConstant.API_EMPTY,
+                params = ParamConstant.ID,
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseData> getVocabularyCategoryById(@RequestParam(name = TExamParamConstant.ID) UUID categoryId) {
+    public ResponseEntity<DataResponse> getVocabularyCategoryById(@RequestParam(name = ParamConstant.ID) UUID categoryId) {
         HttpStatus httpStatus = HttpStatus.OK;
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.VOCABULARY_CATEGORY_S005,
+                SuccessfulConstant.VOCABULARY_CATEGORY_S005,
                 vocabularyCategoryService.getVocabularyCategoryById(categoryId)
         );
 
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @GetMapping(path = TExamApiConstant.API_EMPTY,
+    @GetMapping(path = ApiConstant.API_EMPTY,
                 params = "name",
                 produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<ResponseData> getVocabularyCategoryByName(@RequestParam String name) {
+    public ResponseEntity<DataResponse> getVocabularyCategoryByName(@RequestParam String name) {
         HttpStatus httpStatus = HttpStatus.OK;
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.VOCABULARY_CATEGORY_S003,
+                SuccessfulConstant.VOCABULARY_CATEGORY_S003,
                 vocabularyCategoryService.getVocabularyCategoryByName(name)
         );
 
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @PutMapping(path = TExamApiConstant.API_EMPTY,
+    @PutMapping(path = ApiConstant.API_EMPTY,
                 params = "id",
                 produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<ResponseData> updateVocabularyCategory(@RequestParam(name = "id") UUID vocabularyCategoryId,
+    public ResponseEntity<DataResponse> updateVocabularyCategory(@RequestParam(name = "id") UUID vocabularyCategoryId,
                                                                  @RequestBody VocabularyCategoryDto vocabularyCategoryDto) {
         HttpStatus httpStatus = HttpStatus.OK;
         vocabularyCategoryService.updateVocabularyCategory(vocabularyCategoryId, vocabularyCategoryDto);
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.VOCABULARY_CATEGORY_S003
+                SuccessfulConstant.VOCABULARY_CATEGORY_S003
         );
 
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @DeleteMapping(path = TExamApiConstant.API_EMPTY,
+    @DeleteMapping(path = ApiConstant.API_EMPTY,
                    params = "id",
                    produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<ResponseData> deleteVocabularyCategory(@RequestParam(name = "id") UUID vocabularyCategoryId) {
+    public ResponseEntity<DataResponse> deleteVocabularyCategory(@RequestParam(name = "id") UUID vocabularyCategoryId) {
         HttpStatus httpStatus = HttpStatus.OK;
         vocabularyCategoryService.deleteVocabularyCategoryById(vocabularyCategoryId);
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.VOCABULARY_CATEGORY_S004
+                SuccessfulConstant.VOCABULARY_CATEGORY_S004
         );
 
         return new ResponseEntity<>(result, httpStatus);

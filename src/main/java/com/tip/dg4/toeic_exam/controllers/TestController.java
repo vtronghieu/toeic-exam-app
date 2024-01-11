@@ -1,10 +1,10 @@
 package com.tip.dg4.toeic_exam.controllers;
 
-import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
+import com.tip.dg4.toeic_exam.common.constants.ApiConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamConstant;
-import com.tip.dg4.toeic_exam.common.constants.TExamParamConstant;
-import com.tip.dg4.toeic_exam.common.constants.TExamSuccessfulConstant;
-import com.tip.dg4.toeic_exam.common.responses.ResponseData;
+import com.tip.dg4.toeic_exam.common.constants.ParamConstant;
+import com.tip.dg4.toeic_exam.common.constants.SuccessfulConstant;
+import com.tip.dg4.toeic_exam.common.responses.DataResponse;
 import com.tip.dg4.toeic_exam.dto.requests.TestReq;
 import com.tip.dg4.toeic_exam.services.TestService;
 import jakarta.validation.Valid;
@@ -18,65 +18,65 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(path = TExamApiConstant.TEST_API_ROOT)
+@RequestMapping(path = ApiConstant.TEST_API_ROOT)
 @RequiredArgsConstructor
 public class TestController {
     private final TestService testService;
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
-    public ResponseEntity<ResponseData> createTest(@RequestBody @Valid TestReq testREQ) {
+    public ResponseEntity<DataResponse> createTest(@RequestBody @Valid TestReq testREQ) {
         testService.createTest(testREQ);
 
         HttpStatus httpStatus = HttpStatus.CREATED;
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.TEST_S001
+                SuccessfulConstant.TEST_S001
         );
 
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @GetMapping(params = {TExamParamConstant.PAGE, TExamParamConstant.SIZE},
+    @GetMapping(params = {ParamConstant.PAGE, ParamConstant.SIZE},
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseData> getTests(@RequestParam(value = TExamParamConstant.PAGE,
-                                                               defaultValue = TExamParamConstant.PAGE_DEFAULT) int page,
-                                                 @RequestParam(value = TExamParamConstant.SIZE,
-                                                               defaultValue = TExamParamConstant.SIZE_DEFAULT) int size) {
+    public ResponseEntity<DataResponse> getTests(@RequestParam(value = ParamConstant.PAGE,
+                                                               defaultValue = ParamConstant.PAGE_DEFAULT) int page,
+                                                 @RequestParam(value = ParamConstant.SIZE,
+                                                               defaultValue = ParamConstant.SIZE_DEFAULT) int size) {
         HttpStatus httpStatus = HttpStatus.OK;
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.TEST_S004,
+                SuccessfulConstant.TEST_S004,
                 testService.getTests(page, size)
         );
 
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @GetMapping(params = TExamParamConstant.ID,
+    @GetMapping(params = ParamConstant.ID,
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseData> getTestById(@RequestParam(TExamParamConstant.ID) UUID id) {
+    public ResponseEntity<DataResponse> getTestById(@RequestParam(ParamConstant.ID) UUID id) {
         HttpStatus httpStatus = HttpStatus.OK;
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.TEST_S005,
+                SuccessfulConstant.TEST_S005,
                 testService.getTestById(id)
         );
 
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @GetMapping(params = TExamParamConstant.PART_ID,
+    @GetMapping(params = ParamConstant.PART_ID,
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseData> getTestsByPartId(@RequestParam(TExamParamConstant.PART_ID) UUID partId) {
+    public ResponseEntity<DataResponse> getTestsByPartId(@RequestParam(ParamConstant.PART_ID) UUID partId) {
         HttpStatus httpStatus = HttpStatus.OK;
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.TEST_S004,
+                SuccessfulConstant.TEST_S004,
                 testService.getTestsByPartId(partId)
         );
 
@@ -85,29 +85,29 @@ public class TestController {
 
     @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
-    public ResponseEntity<ResponseData> updateTest(@RequestBody TestReq testReq) {
+    public ResponseEntity<DataResponse> updateTest(@RequestBody TestReq testReq) {
         testService.updateTest(testReq);
 
         HttpStatus httpStatus = HttpStatus.OK;
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.TEST_S002
+                SuccessfulConstant.TEST_S002
         );
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @DeleteMapping(params = TExamParamConstant.ID,
+    @DeleteMapping(params = ParamConstant.ID,
                    produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
-    public ResponseEntity<ResponseData> deleteTestById(@RequestParam(TExamParamConstant.ID) UUID id) {
+    public ResponseEntity<DataResponse> deleteTestById(@RequestParam(ParamConstant.ID) UUID id) {
         testService.deleteTestById(id);
 
         HttpStatus httpStatus = HttpStatus.OK;
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.TEST_S003
+                SuccessfulConstant.TEST_S003
         );
 
         return new ResponseEntity<>(result, httpStatus);

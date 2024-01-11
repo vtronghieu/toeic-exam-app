@@ -1,8 +1,8 @@
 package com.tip.dg4.toeic_exam.controllers;
 
-import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
-import com.tip.dg4.toeic_exam.common.constants.TExamSuccessfulConstant;
-import com.tip.dg4.toeic_exam.common.responses.ResponseData;
+import com.tip.dg4.toeic_exam.common.constants.ApiConstant;
+import com.tip.dg4.toeic_exam.common.constants.SuccessfulConstant;
+import com.tip.dg4.toeic_exam.common.responses.DataResponse;
 import com.tip.dg4.toeic_exam.dto.VocabularyDto;
 import com.tip.dg4.toeic_exam.services.VocabularyService;
 import org.springframework.http.HttpStatus;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(path = TExamApiConstant.VOCABULARY_API_ROOT)
+@RequestMapping(path = ApiConstant.VOCABULARY_API_ROOT)
 public class VocabularyController {
     private final VocabularyService vocabularyService;
 
@@ -22,78 +22,78 @@ public class VocabularyController {
         this.vocabularyService = vocabularyService;
     }
 
-    @PostMapping(path = TExamApiConstant.API_CREATE,
+    @PostMapping(path = ApiConstant.API_CREATE,
                  produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<ResponseData> createVocabulary(@RequestBody VocabularyDto vocabularyDto) {
+    public ResponseEntity<DataResponse> createVocabulary(@RequestBody VocabularyDto vocabularyDto) {
         HttpStatus httpStatus = HttpStatus.CREATED;
         vocabularyService.createVocabulary(vocabularyDto);
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.VOCABULARY_S002
+                SuccessfulConstant.VOCABULARY_S002
         );
 
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @GetMapping(path = {TExamApiConstant.API_EMPTY, TExamApiConstant.API_SLASH},
+    @GetMapping(path = {ApiConstant.API_EMPTY, ApiConstant.API_SLASH},
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseData> getAllVocabularies() {
+    public ResponseEntity<DataResponse> getAllVocabularies() {
         HttpStatus httpStatus = HttpStatus.OK;
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.VOCABULARY_S001,
+                SuccessfulConstant.VOCABULARY_S001,
                 vocabularyService.getAllVocabularies()
         );
 
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @GetMapping(path = TExamApiConstant.VOCABULARY_API_GET_BY_CATEGORY_IDS,
+    @GetMapping(path = ApiConstant.VOCABULARY_API_GET_BY_CATEGORY_IDS,
                 params = "categoryId",
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseData> getVocabulariesByCategoryId(@RequestParam UUID categoryId) {
+    public ResponseEntity<DataResponse> getVocabulariesByCategoryId(@RequestParam UUID categoryId) {
         HttpStatus httpStatus = HttpStatus.OK;
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.VOCABULARY_S005,
+                SuccessfulConstant.VOCABULARY_S005,
                 vocabularyService.getVocabulariesByCategoryId(categoryId)
         );
 
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @PutMapping(path = TExamApiConstant.API_EMPTY,
+    @PutMapping(path = ApiConstant.API_EMPTY,
                 params = "id",
                 produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<ResponseData> updateVocabulary(@RequestParam(name = "id") UUID vocabularyId,
+    public ResponseEntity<DataResponse> updateVocabulary(@RequestParam(name = "id") UUID vocabularyId,
                                                          @RequestBody VocabularyDto vocabularyDto) {
         HttpStatus httpStatus = HttpStatus.OK;
         vocabularyService.updateVocabulary(vocabularyId, vocabularyDto);
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.VOCABULARY_S003
+                SuccessfulConstant.VOCABULARY_S003
         );
 
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @DeleteMapping(path = TExamApiConstant.API_EMPTY,
+    @DeleteMapping(path = ApiConstant.API_EMPTY,
                    params = "id",
                    produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<ResponseData> deleteVocabularyById(@RequestParam(name = "id") UUID vocabularyId) {
+    public ResponseEntity<DataResponse> deleteVocabularyById(@RequestParam(name = "id") UUID vocabularyId) {
         HttpStatus httpStatus = HttpStatus.OK;
         vocabularyService.deleteVocabularyById(vocabularyId);
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.VOCABULARY_S004
+                SuccessfulConstant.VOCABULARY_S004
         );
 
         return new ResponseEntity<>(result, httpStatus);

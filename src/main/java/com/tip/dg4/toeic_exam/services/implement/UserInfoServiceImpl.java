@@ -1,8 +1,8 @@
 package com.tip.dg4.toeic_exam.services.implement;
 
 import com.tip.dg4.toeic_exam.common.constants.TExamConstant;
-import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
-import com.tip.dg4.toeic_exam.dto.UserInfoDto;
+import com.tip.dg4.toeic_exam.common.constants.ExceptionConstant;
+import com.tip.dg4.toeic_exam.dto.user.UserInfoDto;
 import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
 import com.tip.dg4.toeic_exam.exceptions.NotFoundException;
 import com.tip.dg4.toeic_exam.exceptions.TExamException;
@@ -65,7 +65,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     public UserInfoDto getUserInfoByUserId(UUID userId) {
         try {
             User user = userService.findById(userId)
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.USER_E001));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.USER_E001));
             UserInfo userInfo = Optional.of(user.getUserInfo()).orElse(new UserInfo());
 
             return ObjectUtils.isNotEmpty(userInfo) ? userInfoMapper.convertModelToDto(userInfo) : new UserInfoDto();
@@ -87,9 +87,9 @@ public class UserInfoServiceImpl implements UserInfoService {
     public void updateUserInfoByUserId(UUID userId, UserInfoDto userInfoDto) {
         try {
             User user = userService.findById(userId)
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.USER_E001));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.USER_E001));
             if (invalidPhone(userInfoDto.getPhone())) {
-                throw new BadRequestException(TExamExceptionConstant.USER_INFO_E004);
+                throw new BadRequestException(ExceptionConstant.USER_INFO_E004);
             }
 
             user.setUserInfo(setUserInfo(user, userInfoDto));
@@ -109,7 +109,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Override
     public UserInfo setUserInfo(UserInfoDto userInfoDto) {
         if (invalidPhone(userInfoDto.getPhone())) {
-            throw new BadRequestException(TExamExceptionConstant.USER_INFO_E004);
+            throw new BadRequestException(ExceptionConstant.USER_INFO_E004);
         }
 
         return userInfoMapper.convertDtoToModel(userInfoDto);
@@ -126,7 +126,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Override
     public UserInfo setUserInfo(UserInfoDto userInfoDto, UserInfo userInfo) {
         if (invalidPhone(userInfoDto.getPhone())) {
-            throw new BadRequestException(TExamExceptionConstant.USER_INFO_E004);
+            throw new BadRequestException(ExceptionConstant.USER_INFO_E004);
         }
 
         UserInfo setedUserInfo = ObjectUtils.cloneIfPossible(userInfo);

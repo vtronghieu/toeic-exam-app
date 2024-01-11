@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class TExamApiConstant {
+public class ApiConstant {
     private static final String API_ROOT = "/api";
     private static final String API_VERSION_1 = "/v1";
     //  Common
@@ -45,11 +45,12 @@ public class TExamApiConstant {
     public static final String LESSON_API_ROOT = API_ROOT + API_VERSION_1 + "/lessons";
     //  Content
     public static final String CONTENT_API_ROOT = API_ROOT + API_VERSION_1 + "/contents";
-    //  Test history
-    public static final String TEST_HISTORY_API_ROOT = API_ROOT + API_VERSION_1 + "/testHistories";
+    //  Statistic
+    public static final String STATISTIC_API_ROOT = API_ROOT + API_VERSION_1 + "/statistics";
     public static final String SEND_ANSWER_API = "/sendAnswer";
     public static final String GET_TEST_HISTORY_BY_STATUS = "/getTestHistoryByStatus";
     public static final String GET_TEST_HISTORY_OF_TEST_ID_BY_STATUS = "/getTestHistoryOfTestIdByStatus";
+    //  Upload
     public static final String UPLOAD_API_ROOT = API_ROOT + API_VERSION_1 + "/upload";
 }
 

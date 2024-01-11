@@ -1,9 +1,9 @@
 package com.tip.dg4.toeic_exam.services.implement;
 
-import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
-import com.tip.dg4.toeic_exam.dto.AuthenticateDto;
-import com.tip.dg4.toeic_exam.dto.AuthorizeDto;
-import com.tip.dg4.toeic_exam.dto.UserDto;
+import com.tip.dg4.toeic_exam.common.constants.ExceptionConstant;
+import com.tip.dg4.toeic_exam.dto.user.AuthenticateDto;
+import com.tip.dg4.toeic_exam.dto.user.AuthorizeDto;
+import com.tip.dg4.toeic_exam.dto.user.UserDto;
 import com.tip.dg4.toeic_exam.exceptions.TExamException;
 import com.tip.dg4.toeic_exam.exceptions.UnauthorizedException;
 import com.tip.dg4.toeic_exam.models.User;
@@ -34,7 +34,7 @@ public class AuthServiceImpl implements AuthService {
     public AuthorizeDto login(AuthenticateDto authenticateDto) {
         try {
             User user = userService.getByUsernameAndPassword(authenticateDto.getUsername(), authenticateDto.getPassword())
-                    .orElseThrow(() -> new UnauthorizedException(TExamExceptionConstant.AUTH_E003));
+                    .orElseThrow(() -> new UnauthorizedException(ExceptionConstant.AUTH_E003));
             String token = jwtService.generateToken(user.getUsername());
 
             return AuthorizeDto.builder()
@@ -44,7 +44,7 @@ public class AuthServiceImpl implements AuthService {
                     .token(token)
                     .build();
         } catch (Exception e) {
-            throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
+            throw new ArrayIndexOutOfBoundsException(ExceptionConstant.TEXAM_E001);
         }
     }
 

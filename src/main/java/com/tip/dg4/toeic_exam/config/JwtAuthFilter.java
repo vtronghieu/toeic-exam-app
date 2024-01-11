@@ -1,7 +1,7 @@
 package com.tip.dg4.toeic_exam.config;
 
-import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
-import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
+import com.tip.dg4.toeic_exam.common.constants.ApiConstant;
+import com.tip.dg4.toeic_exam.common.constants.ExceptionConstant;
 import com.tip.dg4.toeic_exam.exceptions.UnauthorizedException;
 import com.tip.dg4.toeic_exam.services.JwtService;
 import com.tip.dg4.toeic_exam.utils.ApiUtil;
@@ -10,6 +10,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
@@ -26,6 +27,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Component
+@RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
     public static final String BEARER_PREFIX = "Bearer ";
 
@@ -33,16 +35,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
     private final ExceptionConfig exceptionConfig;
     private final RequestMappingHandlerMapping handlerMapping;
-
-    public JwtAuthFilter(JwtService jwtService,
-                         UserDetailsService userDetailsService,
-                         ExceptionConfig exceptionConfig,
-                         RequestMappingHandlerMapping handlerMapping) {
-        this.jwtService = jwtService;
-        this.userDetailsService = userDetailsService;
-        this.exceptionConfig = exceptionConfig;
-        this.handlerMapping = handlerMapping;
-    }
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -52,7 +44,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (Objects.isNull(authHeader) || !authHeader.startsWith(BEARER_PREFIX)) {
             String requestUri = request.getRequestURI();
             if (ApiUtil.existAPI(handlerMapping, requestUri) && !isRequestUriAllowed(requestUri)) {
-                exceptionConfig.handleUnauthorizedException(response, new UnauthorizedException(TExamExceptionConstant.TEXAM_E002));
+                exceptionConfig.handleUnauthorizedException(response, new UnauthorizedException(ExceptionConstant.TEXAM_E002));
                 return;
             }
             filterChain.doFilter(request, response);
@@ -76,8 +68,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private boolean isRequestUriAllowed(String requestUri) {
         Set<String> requestUris = Set.of(
-                TExamApiConstant.AUTH_API_LOGIN,
-                TExamApiConstant.AUTH_API_REGISTER
+                ApiConstant.AUTH_API_LOGIN,
+                ApiConstant.AUTH_API_REGISTER
         );
         Set<String> swaggerUris = Set.of(
                 "/v2/api-docs",

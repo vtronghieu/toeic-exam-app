@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResponseError {
+public class ErrorResponse {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = TExamConstant.DATE_TIME_FORMAT)
     private LocalDateTime timestamp;
     private int code;

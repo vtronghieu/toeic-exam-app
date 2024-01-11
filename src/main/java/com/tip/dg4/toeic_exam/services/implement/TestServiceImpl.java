@@ -1,6 +1,6 @@
 package com.tip.dg4.toeic_exam.services.implement;
 
-import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
+import com.tip.dg4.toeic_exam.common.constants.ExceptionConstant;
 import com.tip.dg4.toeic_exam.dto.TestDto;
 import com.tip.dg4.toeic_exam.dto.requests.TestReq;
 import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
@@ -45,13 +45,13 @@ public class TestServiceImpl implements TestService {
         UUID newTestID = null;
         try {
             Part part = partService.findById(testREQ.getPartId())
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PART_E002));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.PART_E002));
             PracticeType practiceType = PracticeType.getType(testREQ.getType());
             if (Objects.equals(PracticeType.UNDEFINED, practiceType)) {
-                throw new BadRequestException(TExamExceptionConstant.PRACTICE_E006);
+                throw new BadRequestException(ExceptionConstant.PRACTICE_E006);
             }
             if (existsInPartByName(part, testREQ.getName())) {
-                throw new BadRequestException(TExamExceptionConstant.TEST_E004);
+                throw new BadRequestException(ExceptionConstant.TEST_E004);
             }
 
             List<Test> tests = Optional.ofNullable(part.getTests()).orElse(new ArrayList<>());
@@ -119,7 +119,7 @@ public class TestServiceImpl implements TestService {
     public TestDto getTestById(UUID id) {
         try {
             return this.findById(id).map(testMapper::convertModelToDto)
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.TEST_E005));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.TEST_E005));
         } catch (Exception e) {
             throw new TExamException(e);
         }
@@ -136,7 +136,7 @@ public class TestServiceImpl implements TestService {
     public List<TestDto> getTestsByPartId(UUID partId) {
         try {
             Part part = partService.findById(partId)
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PART_E002));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.PART_E002));
 
             return Optional.ofNullable(part.getTests()).orElse(Collections.emptyList()).stream()
                     .map(testMapper::convertModelToDto)
@@ -157,7 +157,7 @@ public class TestServiceImpl implements TestService {
     public void updateTest(TestReq testReq) {
         try {
             Part part = partService.findById(testReq.getPartId())
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PART_E002));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.PART_E002));
 
             part.getTests().stream()
                     .filter(test -> testReq.getId().equals(test.getId()))
@@ -165,7 +165,7 @@ public class TestServiceImpl implements TestService {
                     .map(test -> {
                         PracticeType practiceType = PracticeType.getType(testReq.getType());
                         if (Objects.equals(PracticeType.UNDEFINED, practiceType)) {
-                            throw new BadRequestException(TExamExceptionConstant.TEST_E006);
+                            throw new BadRequestException(ExceptionConstant.TEST_E006);
                         }
                         List<Question> questions = questionService.updateQuestions(testReq.getQuestions());
                         List<UUID> questionsIds = questionService.getQuestionIDsByQuestions(questions);
@@ -175,7 +175,7 @@ public class TestServiceImpl implements TestService {
                         test.setName(testReq.getName());
                         test.setQuestionIDs(questionsIds);
                         return test;
-                    }).orElseThrow(() -> new NotFoundException(TExamExceptionConstant.TEST_E005));
+                    }).orElseThrow(() -> new NotFoundException(ExceptionConstant.TEST_E005));
             practiceService.saveByPart(part);
         } catch (Exception e) {
             throw new TExamException(e);
@@ -192,9 +192,9 @@ public class TestServiceImpl implements TestService {
     public void deleteTestById(UUID id) {
         try {
             Test test = this.findById(id)
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.TEST_E005));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.TEST_E005));
             Part part = partService.findById(test.getPartId())
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PART_E002));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.PART_E002));
 
             part.getTests().removeIf(t -> {
                 if (id.equals(t.getId())) {

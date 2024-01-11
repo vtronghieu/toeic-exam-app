@@ -9,13 +9,13 @@ import java.util.Collections;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ResponseData {
+public class DataResponse {
     private int code;
     private String status;
     private String message;
     private Object data;
 
-    public ResponseData(int code, String status, String message) {
+    public DataResponse(int code, String status, String message) {
         this.code = code;
         this.status = status;
         this.message = message;

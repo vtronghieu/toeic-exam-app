@@ -1,8 +1,8 @@
-package com.tip.dg4.toeic_exam.dto;
+package com.tip.dg4.toeic_exam.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.tip.dg4.toeic_exam.common.constants.TExamConstant;
-import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
+import com.tip.dg4.toeic_exam.common.constants.ExceptionConstant;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -22,21 +22,21 @@ public class UserInfoDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private UUID id;
 
-    @NotEmpty(message = TExamExceptionConstant.USER_INFO_E001)
-    @NotBlank(message = TExamExceptionConstant.USER_INFO_E001)
+    @NotEmpty(message = ExceptionConstant.USER_INFO_E001)
+    @NotBlank(message = ExceptionConstant.USER_INFO_E001)
     private String surname;
 
-    @NotEmpty(message = TExamExceptionConstant.USER_INFO_E002)
-    @NotBlank(message = TExamExceptionConstant.USER_INFO_E002)
+    @NotEmpty(message = ExceptionConstant.USER_INFO_E002)
+    @NotBlank(message = ExceptionConstant.USER_INFO_E002)
     private String name;
 
-    @NotEmpty(message = TExamExceptionConstant.USER_INFO_E005)
-    @NotBlank(message = TExamExceptionConstant.USER_INFO_E005)
+    @NotEmpty(message = ExceptionConstant.USER_INFO_E005)
+    @NotBlank(message = ExceptionConstant.USER_INFO_E005)
     private String imageURL;
 
-    @NotEmpty(message = TExamExceptionConstant.USER_INFO_E003)
-    @NotBlank(message = TExamExceptionConstant.USER_INFO_E003)
-    @Email(message = TExamExceptionConstant.USER_INFO_E003)
+    @NotEmpty(message = ExceptionConstant.USER_INFO_E003)
+    @NotBlank(message = ExceptionConstant.USER_INFO_E003)
+    @Email(message = ExceptionConstant.USER_INFO_E003)
     private String email;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = TExamConstant.DATE_FORMAT)

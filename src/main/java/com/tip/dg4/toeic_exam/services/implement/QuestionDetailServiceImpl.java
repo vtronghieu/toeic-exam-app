@@ -1,7 +1,7 @@
 package com.tip.dg4.toeic_exam.services.implement;
 
-import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
-import com.tip.dg4.toeic_exam.dto.QuestionDetailDto;
+import com.tip.dg4.toeic_exam.common.constants.ExceptionConstant;
+import com.tip.dg4.toeic_exam.dto.question.QuestionDetailDto;
 import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
 import com.tip.dg4.toeic_exam.exceptions.NotFoundException;
 import com.tip.dg4.toeic_exam.exceptions.TExamException;
@@ -42,16 +42,16 @@ public class QuestionDetailServiceImpl implements QuestionDetailService {
     public void createQuestionDetails(List<QuestionDetailDto> questionDetailDTOs) {
         try {
             if (questionDetailDTOs.isEmpty()) {
-                throw new BadRequestException(TExamExceptionConstant.QUESTION_DETAIL_E005);
+                throw new BadRequestException(ExceptionConstant.QUESTION_DETAIL_E005);
             }
             Question question = questionService.findById(questionDetailDTOs.get(0).getQuestionId())
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.QUESTION_E001));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.QUESTION_E001));
             List<QuestionDetail> questionDetails = questionDetailMapper.convertDTOsToModels(questionDetailDTOs);
 
             question.getQuestionDetails().addAll(questionDetails);
             questionService.save(question);
         } catch (Exception e) {
-            throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
+            throw new TExamException(ExceptionConstant.TEXAM_E001, e);
         }
     }
 
@@ -75,7 +75,7 @@ public class QuestionDetailServiceImpl implements QuestionDetailService {
                     .map(questionDetailMapper::convertModelToDto)
                     .getContent();
         } catch (Exception e) {
-            throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
+            throw new TExamException(ExceptionConstant.TEXAM_E001, e);
         }
     }
 
@@ -91,13 +91,13 @@ public class QuestionDetailServiceImpl implements QuestionDetailService {
     public List<QuestionDetailDto> getQuestionDetailsByQuestionId(UUID questionId) {
         try {
             Question question = questionService.findById(questionId)
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.QUESTION_E001));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.QUESTION_E001));
 
             return question.getQuestionDetails().stream()
                     .map(questionDetailMapper::convertModelToDto)
                     .toList();
         } catch (Exception e) {
-            throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
+            throw new TExamException(ExceptionConstant.TEXAM_E001, e);
         }
     }
 
@@ -113,11 +113,11 @@ public class QuestionDetailServiceImpl implements QuestionDetailService {
     public QuestionDetailDto getQuestionDetailById(UUID id) {
         try {
             QuestionDetail questionDetail = this.findById(id)
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.QUESTION_DETAIL_E006));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.QUESTION_DETAIL_E006));
 
             return questionDetailMapper.convertModelToDto(questionDetail);
         } catch (Exception e) {
-            throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
+            throw new TExamException(ExceptionConstant.TEXAM_E001, e);
         }
     }
 
@@ -132,10 +132,10 @@ public class QuestionDetailServiceImpl implements QuestionDetailService {
     public void updateQuestionDetail(QuestionDetailDto questionDetailDto) {
         try {
             if (!existsById(questionDetailDto.getId())) {
-                throw new NotFoundException(TExamExceptionConstant.QUESTION_DETAIL_E006);
+                throw new NotFoundException(ExceptionConstant.QUESTION_DETAIL_E006);
             }
             Question question = questionService.findById(questionDetailDto.getQuestionId())
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.QUESTION_E001));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.QUESTION_E001));
 
             question.getQuestionDetails().stream()
                     .filter(questionDetail -> questionDetailDto.getId().equals(questionDetail.getId()))
@@ -148,7 +148,7 @@ public class QuestionDetailServiceImpl implements QuestionDetailService {
                     });
             questionService.save(question);
         } catch (Exception e) {
-            throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
+            throw new TExamException(ExceptionConstant.TEXAM_E001, e);
         }
     }
 
@@ -163,14 +163,14 @@ public class QuestionDetailServiceImpl implements QuestionDetailService {
     public void deleteQuestionDetailById(UUID id) {
         try {
             QuestionDetail questionDetail = this.findById(id)
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.QUESTION_DETAIL_E006));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.QUESTION_DETAIL_E006));
             Question question = questionService.findById(questionDetail.getQuestionId())
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.QUESTION_E001));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.QUESTION_E001));
 
             question.getQuestionDetails().remove(questionDetail);
             questionService.save(question);
         } catch (Exception e) {
-            throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
+            throw new TExamException(ExceptionConstant.TEXAM_E001, e);
         }
     }
 

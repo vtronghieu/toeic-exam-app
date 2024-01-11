@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class TExamExceptionConstant {
+public class ExceptionConstant {
     public static final String TEXAM_E001 = "Something went wrong";
     public static final String TEXAM_E002 = "Unauthorized, token is missing";
     public static final String TEXAM_E003 = "Path not found: ";

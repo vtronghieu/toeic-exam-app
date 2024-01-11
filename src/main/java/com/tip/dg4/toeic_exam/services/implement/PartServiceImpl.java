@@ -1,6 +1,6 @@
 package com.tip.dg4.toeic_exam.services.implement;
 
-import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
+import com.tip.dg4.toeic_exam.common.constants.ExceptionConstant;
 import com.tip.dg4.toeic_exam.dto.PartDto;
 import com.tip.dg4.toeic_exam.dto.requests.PartReq;
 import com.tip.dg4.toeic_exam.exceptions.ConflictException;
@@ -38,9 +38,9 @@ public class PartServiceImpl implements PartService {
     public void createPart(PartReq partREQ) {
         try {
             Practice practice = practiceService.findById(partREQ.getPracticeId())
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PRACTICE_E003));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.PRACTICE_E003));
             if (existByName(practice, partREQ.getName())) {
-                throw new ConflictException(TExamExceptionConstant.PART_E001);
+                throw new ConflictException(ExceptionConstant.PART_E001);
             }
 
             List<Part> parts = Optional.ofNullable(practice.getParts()).orElse(new ArrayList<>());
@@ -65,7 +65,7 @@ public class PartServiceImpl implements PartService {
     public List<PartDto> getPartsByPracticeId(UUID practiceId) {
         try {
             Practice practice = practiceService.findById(practiceId)
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PRACTICE_E003));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.PRACTICE_E003));
 
             return partMapper.convertModelsToDTOs(practice.getParts());
         } catch (Exception e) {
@@ -85,14 +85,14 @@ public class PartServiceImpl implements PartService {
     public void updatePart(PartReq partREQ) {
         try {
             Practice practice = practiceService.findById(partREQ.getPracticeId())
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PRACTICE_E003));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.PRACTICE_E003));
 
             practice.getParts().stream()
                     .filter(part -> Objects.nonNull(partREQ.getId()) && partREQ.getId().equals(part.getId()))
                     .findFirst()
                     .map(part -> {
                         if (!Objects.equals(partREQ.getName(), part.getName()) && existByName(practice, partREQ.getName())) {
-                            throw new ConflictException(TExamExceptionConstant.PART_E001);
+                            throw new ConflictException(ExceptionConstant.PART_E001);
                         }
                         part.setPracticeId(partREQ.getPracticeId());
                         part.setName(partREQ.getName());
@@ -100,7 +100,7 @@ public class PartServiceImpl implements PartService {
                         part.setDescription(partREQ.getDescription());
 
                         return part;
-                    }).orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PART_E002));
+                    }).orElseThrow(() -> new NotFoundException(ExceptionConstant.PART_E002));
             practiceService.save(practice);
         } catch (Exception e) {
             throw new TExamException(e);
@@ -118,7 +118,7 @@ public class PartServiceImpl implements PartService {
     public void deletePartById(UUID id) {
         try {
             Part part = this.findById(id)
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PART_E002));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.PART_E002));
 
             practiceService.findById(part.getPracticeId())
                     .ifPresent(practice -> {
@@ -143,9 +143,9 @@ public class PartServiceImpl implements PartService {
     public void deletePartByPracticeIdAndPartId(UUID practiceId, UUID partId) {
         try {
             Practice practice = practiceService.findById(practiceId)
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PRACTICE_E003));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.PRACTICE_E003));
             Part part = this.findByPracticeAndId(practice, partId)
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.PART_E002));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.PART_E002));
 
             if (practice.getParts().remove(part)) {
                 practiceService.save(practice);

@@ -1,7 +1,7 @@
-package com.tip.dg4.toeic_exam.dto;
+package com.tip.dg4.toeic_exam.dto.question;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
+import com.tip.dg4.toeic_exam.common.constants.ExceptionConstant;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -24,14 +24,14 @@ public class QuestionDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private UUID id;
 
-    @NotEmpty(message = TExamExceptionConstant.QUESTION_E002)
-    @NotBlank(message = TExamExceptionConstant.QUESTION_E002)
+    @NotEmpty(message = ExceptionConstant.QUESTION_E002)
+    @NotBlank(message = ExceptionConstant.QUESTION_E002)
     private String type;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private UUID objectTypeId;
 
-    @NotEmpty(message = TExamExceptionConstant.QUESTION_E004)
+    @NotEmpty(message = ExceptionConstant.QUESTION_E004)
     private String level;
 
     private List<String> imageURLs;
@@ -41,7 +41,7 @@ public class QuestionDto {
     private String transcript;
 
     @Valid
-    @NotEmpty(message = TExamExceptionConstant.QUESTION_DETAIL_E005)
-    @Size(min = 1, message = TExamExceptionConstant.QUESTION_DETAIL_E005)
+    @NotEmpty(message = ExceptionConstant.QUESTION_DETAIL_E005)
+    @Size(min = 1, message = ExceptionConstant.QUESTION_DETAIL_E005)
     private List<QuestionDetailDto> questionDetails;
 }

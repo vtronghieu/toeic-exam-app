@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class TExamParamConstant {
+public class ParamConstant {
     public static final String ID = "id";
     public static final String PRACTICE_ID = "practice-id";
     public static final String PART_ID = "part-id";

@@ -1,10 +1,10 @@
 package com.tip.dg4.toeic_exam.controllers;
 
-import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
-import com.tip.dg4.toeic_exam.common.constants.TExamSuccessfulConstant;
-import com.tip.dg4.toeic_exam.common.responses.ResponseData;
-import com.tip.dg4.toeic_exam.dto.AuthenticateDto;
-import com.tip.dg4.toeic_exam.dto.UserDto;
+import com.tip.dg4.toeic_exam.common.constants.ApiConstant;
+import com.tip.dg4.toeic_exam.common.constants.SuccessfulConstant;
+import com.tip.dg4.toeic_exam.common.responses.DataResponse;
+import com.tip.dg4.toeic_exam.dto.user.AuthenticateDto;
+import com.tip.dg4.toeic_exam.dto.user.UserDto;
 import com.tip.dg4.toeic_exam.services.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,35 +17,35 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = TExamApiConstant.AUTH_API_ROOT)
+@RequestMapping(path = ApiConstant.AUTH_API_ROOT)
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
 
-    @PostMapping(path = TExamApiConstant.AUTH_ENDPOINT_LOGIN,
+    @PostMapping(path = ApiConstant.AUTH_ENDPOINT_LOGIN,
                  produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseData> login(@RequestBody @Valid AuthenticateDto authenticateDto) {
+    public ResponseEntity<DataResponse> login(@RequestBody @Valid AuthenticateDto authenticateDto) {
         HttpStatus httpStatus = HttpStatus.ACCEPTED;
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.AUTH_S001,
+                SuccessfulConstant.AUTH_S001,
                 authService.login(authenticateDto)
         );
 
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @PostMapping(path = TExamApiConstant.AUTH_ENDPOINT_REGISTER,
+    @PostMapping(path = ApiConstant.AUTH_ENDPOINT_REGISTER,
                  produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseData> register(@RequestBody @Valid UserDto userDto) {
+    public ResponseEntity<DataResponse> register(@RequestBody @Valid UserDto userDto) {
         authService.register(userDto);
 
         HttpStatus httpStatus = HttpStatus.CREATED;
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.AUTH_S002
+                SuccessfulConstant.AUTH_S002
         );
 
         return new ResponseEntity<>(result, httpStatus);

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TExamConstant {
     public static final String EMPTY = "";
+    public static final String SPACE = " ";
     public static final String SLASH = "/";
     public static final String ASTERISK = "*";
     public static final String DATE_FORMAT = "dd-MM-yyyy";

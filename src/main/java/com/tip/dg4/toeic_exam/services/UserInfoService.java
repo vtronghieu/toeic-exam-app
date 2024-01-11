@@ -1,6 +1,6 @@
 package com.tip.dg4.toeic_exam.services;
 
-import com.tip.dg4.toeic_exam.dto.UserInfoDto;
+import com.tip.dg4.toeic_exam.dto.user.UserInfoDto;
 import com.tip.dg4.toeic_exam.models.UserInfo;
 
 import java.util.List;

@@ -1,6 +1,6 @@
 package com.tip.dg4.toeic_exam.dto.requests;
 
-import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
+import com.tip.dg4.toeic_exam.common.constants.ExceptionConstant;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -22,11 +22,11 @@ import java.util.UUID;
 public class QuestionReq {
     private UUID id;
 
-    @NotEmpty(message = TExamExceptionConstant.QUESTION_E002)
-    @NotBlank(message = TExamExceptionConstant.QUESTION_E002)
+    @NotEmpty(message = ExceptionConstant.QUESTION_E002)
+    @NotBlank(message = ExceptionConstant.QUESTION_E002)
     private String type;
 
-    @NotEmpty(message = TExamExceptionConstant.QUESTION_E004)
+    @NotEmpty(message = ExceptionConstant.QUESTION_E004)
     private String level;
 
     private List<String> imageURLs;
@@ -36,7 +36,7 @@ public class QuestionReq {
     private String transcript;
 
     @Valid
-    @NotEmpty(message = TExamExceptionConstant.QUESTION_DETAIL_E005)
-    @Size(min = 1, message = TExamExceptionConstant.QUESTION_DETAIL_E005)
+    @NotEmpty(message = ExceptionConstant.QUESTION_DETAIL_E005)
+    @Size(min = 1, message = ExceptionConstant.QUESTION_DETAIL_E005)
     private List<QuestionDetailReq> questionDetails;
 }

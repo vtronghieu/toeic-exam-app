@@ -1,8 +1,7 @@
-package com.tip.dg4.toeic_exam.dto;
+package com.tip.dg4.toeic_exam.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,12 +9,12 @@ import java.util.UUID;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class AuthorizeDto {
+public class AccountDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    private UUID userId;
+    private UUID id;
     private String username;
+    private String password;
     private String role;
-    private String token;
+    @JsonProperty(value = "isActive")
+    private boolean isActive;
 }

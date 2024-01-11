@@ -1,6 +1,6 @@
 package com.tip.dg4.toeic_exam.mappers;
 
-import com.tip.dg4.toeic_exam.dto.UserDto;
+import com.tip.dg4.toeic_exam.dto.user.UserDto;
 import com.tip.dg4.toeic_exam.models.User;
 import com.tip.dg4.toeic_exam.models.enums.UserRole;
 import lombok.RequiredArgsConstructor;

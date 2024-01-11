@@ -1,10 +1,10 @@
 package com.tip.dg4.toeic_exam.controllers;
 
-import com.tip.dg4.toeic_exam.common.constants.TExamApiConstant;
+import com.tip.dg4.toeic_exam.common.constants.ApiConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamConstant;
-import com.tip.dg4.toeic_exam.common.constants.TExamParamConstant;
-import com.tip.dg4.toeic_exam.common.constants.TExamSuccessfulConstant;
-import com.tip.dg4.toeic_exam.common.responses.ResponseData;
+import com.tip.dg4.toeic_exam.common.constants.ParamConstant;
+import com.tip.dg4.toeic_exam.common.constants.SuccessfulConstant;
+import com.tip.dg4.toeic_exam.common.responses.DataResponse;
 import com.tip.dg4.toeic_exam.dto.requests.LessonReq;
 import com.tip.dg4.toeic_exam.services.LessonService;
 import jakarta.validation.Valid;
@@ -18,61 +18,61 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(path = TExamApiConstant.LESSON_API_ROOT)
+@RequestMapping(path = ApiConstant.LESSON_API_ROOT)
 @RequiredArgsConstructor
 public class LessonController {
     private final LessonService lessonService;
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
-    ResponseEntity<ResponseData> createLesson(@RequestBody @Valid LessonReq partLessonDto) {
+    ResponseEntity<DataResponse> createLesson(@RequestBody @Valid LessonReq partLessonDto) {
         lessonService.createLesson(partLessonDto);
 
         HttpStatus httpStatus = HttpStatus.CREATED;
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.LESSON_S001
+                SuccessfulConstant.LESSON_S001
         );
 
         return new ResponseEntity<>(result, httpStatus);
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<ResponseData> getLessons() {
+    ResponseEntity<DataResponse> getLessons() {
         HttpStatus httpStatus = HttpStatus.OK;
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.LESSON_S002,
+                SuccessfulConstant.LESSON_S002,
                 lessonService.getLessons()
         );
 
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @GetMapping(params = TExamParamConstant.PART_ID,
+    @GetMapping(params = ParamConstant.PART_ID,
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<ResponseData> getLessonsByPartId(@RequestParam(TExamParamConstant.PART_ID) UUID partId) {
+    ResponseEntity<DataResponse> getLessonsByPartId(@RequestParam(ParamConstant.PART_ID) UUID partId) {
         HttpStatus httpStatus = HttpStatus.OK;
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.LESSON_S002,
+                SuccessfulConstant.LESSON_S002,
                 lessonService.getLessonsByPartId(partId)
         );
 
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @GetMapping(params = TExamParamConstant.ID,
+    @GetMapping(params = ParamConstant.ID,
                 produces = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<ResponseData> getLessonById(@RequestParam(TExamParamConstant.ID) UUID id) {
+    ResponseEntity<DataResponse> getLessonById(@RequestParam(ParamConstant.ID) UUID id) {
         HttpStatus httpStatus = HttpStatus.OK;
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.LESSON_S005,
+                SuccessfulConstant.LESSON_S005,
                 lessonService.getLessonById(id)
         );
 
@@ -81,30 +81,30 @@ public class LessonController {
 
     @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
-    ResponseEntity<ResponseData> updateLessonById(@RequestBody @Valid LessonReq lessonREQ) {
+    ResponseEntity<DataResponse> updateLessonById(@RequestBody @Valid LessonReq lessonREQ) {
         lessonService.updateLessonById(lessonREQ);
 
         HttpStatus httpStatus = HttpStatus.OK;
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.LESSON_S003
+                SuccessfulConstant.LESSON_S003
         );
 
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @DeleteMapping(params = TExamParamConstant.ID,
+    @DeleteMapping(params = ParamConstant.ID,
                    produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize(TExamConstant.ADMIN_AUTHORIZED)
-    ResponseEntity<ResponseData> deleteLessonById(@RequestParam(TExamParamConstant.ID) UUID id) {
+    ResponseEntity<DataResponse> deleteLessonById(@RequestParam(ParamConstant.ID) UUID id) {
         lessonService.deleteLessonById(id);
 
         HttpStatus httpStatus = HttpStatus.OK;
-        ResponseData result = new ResponseData(
+        DataResponse result = new DataResponse(
                 httpStatus.value(),
                 httpStatus.getReasonPhrase(),
-                TExamSuccessfulConstant.LESSON_S004
+                SuccessfulConstant.LESSON_S004
         );
 
         return new ResponseEntity<>(result, httpStatus);

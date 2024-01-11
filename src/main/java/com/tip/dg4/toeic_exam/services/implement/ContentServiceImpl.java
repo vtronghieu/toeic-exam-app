@@ -1,6 +1,6 @@
 package com.tip.dg4.toeic_exam.services.implement;
 
-import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
+import com.tip.dg4.toeic_exam.common.constants.ExceptionConstant;
 import com.tip.dg4.toeic_exam.dto.ContentDto;
 import com.tip.dg4.toeic_exam.exceptions.ConflictException;
 import com.tip.dg4.toeic_exam.exceptions.NotFoundException;
@@ -37,9 +37,9 @@ public class ContentServiceImpl implements ContentService {
     public void createContent(ContentDto contentDTO) {
         try {
             Lesson lesson = lessonService.findById(contentDTO.getLessonId())
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.LESSON_E002));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.LESSON_E002));
             if (existsInLessonByTitle(lesson, contentDTO.getTitle())) {
-                throw new ConflictException(TExamExceptionConstant.CONTENT_E004);
+                throw new ConflictException(ExceptionConstant.CONTENT_E004);
             }
 
             List<Content> contents = Optional.ofNullable(lesson.getContents()).orElse(new ArrayList<>());
@@ -79,7 +79,7 @@ public class ContentServiceImpl implements ContentService {
         try {
             return this.findById(id)
                     .map(contentMapper::convertModelToDTO)
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.CONTENT_E005));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.CONTENT_E005));
         } catch (Exception e) {
             throw new TExamException(e);
         }
@@ -96,7 +96,7 @@ public class ContentServiceImpl implements ContentService {
     public List<ContentDto> getContentsByLessonId(UUID lessonId) {
         try {
             Lesson lesson = lessonService.findById(lessonId)
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.LESSON_E002));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.LESSON_E002));
 
             return contentMapper.convertModelsToDTOs(lesson.getContents());
         } catch (Exception e) {
@@ -116,7 +116,7 @@ public class ContentServiceImpl implements ContentService {
     public void updateContent(ContentDto contentDTO) {
         try {
             Lesson lesson = lessonService.findById(contentDTO.getLessonId())
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.LESSON_E002));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.LESSON_E002));
 
             lesson.getContents().stream()
                     .filter(content -> contentDTO.getId().equals(content.getId()))
@@ -124,7 +124,7 @@ public class ContentServiceImpl implements ContentService {
                     .map(content -> {
                         if (!Objects.equals(contentDTO.getContent(), content.getContent()) &&
                                 existsInLessonByTitle(lesson, contentDTO.getTitle())) {
-                            throw new ConflictException(TExamExceptionConstant.CONTENT_E004);
+                            throw new ConflictException(ExceptionConstant.CONTENT_E004);
                         }
                         content.setLessonId(contentDTO.getLessonId());
                         content.setTitle(contentDTO.getTitle());
@@ -132,7 +132,7 @@ public class ContentServiceImpl implements ContentService {
                         content.setExamples(contentDTO.getExamples());
 
                         return content;
-                    }).orElseThrow(() -> new NotFoundException(TExamExceptionConstant.CONTENT_E005));
+                    }).orElseThrow(() -> new NotFoundException(ExceptionConstant.CONTENT_E005));
             practiceService.saveByLesson(lesson);
         } catch (Exception e) {
             throw new TExamException(e);
@@ -150,9 +150,9 @@ public class ContentServiceImpl implements ContentService {
     public void deleteContentById(UUID id) {
         try {
             Content content = this.findById(id)
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.CONTENT_E005));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.CONTENT_E005));
             Lesson lesson = lessonService.findById(content.getLessonId())
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.LESSON_E002));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.LESSON_E002));
 
             lesson.getContents().remove(content);
             practiceService.saveByLesson(lesson);

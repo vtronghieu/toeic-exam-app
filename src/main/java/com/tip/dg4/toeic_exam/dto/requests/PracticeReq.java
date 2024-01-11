@@ -1,7 +1,7 @@
 package com.tip.dg4.toeic_exam.dto.requests;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
+import com.tip.dg4.toeic_exam.common.constants.ExceptionConstant;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
@@ -19,15 +19,15 @@ public class PracticeReq {
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private UUID id;
 
-    @NotEmpty(message = TExamExceptionConstant.PRACTICE_E004)
-    @NotBlank(message = TExamExceptionConstant.PRACTICE_E004)
+    @NotEmpty(message = ExceptionConstant.PRACTICE_E004)
+    @NotBlank(message = ExceptionConstant.PRACTICE_E004)
     private String name;
 
-    @NotEmpty(message = TExamExceptionConstant.PRACTICE_E002)
-    @NotBlank(message = TExamExceptionConstant.PRACTICE_E002)
+    @NotEmpty(message = ExceptionConstant.PRACTICE_E002)
+    @NotBlank(message = ExceptionConstant.PRACTICE_E002)
     private String type;
 
-    @NotEmpty(message = TExamExceptionConstant.PRACTICE_E005)
-    @NotBlank(message = TExamExceptionConstant.PRACTICE_E005)
+    @NotEmpty(message = ExceptionConstant.PRACTICE_E005)
+    @NotBlank(message = ExceptionConstant.PRACTICE_E005)
     private String imageURL;
 }

@@ -1,4 +1,4 @@
-package com.tip.dg4.toeic_exam.dto;
+package com.tip.dg4.toeic_exam.dto.user;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

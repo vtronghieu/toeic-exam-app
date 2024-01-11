@@ -1,8 +1,7 @@
 package com.tip.dg4.toeic_exam.services.implement;
 
-import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
-import com.tip.dg4.toeic_exam.dto.QuestionDetailDto;
-import com.tip.dg4.toeic_exam.dto.QuestionDto;
+import com.tip.dg4.toeic_exam.common.constants.ExceptionConstant;
+import com.tip.dg4.toeic_exam.dto.question.QuestionDto;
 import com.tip.dg4.toeic_exam.dto.requests.QuestionReq;
 import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
 import com.tip.dg4.toeic_exam.exceptions.NotFoundException;
@@ -51,10 +50,10 @@ public class QuestionServiceImpl implements QuestionService {
     public Question createQuestion(UUID objectTypeId, QuestionReq questionReq) {
         try {
             if (Objects.equals(QuestionType.UNDEFINED, QuestionType.getType(questionReq.getType()))) {
-                throw new BadRequestException(TExamExceptionConstant.QUESTION_E003);
+                throw new BadRequestException(ExceptionConstant.QUESTION_E003);
             }
             if (Objects.equals(QuestionLevel.UNDEFINED, QuestionLevel.getLevel(questionReq.getLevel()))) {
-                throw new BadRequestException(TExamExceptionConstant.QUESTION_E005);
+                throw new BadRequestException(ExceptionConstant.QUESTION_E005);
             }
 
             Question question = questionMapper.convertReqToModel(questionReq);
@@ -65,7 +64,7 @@ public class QuestionServiceImpl implements QuestionService {
             question.setQuestionDetails(questionDetails);
             return questionRepository.save(question);
         } catch (Exception e) {
-            throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
+            throw new TExamException(ExceptionConstant.TEXAM_E001, e);
         }
     }
 
@@ -90,7 +89,7 @@ public class QuestionServiceImpl implements QuestionService {
                     .map(questionMapper::convertModelToDto)
                     .getContent();
         } catch (Exception e) {
-            throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
+            throw new TExamException(ExceptionConstant.TEXAM_E001, e);
         }
     }
 
@@ -106,11 +105,11 @@ public class QuestionServiceImpl implements QuestionService {
     public QuestionDto getQuestionById(UUID id) {
         try {
             Question question = questionRepository.findById(id)
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.QUESTION_E001));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.QUESTION_E001));
 
             return questionMapper.convertModelToDto(question);
         } catch (Exception e) {
-            throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
+            throw new TExamException(ExceptionConstant.TEXAM_E001, e);
         }
     }
 
@@ -129,7 +128,7 @@ public class QuestionServiceImpl implements QuestionService {
         try {
             QuestionType questionType = QuestionType.getType(type);
             if (Objects.equals(QuestionType.UNDEFINED, questionType)) {
-                throw new BadRequestException(TExamExceptionConstant.QUESTION_E003);
+                throw new BadRequestException(ExceptionConstant.QUESTION_E003);
             }
             long totalElements = questionRepository.countByType(questionType);
             if (totalElements == 0) return Collections.emptyList();
@@ -141,7 +140,7 @@ public class QuestionServiceImpl implements QuestionService {
                     .map(questionMapper::convertModelToDto)
                     .toList();
         } catch (Exception e) {
-            throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
+            throw new TExamException(ExceptionConstant.TEXAM_E001, e);
         }
     }
 
@@ -160,7 +159,7 @@ public class QuestionServiceImpl implements QuestionService {
         try {
             long totalElements = questionRepository.countByObjectTypeId(objectTypeId);
             if (totalElements == 0) {
-                throw new NotFoundException(TExamExceptionConstant.QUESTION_E007);
+                throw new NotFoundException(ExceptionConstant.QUESTION_E007);
             }
             int currentPage = TExamUtil.getCorrectPage(page, size, totalElements);
             int currentSize = TExamUtil.getCorrectSize(size, totalElements);
@@ -169,7 +168,7 @@ public class QuestionServiceImpl implements QuestionService {
                     .map(questionMapper::convertModelToDto)
                     .toList();
         } catch (Exception e) {
-            throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
+            throw new TExamException(ExceptionConstant.TEXAM_E001, e);
         }
     }
 
@@ -184,7 +183,7 @@ public class QuestionServiceImpl implements QuestionService {
     public List<QuestionDto> getQuestionsByObjectTypeId(UUID objectTypeId) {
         List<Question> questions = questionRepository.findByObjectTypeId(objectTypeId);
         if (questions.isEmpty()) {
-            throw new NotFoundException(TExamExceptionConstant.QUESTION_E007);
+            throw new NotFoundException(ExceptionConstant.QUESTION_E007);
         }
 
         return questions.stream().map(questionMapper::convertModelToDto).toList();
@@ -202,14 +201,14 @@ public class QuestionServiceImpl implements QuestionService {
     public Question updateQuestion(QuestionReq questionReq) {
         try {
             Question question = questionRepository.findById(questionReq.getId())
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.QUESTION_E001));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.QUESTION_E001));
             QuestionType questionType = QuestionType.getType(questionReq.getType());
             if (Objects.equals(QuestionType.UNDEFINED, questionType)) {
-                throw new BadRequestException(TExamExceptionConstant.QUESTION_E003);
+                throw new BadRequestException(ExceptionConstant.QUESTION_E003);
             }
             QuestionLevel questionLevel = QuestionLevel.getLevel(questionReq.getLevel());
             if (Objects.equals(QuestionLevel.UNDEFINED, questionLevel)) {
-                throw new BadRequestException(TExamExceptionConstant.QUESTION_E005);
+                throw new BadRequestException(ExceptionConstant.QUESTION_E005);
             }
 
             question.setType(questionType);
@@ -221,7 +220,7 @@ public class QuestionServiceImpl implements QuestionService {
 
             return questionRepository.save(question);
         } catch (Exception e) {
-            throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
+            throw new TExamException(ExceptionConstant.TEXAM_E001, e);
         }
     }
 
@@ -250,13 +249,13 @@ public class QuestionServiceImpl implements QuestionService {
     public void deleteQuestionById(UUID id) {
         try {
             Question question = questionRepository.findById(id)
-                    .orElseThrow(() -> new NotFoundException(TExamExceptionConstant.QUESTION_E001));
+                    .orElseThrow(() -> new NotFoundException(ExceptionConstant.QUESTION_E001));
 
             questionRepository.deleteById(id);
             uploadService.deleteFile(question.getAudioURL());
             question.getImageURLs().parallelStream().forEach(uploadService::deleteFile);
         } catch (Exception e) {
-            throw new TExamException(TExamExceptionConstant.TEXAM_E001, e);
+            throw new TExamException(ExceptionConstant.TEXAM_E001, e);
         }
     }
 

@@ -8,7 +8,7 @@ import com.dropbox.core.v2.sharing.RequestedVisibility;
 import com.dropbox.core.v2.sharing.SharedLinkMetadata;
 import com.dropbox.core.v2.sharing.SharedLinkSettings;
 import com.tip.dg4.toeic_exam.common.constants.TExamConstant;
-import com.tip.dg4.toeic_exam.common.constants.TExamExceptionConstant;
+import com.tip.dg4.toeic_exam.common.constants.ExceptionConstant;
 import com.tip.dg4.toeic_exam.exceptions.BadRequestException;
 import com.tip.dg4.toeic_exam.exceptions.TExamException;
 import com.tip.dg4.toeic_exam.exceptions.UnauthorizedException;
@@ -58,11 +58,11 @@ public class UploadServiceImpl implements UploadService {
                 images.add(image);
 
             } catch (InvalidAccessTokenException e) {
-                throw new UnauthorizedException(TExamExceptionConstant.DROPBOX_E001);
+                throw new UnauthorizedException(ExceptionConstant.DROPBOX_E001);
             } catch (CreateSharedLinkWithSettingsErrorException e) {
-                throw new BadRequestException(TExamExceptionConstant.DROPBOX_E002);
+                throw new BadRequestException(ExceptionConstant.DROPBOX_E002);
             } catch (Exception e) {
-                throw new BadRequestException(TExamExceptionConstant.DROPBOX_E003);
+                throw new BadRequestException(ExceptionConstant.DROPBOX_E003);
             }
         }
         return images;
