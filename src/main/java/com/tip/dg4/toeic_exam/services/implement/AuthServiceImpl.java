@@ -32,20 +32,16 @@ public class AuthServiceImpl implements AuthService {
      */
     @Override
     public AuthorizeDto login(AuthenticateDto authenticateDto) {
-        try {
-            User user = userService.getByUsernameAndPassword(authenticateDto.getUsername(), authenticateDto.getPassword())
-                    .orElseThrow(() -> new UnauthorizedException(ExceptionConstant.AUTH_E003));
-            String token = jwtService.generateToken(user.getUsername());
+        User user = userService.getByUsernameAndPassword(authenticateDto.getUsername(), authenticateDto.getPassword())
+                .orElseThrow(() -> new UnauthorizedException(ExceptionConstant.AUTH_E003));
+        String token = jwtService.generateToken(user.getUsername());
 
-            return AuthorizeDto.builder()
-                    .userId(user.getId())
-                    .username(user.getUsername())
-                    .role(UserRole.getValue(user.getRole()))
-                    .token(token)
-                    .build();
-        } catch (Exception e) {
-            throw new ArrayIndexOutOfBoundsException(ExceptionConstant.TEXAM_E001);
-        }
+        return AuthorizeDto.builder()
+                .userId(user.getId())
+                .username(user.getUsername())
+                .role(UserRole.getValue(user.getRole()))
+                .token(token)
+                .build();
     }
 
     /**

@@ -70,6 +70,13 @@ public class TExamUtil {
                 .findFirst().orElse(null);
     }
 
+    /**
+     * Retrieves the Field object corresponding to the specified field name from the given object's class.
+     *
+     * @param source    The object from which to retrieve the Field.
+     * @param fieldName The name of the field to retrieve.
+     * @return The Field object representing the specified field, or null if the field is not found.
+     */
     public static Field getField(Object source, String fieldName) {
         return Arrays.stream(source.getClass().getDeclaredFields())
                 .filter(field -> fieldName.equals(field.getName()))

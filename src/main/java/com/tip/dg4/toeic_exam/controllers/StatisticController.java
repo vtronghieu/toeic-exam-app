@@ -18,8 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class StatisticController {
     private final StatisticService statisticService;
 
-    @GetMapping(params = {ParamConstant.PAGE, ParamConstant.SIZE},
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(params = {ParamConstant.PAGE, ParamConstant.SIZE}, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DataResponse> getStatistics(@RequestParam(name = ParamConstant.PAGE,
                                                                     defaultValue = ParamConstant.PAGE_DEFAULT) int page,
                                                       @RequestParam(name = ParamConstant.SIZE,
@@ -35,8 +34,7 @@ public class StatisticController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @PostMapping(path = ApiConstant.SEND_ANSWER_API,
-                 produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = ApiConstant.SEND_ANSWER_API, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DataResponse> sendAnswer(@RequestBody SendAnswerDto sendAnswerDto) {
         HttpStatus httpStatus = HttpStatus.OK;
         DataResponse result = new DataResponse(
