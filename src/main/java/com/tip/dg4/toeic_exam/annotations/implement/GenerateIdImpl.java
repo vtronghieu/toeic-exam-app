@@ -1,8 +1,7 @@
 package com.tip.dg4.toeic_exam.annotations.implement;
 
 import com.tip.dg4.toeic_exam.annotations.GenerateID;
-import com.tip.dg4.toeic_exam.common.constants.TExamConstant;
-import com.tip.dg4.toeic_exam.utils.TExamUtil;
+import com.tip.dg4.toeic_exam.utils.ConfigUtil;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mapping.MappingException;
 import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener;
@@ -11,9 +10,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.UUID;
@@ -35,7 +31,7 @@ public class GenerateIdImpl extends AbstractMongoEventListener<Object> {
     public void onBeforeConvert(@NonNull BeforeConvertEvent<Object> event) {
         Object source = event.getSource();
 
-        this.generateID(source, TExamUtil.isObjectCreated(source));
+        this.generateID(source, ConfigUtil.isObjectCreated(source));
     }
 
     /**
@@ -47,23 +43,23 @@ public class GenerateIdImpl extends AbstractMongoEventListener<Object> {
      */
     private void generateID(Object source, boolean isObjectCreated) {
         for (Field field : source.getClass().getDeclaredFields()) {
-            Object fieldValue = TExamUtil.getFieldValue(field, source);
+            Object fieldValue = ConfigUtil.getFieldValue(field, source);
             if (field.isAnnotationPresent(Id.class) && field.isAnnotationPresent(GenerateID.class)) {
                 if (!isObjectCreated && Objects.isNull(fieldValue)) {
                     throw new NullPointerException(field.getDeclaringClass().getCanonicalName() + ": Id can't be null");
                 }
                 this.setAutoGenerateID(field, source);
             } else {
-                if (!TExamUtil.isModelClassField(field)) continue;
+                if (!ConfigUtil.isModelClassField(field)) continue;
 
                 // Generate ID for sub-document
                 if (Objects.nonNull(fieldValue)) {
                     if (fieldValue instanceof Collection<?>) {
                         for (Object subSource : (Collection<?>) fieldValue) {
-                            this.generateID(subSource, TExamUtil.isObjectCreated(subSource));
+                            this.generateID(subSource, ConfigUtil.isObjectCreated(subSource));
                         }
                     } else {
-                        this.generateID(fieldValue, TExamUtil.isObjectCreated(fieldValue));
+                        this.generateID(fieldValue, ConfigUtil.isObjectCreated(fieldValue));
                     }
                 }
             }

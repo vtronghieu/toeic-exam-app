@@ -6,16 +6,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ExceptionConstant {
     public static final String TEXAM_E001 = "Something went wrong";
-    public static final String TEXAM_E002 = "Unauthorized, token is missing";
+    public static final String TEXAM_E002 = "Missing token";
     public static final String TEXAM_E003 = "Path not found: ";
     public static final String TEXAM_E004 = "Undefined validation error";
-    //    Account
-    public static final String ACCOUNT_E005 = "This user is not have the permission to access this path";
+    public static final String TEXAM_E005 = "Invalid authentication entry point";
+    public static final String TEXAM_E006 = "Invalid token";
+    public static final String TEXAM_E007 = "Expired token";
+    public static final String TEXAM_E008 = "Unsupported token";
+    public static final String TEXAM_E009 = "Token claims string is empty";
     //  Auth
     public static final String AUTH_E001 = "The username is invalid";
     public static final String AUTH_E002 = "The password is invalid";
     public static final String AUTH_E003 = "The username or password is incorrect";
-    public static final String AUTH_E004 = "The user doesn't have access";
+    public static final String AUTH_E004 = "Don't have permission to access";
     //  User
     public static final String USER_E001 = "The user not found";
     public static final String USER_E002 = "The user already exists";

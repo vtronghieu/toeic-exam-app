@@ -3,6 +3,8 @@ package com.tip.dg4.toeic_exam.config;
 import com.tip.dg4.toeic_exam.common.constants.ApiConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamConstant;
 import com.tip.dg4.toeic_exam.services.implement.UserDetailsServiceImpl;
+import com.tip.dg4.toeic_exam.utils.ConfigUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -23,40 +25,40 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Map;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
     private final ExceptionConfig exceptionConfig;
     private final UserDetailsServiceImpl userDetailsService;
 
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter,
-                          ExceptionConfig exceptionConfig,
-                          UserDetailsServiceImpl userDetailsService) {
-        this.jwtAuthFilter = jwtAuthFilter;
-        this.exceptionConfig = exceptionConfig;
-        this.userDetailsService = userDetailsService;
-    }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+        Map<HttpMethod, String[]> requests = ConfigUtil.getMethodsAndPublicAPIs();
         httpSecurity
                 .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(
-                        auth -> auth.requestMatchers(HttpMethod.POST, this.getPermitAllAPIs()).permitAll()
-                                    .requestMatchers(this.getPermitAllSwagger()).permitAll()
-                                    .anyRequest().authenticated()
-                )
+                .authorizeHttpRequests(auth -> {
+                    for (Map.Entry<HttpMethod, String[]> request : requests.entrySet()) {
+                        auth.requestMatchers(request.getKey(), request.getValue()).permitAll();
+                    }
+                    auth.requestMatchers(this.getSwaggerEndpoints()).permitAll();
+                    auth.anyRequest().authenticated();
+                })
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(this.authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(ex -> ex.accessDeniedHandler(exceptionConfig.handleAccessDenied())
-                                           .authenticationEntryPoint(exceptionConfig.handleAuthenticationEntryPoint()));
+                .exceptionHandling(ex -> ex
+                        .accessDeniedHandler(exceptionConfig.handleAccessDenied())
+                        .authenticationEntryPoint(exceptionConfig.handleAuthenticationEntryPoint())
+                );
 
         return httpSecurity.build();
     }
@@ -96,15 +98,8 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    private String[] getPermitAllAPIs() {
-        return new String[] {
-                ApiConstant.AUTH_API_LOGIN,
-                ApiConstant.AUTH_API_REGISTER
-        };
-    }
-
-    private String[] getPermitAllSwagger() {
-        return new String[] {
+    private String[] getSwaggerEndpoints() {
+        return new String[]{
                 "/v2/api-docs",
                 "/v3/api-docs",
                 "/v3/api-docs/**",

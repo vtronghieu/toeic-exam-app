@@ -19,6 +19,7 @@ public class TExamConstant {
     public static final String APP_DROPBOX = "ToeicDG4";
     public static final String MODEL_PACKAGE = "com.tip.dg4.toeic_exam.models";
     public static final String ADMIN_AUTHORIZED = "hasAuthority('Admin')";
+    public static final String USER_AUTHORIZED = "hasAuthority('User')";
     public static final String DOT_REGEX = "\\.";
     public static final String QUESTION_MARK_REGEX = "\\?";
     public static final String DTO_REGEX = "\\D[Tt][Oo]";

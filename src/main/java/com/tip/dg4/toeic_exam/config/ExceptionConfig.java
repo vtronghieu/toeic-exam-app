@@ -7,10 +7,9 @@ import com.tip.dg4.toeic_exam.common.constants.ExceptionConstant;
 import com.tip.dg4.toeic_exam.common.responses.ErrorResponse;
 import com.tip.dg4.toeic_exam.exceptions.InternalServerErrorException;
 import com.tip.dg4.toeic_exam.exceptions.TExamException;
-import com.tip.dg4.toeic_exam.exceptions.UnauthorizedException;
-import com.tip.dg4.toeic_exam.utils.ApiUtil;
-import com.tip.dg4.toeic_exam.utils.TExamUtil;
+import com.tip.dg4.toeic_exam.utils.ConfigUtil;
 import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolation;
@@ -26,7 +25,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.io.IOException;
@@ -38,36 +36,29 @@ import java.util.*;
 @ControllerAdvice
 @RequiredArgsConstructor
 public class ExceptionConfig extends ResponseEntityExceptionHandler {
-    private final RequestMappingHandlerMapping handlerMapping;
-
-    @ExceptionHandler(Exception.class)
-    public <E extends Exception> ResponseEntity<ErrorResponse> handleException(E exception) {
-        HttpStatus httpStatus = HttpStatus.NOT_IMPLEMENTED;
-        String message = ExceptionConstant.TEXAM_E001;
-        if ((exception instanceof TExamException)
-                && (!exception.getCause().getClass().equals(TExamException.class))) {
-            Field httpStatusField = TExamUtil.getField(exception, "httpStatus");
-            httpStatus = (HttpStatus) Optional.ofNullable(TExamUtil.getFieldValue(httpStatusField, exception.getCause()))
-                    .orElse(HttpStatus.NOT_IMPLEMENTED);
-            message = exception.getCause().getMessage();
-        }
+    @ExceptionHandler(TExamException.class)
+    public <E extends TExamException> ResponseEntity<ErrorResponse> handleTExamException(E exception) {
+        Field httpStatusField = ConfigUtil.getField(exception, "httpStatus");
+        HttpStatus httpStatus = (HttpStatus) Optional.ofNullable(ConfigUtil.getFieldValue(httpStatusField, exception.getCause()))
+                .orElse(HttpStatus.NOT_IMPLEMENTED);
+        String message = httpStatus != HttpStatus.NOT_IMPLEMENTED ? exception.getCause().getMessage() : exception.getMessage();
         ErrorResponse result = new ErrorResponse(
                 LocalDateTime.now(), httpStatus.value(), httpStatus.getReasonPhrase(), message
         );
-        log.error(exception, exception.fillInStackTrace());
 
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    public void handleUnauthorizedException(HttpServletResponse response, UnauthorizedException exception) {
+    public void handleJwtException(HttpServletResponse response, String message, String... requestURI) {
         try {
             HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
-            ErrorResponse result = new ErrorResponse();
-            result.setTimestamp(LocalDateTime.now());
-            result.setCode(httpStatus.value());
-            result.setStatus(httpStatus.getReasonPhrase());
-            result.setMessage(exception.getMessage());
-
+            if (requestURI != null && requestURI.length > 0) {
+                httpStatus = HttpStatus.NOT_FOUND;
+                message = ExceptionConstant.TEXAM_E003 + requestURI[0];
+            }
+            ErrorResponse result = new ErrorResponse(
+                    LocalDateTime.now(), httpStatus.value(), httpStatus.getReasonPhrase(), message
+            );
             JsonMapper mapper = new JsonMapper();
             mapper.registerModule(new JavaTimeModule());
 
@@ -81,37 +72,46 @@ public class ExceptionConfig extends ResponseEntityExceptionHandler {
     }
 
     public AccessDeniedHandler handleAccessDenied() {
-        HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
-        ErrorResponse result = new ErrorResponse(
-                LocalDateTime.now(),
-                httpStatus.value(),
-                httpStatus.getReasonPhrase(),
-                ExceptionConstant.ACCOUNT_E005
-        );
-
         return ((request, response, accessDeniedException) -> {
-            response.setStatus(httpStatus.value());
-            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            HttpStatus httpStatus = HttpStatus.FORBIDDEN;
+            ErrorResponse result = new ErrorResponse(
+                    LocalDateTime.now(), httpStatus.value(), httpStatus.getReasonPhrase(), ExceptionConstant.AUTH_E004
+            );
             JsonMapper mapper = new JsonMapper();
             mapper.registerModule(new JavaTimeModule());
+
+            response.setStatus(httpStatus.value());
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.getWriter().write(mapper.writeValueAsString(result));
         });
     }
 
     public AuthenticationEntryPoint handleAuthenticationEntryPoint() {
         return (request, response, authException) -> {
-            String requestUri = ApiConstant.API_ERROR.equals(request.getRequestURI()) ?
-                    request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI).toString() :
-                    request.getRequestURI();
-            if (ApiUtil.existAPI(handlerMapping, requestUri)) return;
-
-            HttpStatus httpStatus = HttpStatus.NOT_FOUND;
-            ErrorResponse result = new ErrorResponse();
-            result.setTimestamp(LocalDateTime.now());
-            result.setCode(httpStatus.value());
-            result.setStatus(httpStatus.getReasonPhrase());
-            result.setMessage(ExceptionConstant.TEXAM_E003 + requestUri);
-
+            HttpStatus httpStatus = HttpStatus.valueOf(response.getStatus());
+            LocalDateTime currentDateTime = LocalDateTime.now();
+            String message;
+            if (httpStatus == HttpStatus.OK) {
+                if (!ConfigUtil.existsAPI(request.getRequestURI())) {
+                    httpStatus = HttpStatus.NOT_FOUND;
+                    message = ExceptionConstant.TEXAM_E003 + request.getRequestURI();
+                } else {
+                    return;
+                }
+            } else if (httpStatus == HttpStatus.NOT_FOUND) {
+                String requestUri = ApiConstant.API_ERROR.equals(request.getRequestURI())
+                        ? request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI).toString()
+                        : request.getRequestURI();
+                message = ExceptionConstant.TEXAM_E003 + requestUri;
+            } else if (httpStatus == HttpStatus.INTERNAL_SERVER_ERROR) {
+                message = ExceptionConstant.TEXAM_E001;
+                log.error(authException, authException.fillInStackTrace());
+            } else {
+                message = ExceptionConstant.TEXAM_E005;
+            }
+            ErrorResponse result = new ErrorResponse(
+                    currentDateTime, httpStatus.value(), httpStatus.getReasonPhrase(), message
+            );
             JsonMapper mapper = new JsonMapper();
             mapper.registerModule(new JavaTimeModule());
 
@@ -185,10 +185,10 @@ public class ExceptionConfig extends ResponseEntityExceptionHandler {
         try {
             Map<String, Map<String, Object>> validationErrors = new TreeMap<>();
             for (ConstraintViolation<?> constraintViolation : exception.getConstraintViolations()) {
-                String element = TExamUtil.extractElementFromPropertyPath(constraintViolation.getPropertyPath());
+                String element = ConfigUtil.extractElementFromPropertyPath(constraintViolation.getPropertyPath());
 
                 if (StringUtils.isNotEmpty(element)) {
-                    String propertyName = TExamUtil.extractPropertyFromPropertyPath(constraintViolation.getPropertyPath());
+                    String propertyName = ConfigUtil.extractPropertyFromPropertyPath(constraintViolation.getPropertyPath());
                     String errorMessage = constraintViolation.getMessage();
                     Map<String, Object> errorProperties = validationErrors.computeIfAbsent(element, k -> new LinkedHashMap<>());
                     Object currentMessage = errorProperties.get(propertyName);

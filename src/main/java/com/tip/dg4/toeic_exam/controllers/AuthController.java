@@ -1,5 +1,6 @@
 package com.tip.dg4.toeic_exam.controllers;
 
+import com.tip.dg4.toeic_exam.annotations.PublicApi;
 import com.tip.dg4.toeic_exam.common.constants.ApiConstant;
 import com.tip.dg4.toeic_exam.common.constants.SuccessfulConstant;
 import com.tip.dg4.toeic_exam.common.responses.DataResponse;
@@ -22,8 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     private final AuthService authService;
 
-    @PostMapping(path = ApiConstant.AUTH_ENDPOINT_LOGIN,
-                 produces = MediaType.APPLICATION_JSON_VALUE)
+    @PublicApi
+    @PostMapping(path = ApiConstant.AUTH_ENDPOINT_LOGIN, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DataResponse> login(@RequestBody @Valid AuthenticateDto authenticateDto) {
         HttpStatus httpStatus = HttpStatus.ACCEPTED;
         DataResponse result = new DataResponse(
@@ -36,8 +37,8 @@ public class AuthController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
-    @PostMapping(path = ApiConstant.AUTH_ENDPOINT_REGISTER,
-                 produces = MediaType.APPLICATION_JSON_VALUE)
+    @PublicApi
+    @PostMapping(path = ApiConstant.AUTH_ENDPOINT_REGISTER, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DataResponse> register(@RequestBody @Valid UserDto userDto) {
         authService.register(userDto);
 
