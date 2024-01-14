@@ -18,7 +18,7 @@ import java.util.UUID;
  * A Spring Data MongoDB event listener class that generates IDs for MongoDB documents before they are converted and saved.
  * This class listens to the {@link org.springframework.data.mongodb.core.mapping.event.BeforeConvertEvent} event and
  * generates IDs for annotated fields based on the presence of the {@link org.springframework.data.annotation.Id} and
- * {@link com.tip.dg4.toeic_exam.annotations.GenerateID} annotations.
+ * {@link GenerateID} annotations.
  */
 @Component
 public class GenerateIdImpl extends AbstractMongoEventListener<Object> {
@@ -36,7 +36,7 @@ public class GenerateIdImpl extends AbstractMongoEventListener<Object> {
 
     /**
      * Generates IDs for the fields annotated with {@link org.springframework.data.annotation.Id} and
-     * {@link com.tip.dg4.toeic_exam.annotations.GenerateID}.
+     * {@link GenerateID}.
      *
      * @param source          The object to generate IDs for.
      * @param isObjectCreated true if the object is already created, false otherwise.
