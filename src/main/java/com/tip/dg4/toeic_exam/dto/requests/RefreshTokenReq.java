@@ -1,4 +1,4 @@
-package com.tip.dg4.toeic_exam.dto.user;
+package com.tip.dg4.toeic_exam.dto.requests;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AuthorizeDto {
-    private TokenDto tokens;
-
-    private InformationDto information;
+public class RefreshTokenReq {
+    private String refreshToken;
+    private String username;
 }
-

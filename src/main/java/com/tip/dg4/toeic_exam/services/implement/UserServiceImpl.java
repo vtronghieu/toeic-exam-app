@@ -31,8 +31,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-    @Lazy
-    private final UserInfoService userInfoService;
+    @Lazy private final UserInfoService userInfoService;
 
     /**
      * Creates a new user.

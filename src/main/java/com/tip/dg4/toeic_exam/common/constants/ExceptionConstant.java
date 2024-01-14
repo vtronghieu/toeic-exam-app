@@ -14,11 +14,13 @@ public class ExceptionConstant {
     public static final String TEXAM_E007 = "Expired token";
     public static final String TEXAM_E008 = "Unsupported token";
     public static final String TEXAM_E009 = "Token claims string is empty";
+    public static final String TEXAM_E010 = "Token signature does not match locally computed signature";
     //  Auth
     public static final String AUTH_E001 = "The username is invalid";
     public static final String AUTH_E002 = "The password is invalid";
     public static final String AUTH_E003 = "The username or password is incorrect";
     public static final String AUTH_E004 = "Don't have permission to access";
+    public static final String AUTH_E005 = "Don't have permission to access";
     //  User
     public static final String USER_E001 = "The user not found";
     public static final String USER_E002 = "The user already exists";

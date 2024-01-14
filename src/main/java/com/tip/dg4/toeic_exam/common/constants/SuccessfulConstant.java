@@ -8,6 +8,7 @@ public class SuccessfulConstant {
     //  Auth
     public static final String AUTH_S001 = "Logged in successfully";
     public static final String AUTH_S002 = "Registered successfully";
+    public static final String AUTH_S003 = "Tokens was refreshed successfully";
     //  User
     public static final String USER_S001 = "Get the users successfully";
     public static final String USER_S002 = "The user was created successfully";

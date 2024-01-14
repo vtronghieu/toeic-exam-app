@@ -35,6 +35,8 @@ public class User implements UserDetails {
 
     private UserRole role;
 
+    private String refreshToken;
+
     private boolean isActive;
 
     private UserInfo userInfo;

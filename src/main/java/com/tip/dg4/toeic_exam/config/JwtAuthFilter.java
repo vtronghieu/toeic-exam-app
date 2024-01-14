@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
-    public static final String BEARER_PREFIX = "Bearer ";
+    private static final String BEARER_PREFIX = "Bearer ";
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;

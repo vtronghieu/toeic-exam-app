@@ -2,10 +2,12 @@ package com.tip.dg4.toeic_exam.services.implement;
 
 import com.tip.dg4.toeic_exam.common.constants.ExceptionConstant;
 import com.tip.dg4.toeic_exam.config.ExceptionConfig;
+import com.tip.dg4.toeic_exam.models.enums.JwtType;
 import com.tip.dg4.toeic_exam.services.JwtService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,19 +22,19 @@ import java.util.function.Function;
 @Service
 @RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
-    private static final String SECRET_KEY = "4D6251655468576D5A7133743677397A24432646294A404E635266556A586E32";
-    private static final long EXPIRATION_TIMES = 1000 * 60 * 60 * 24 * 7L; // 7 days
+    private static final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 60L; // 1 hour
+    private static final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 3L; // 3 days
 
     private final ExceptionConfig exceptionConfig;
 
     @Override
-    public String generateToken(String username) {
-        return createToken(new HashMap<>(), username);
+    public String generateToken(String username, JwtType jwtType) {
+        return createToken(new HashMap<>(), username, jwtType);
     }
 
     @Override
-    public String generateToken(UserDetails userDetails) {
-        return createToken(new HashMap<>(), userDetails.getUsername());
+    public String generateToken(UserDetails userDetails, JwtType jwtType) {
+        return createToken(new HashMap<>(), userDetails.getUsername(), jwtType);
     }
 
     @Override
@@ -44,6 +46,8 @@ public class JwtServiceImpl implements JwtService {
     public String extractUsername(String token, HttpServletResponse response) {
         try {
             return extractClaim(token, Claims::getSubject);
+        } catch (SignatureException e) {
+            exceptionConfig.handleJwtException(response, ExceptionConstant.TEXAM_E010);
         } catch (MalformedJwtException e) {
             exceptionConfig.handleJwtException(response, ExceptionConstant.TEXAM_E006);
         } catch (ExpiredJwtException e) {
@@ -75,12 +79,15 @@ public class JwtServiceImpl implements JwtService {
                 .getBody();
     }
 
-    private String createToken(Map<String, Object> claims, String username) {
+    private String createToken(Map<String, Object> claims, String username, JwtType jwtType) {
+        Date expirationDate = new Date(System.currentTimeMillis() +
+                (JwtType.REFRESH_TOKEN.equals(jwtType) ? REFRESH_TOKEN_EXPIRATION : ACCESS_TOKEN_EXPIRATION));
+
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIMES))
+                .setExpiration(expirationDate)
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

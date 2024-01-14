@@ -1,19 +1,22 @@
 package com.tip.dg4.toeic_exam.services.implement;
 
 import com.tip.dg4.toeic_exam.common.constants.ExceptionConstant;
-import com.tip.dg4.toeic_exam.dto.user.AuthenticateDto;
-import com.tip.dg4.toeic_exam.dto.user.AuthorizeDto;
-import com.tip.dg4.toeic_exam.dto.user.UserDto;
+import com.tip.dg4.toeic_exam.dto.requests.RefreshTokenReq;
+import com.tip.dg4.toeic_exam.dto.user.*;
 import com.tip.dg4.toeic_exam.exceptions.TExamException;
 import com.tip.dg4.toeic_exam.exceptions.UnauthorizedException;
 import com.tip.dg4.toeic_exam.models.User;
-import com.tip.dg4.toeic_exam.models.enums.UserRole;
+import com.tip.dg4.toeic_exam.models.enums.JwtType;
 import com.tip.dg4.toeic_exam.services.AuthService;
 import com.tip.dg4.toeic_exam.services.JwtService;
 import com.tip.dg4.toeic_exam.services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
 @Service
@@ -21,6 +24,8 @@ import org.springframework.stereotype.Service;
 public class AuthServiceImpl implements AuthService {
     private final UserService userService;
     private final JwtService jwtService;
+    private final UserDetailsService userDetailsService;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Login a user and return an authorization token.
@@ -28,20 +33,26 @@ public class AuthServiceImpl implements AuthService {
      * @param authenticateDto the authentication DTO containing the info to login.
      * @return an authorization DTO containing the info to login success.
      * @throws UnauthorizedException if the username or password is incorrect.
-     * @throws TExamException        if any other error occurs.
      */
     @Override
+    @Transactional
     public AuthorizeDto login(AuthenticateDto authenticateDto) {
         User user = userService.getByUsernameAndPassword(authenticateDto.getUsername(), authenticateDto.getPassword())
                 .orElseThrow(() -> new UnauthorizedException(ExceptionConstant.AUTH_E003));
-        String token = jwtService.generateToken(user.getUsername());
+        String accessToken = jwtService.generateToken(user.getUsername(), JwtType.ACCESS_TOKEN);
+        String refreshToken = jwtService.generateToken(user.getUsername(), JwtType.REFRESH_TOKEN);
+
+        user.setRefreshToken(passwordEncoder.encode(refreshToken));
+        userService.save(user);
 
         return AuthorizeDto.builder()
-                .userId(user.getId())
-                .username(user.getUsername())
-                .role(UserRole.getValue(user.getRole()))
-                .token(token)
-                .build();
+                .tokens(TokenDto.builder().accessToken(accessToken).refreshToken(refreshToken).build())
+                .information(
+                        InformationDto.builder()
+                                .userId(user.getId())
+                                .username(user.getUsername())
+                                .role(user.getRole().getValue()).build()
+                ).build();
     }
 
     /**
@@ -51,7 +62,22 @@ public class AuthServiceImpl implements AuthService {
      * @throws TExamException if any error occurs.
      */
     @Override
+    @Transactional
     public void register(UserDto userDto) {
         userService.createUser(userDto);
+    }
+
+    @Override
+    @Transactional
+    public TokenDto refreshToken(RefreshTokenReq refreshTokenReq) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(refreshTokenReq.getUsername());
+        if (!jwtService.isTokenValid(refreshTokenReq.getRefreshToken(), userDetails)) {
+            throw new UnauthorizedException(ExceptionConstant.TEXAM_E006);
+        }
+
+        String accessToken = jwtService.generateToken(refreshTokenReq.getUsername(), JwtType.ACCESS_TOKEN);
+        String refreshToken = jwtService.generateToken(refreshTokenReq.getUsername(), JwtType.REFRESH_TOKEN);
+
+        return TokenDto.builder().accessToken(accessToken).refreshToken(refreshToken).build();
     }
 }
