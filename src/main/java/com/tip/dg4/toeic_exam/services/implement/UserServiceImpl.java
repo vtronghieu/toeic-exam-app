@@ -31,7 +31,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-    @Lazy private final UserInfoService userInfoService;
+    @Lazy
+    private final UserInfoService userInfoService;
 
     /**
      * Creates a new user.
@@ -255,5 +256,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User save(User user) {
         return userRepository.save(user);
+    }
+
+    @Override
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
     }
 }

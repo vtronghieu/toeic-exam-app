@@ -1,6 +1,5 @@
 package com.tip.dg4.toeic_exam.utils;
 
-import com.tip.dg4.toeic_exam.annotations.PublicApi;
 import com.tip.dg4.toeic_exam.common.constants.TExamConstant;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,6 +16,7 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -27,10 +27,28 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ConfigUtil {
     private static RequestMappingHandlerMapping handlerMapping;
+    private static Map<HttpMethod, String[]> publicRequestURIs;
+    private static Map<HttpMethod, String[]> requestUriUsesRefreshToken;
 
     @Autowired
     public void setHandlerMapping(RequestMappingHandlerMapping handlerMapping) {
         ConfigUtil.handlerMapping = handlerMapping;
+    }
+
+    public static Map<HttpMethod, String[]> getPublicRequestURIs() {
+        return ConfigUtil.publicRequestURIs;
+    }
+
+    public static void setPublicRequestURIs(Map<HttpMethod, String[]> publicRequestURIs) {
+        ConfigUtil.publicRequestURIs = publicRequestURIs;
+    }
+
+    public static Map<HttpMethod, String[]> getRequestUriUsesRefreshToken() {
+        return ConfigUtil.requestUriUsesRefreshToken;
+    }
+
+    public static void setRequestUriUsesRefreshToken(Map<HttpMethod, String[]> requestUriUsesRefreshTokens) {
+        ConfigUtil.requestUriUsesRefreshToken = requestUriUsesRefreshTokens;
     }
 
     /**
@@ -77,9 +95,15 @@ public class ConfigUtil {
      * @return The Field object representing the specified field, or null if the field is not found.
      */
     public static Field getField(Object source, String fieldName) {
-        return Arrays.stream(source.getClass().getDeclaredFields())
-                .filter(field -> fieldName.equals(field.getName()))
-                .findFirst().orElse(null);
+        try {
+            Field fields = source.getClass().getField(fieldName);
+            System.out.println(fields);
+            return Arrays.stream(source.getClass().getDeclaredFields())
+                    .filter(field -> fieldName.equals(field.getName()))
+                    .findFirst().orElse(null);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /**
@@ -171,12 +195,12 @@ public class ConfigUtil {
      * @return A map containing HTTP methods ({@link HttpMethod}) as keys
      * and corresponding arrays of URL patterns as values.
      */
-    public static Map<HttpMethod, String[]> getMethodsAndPublicAPIs() {
+    public static Map<HttpMethod, String[]> getMethodsAndAPIsByAnnotation(Class<? extends Annotation> annotation) {
         Map<RequestMappingInfo, HandlerMethod> handlerMethods = handlerMapping.getHandlerMethods();
         Map<HttpMethod, String[]> requests = new HashMap<>();
 
         for (Map.Entry<RequestMappingInfo, HandlerMethod> entry : handlerMethods.entrySet()) {
-            boolean hasPublicApi = AnnotationUtils.findAnnotation(entry.getValue().getMethod(), PublicApi.class) != null;
+            boolean hasPublicApi = AnnotationUtils.findAnnotation(entry.getValue().getMethod(), annotation) != null;
             if (!hasPublicApi) continue;
             Set<RequestMethod> requestMethods = entry.getKey().getMethodsCondition().getMethods();
             for (RequestMethod requestMethod : requestMethods) {
@@ -193,5 +217,31 @@ public class ConfigUtil {
         }
 
         return requests;
+    }
+
+    public static boolean publicRequestURI(String requestUri) {
+        Set<String> requestUris = ConfigUtil.getPublicRequestURIs().values()
+                .parallelStream().flatMap(Arrays::stream)
+                .collect(Collectors.toSet());
+        Set<String> swaggerUris = Set.of(
+                "/v2/api-docs",
+                "/v3/api-docs",
+                "/swagger-resources",
+                "/swagger-config",
+                "/configuration/ui",
+                "/configuration/security",
+                "/swagger-ui",
+                "/webjars"
+        );
+
+        return requestUris.contains(requestUri) || swaggerUris.stream().anyMatch(requestUri::startsWith);
+    }
+
+    public static boolean isRequestUriUseRefreshToken(String requestUri) {
+        Set<String> requestUris = ConfigUtil.getRequestUriUsesRefreshToken().values()
+                .parallelStream().flatMap(Arrays::stream)
+                .collect(Collectors.toSet());
+
+        return requestUris.contains(requestUri);
     }
 }

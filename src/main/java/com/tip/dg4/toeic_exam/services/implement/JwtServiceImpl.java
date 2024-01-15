@@ -25,16 +25,27 @@ public class JwtServiceImpl implements JwtService {
     private static final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 60L; // 1 hour
     private static final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 3L; // 3 days
 
+    private JwtType jwtType = JwtType.ACCESS_TOKEN;
+
     private final ExceptionConfig exceptionConfig;
 
     @Override
+    public void setJwtType(JwtType jwtType) {
+        this.jwtType = jwtType;
+    }
+
+    @Override
     public String generateToken(String username, JwtType jwtType) {
-        return createToken(new HashMap<>(), username, jwtType);
+        this.setJwtType(jwtType);
+
+        return createToken(new HashMap<>(), username);
     }
 
     @Override
     public String generateToken(UserDetails userDetails, JwtType jwtType) {
-        return createToken(new HashMap<>(), userDetails.getUsername(), jwtType);
+        this.setJwtType(jwtType);
+
+        return createToken(new HashMap<>(), userDetails.getUsername());
     }
 
     @Override
@@ -67,8 +78,9 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        boolean matchUsername = extractUsername(token).equals(userDetails.getUsername());
+
+        return matchUsername && !isTokenExpired(token);
     }
 
     private Claims extractAllClaims(String token) {
@@ -79,9 +91,9 @@ public class JwtServiceImpl implements JwtService {
                 .getBody();
     }
 
-    private String createToken(Map<String, Object> claims, String username, JwtType jwtType) {
+    private String createToken(Map<String, Object> claims, String username) {
         Date expirationDate = new Date(System.currentTimeMillis() +
-                (JwtType.REFRESH_TOKEN.equals(jwtType) ? REFRESH_TOKEN_EXPIRATION : ACCESS_TOKEN_EXPIRATION));
+                (JwtType.REFRESH_TOKEN.equals(this.jwtType) ? REFRESH_TOKEN_EXPIRATION : ACCESS_TOKEN_EXPIRATION));
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -101,6 +113,8 @@ public class JwtServiceImpl implements JwtService {
     }
 
     private Key getSignKey() {
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(System.getenv("JWT_ACCESS_TOKEN_SECRET")));
+        String jwtSecret = System.getenv(JwtType.REFRESH_TOKEN.equals(this.jwtType) ? "JWT_REFRESH_TOKEN_SECRET" : "JWT_ACCESS_TOKEN_SECRET");
+
+        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
     }
 }

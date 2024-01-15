@@ -1,6 +1,7 @@
 package com.tip.dg4.toeic_exam.controllers;
 
 import com.tip.dg4.toeic_exam.annotations.PublicApi;
+import com.tip.dg4.toeic_exam.annotations.UseRefreshToken;
 import com.tip.dg4.toeic_exam.common.constants.ApiConstant;
 import com.tip.dg4.toeic_exam.common.constants.SuccessfulConstant;
 import com.tip.dg4.toeic_exam.common.responses.DataResponse;
@@ -53,6 +54,7 @@ public class AuthController {
         return new ResponseEntity<>(result, httpStatus);
     }
 
+    @UseRefreshToken
     @PostMapping(path = "/refreshToken", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<DataResponse> refreshToken(@RequestBody RefreshTokenReq refreshTokenReq) {
         HttpStatus httpStatus = HttpStatus.OK;

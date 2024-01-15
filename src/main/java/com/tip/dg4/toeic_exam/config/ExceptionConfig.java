@@ -9,7 +9,6 @@ import com.tip.dg4.toeic_exam.exceptions.InternalServerErrorException;
 import com.tip.dg4.toeic_exam.exceptions.TExamException;
 import com.tip.dg4.toeic_exam.utils.ConfigUtil;
 import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolation;
@@ -28,7 +27,6 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -38,13 +36,11 @@ import java.util.*;
 public class ExceptionConfig extends ResponseEntityExceptionHandler {
     @ExceptionHandler(TExamException.class)
     public <E extends TExamException> ResponseEntity<ErrorResponse> handleTExamException(E exception) {
-        Field httpStatusField = ConfigUtil.getField(exception, "httpStatus");
-        HttpStatus httpStatus = (HttpStatus) Optional.ofNullable(ConfigUtil.getFieldValue(httpStatusField, exception.getCause()))
-                .orElse(HttpStatus.NOT_IMPLEMENTED);
-        String message = httpStatus != HttpStatus.NOT_IMPLEMENTED ? exception.getCause().getMessage() : exception.getMessage();
+        HttpStatus httpStatus = Optional.ofNullable(exception.getHttpStatus()).orElse(HttpStatus.NOT_IMPLEMENTED);
         ErrorResponse result = new ErrorResponse(
-                LocalDateTime.now(), httpStatus.value(), httpStatus.getReasonPhrase(), message
+                LocalDateTime.now(), httpStatus.value(), httpStatus.getReasonPhrase(), exception.getMessage()
         );
+        if (HttpStatus.NOT_IMPLEMENTED.equals(httpStatus)) log.error(exception.getMessage(), exception);
 
         return new ResponseEntity<>(result, httpStatus);
     }

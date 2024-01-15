@@ -8,6 +8,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.function.Function;
 
 public interface JwtService {
+    void setJwtType(JwtType jwtType);
+
     String generateToken(String username, JwtType jwtType);
 
     String generateToken(UserDetails userDetails, JwtType jwtType);

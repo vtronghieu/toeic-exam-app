@@ -1,5 +1,6 @@
 package com.tip.dg4.toeic_exam.config;
 
+import com.tip.dg4.toeic_exam.annotations.PublicApi;
 import com.tip.dg4.toeic_exam.common.constants.ApiConstant;
 import com.tip.dg4.toeic_exam.common.constants.TExamConstant;
 import com.tip.dg4.toeic_exam.services.implement.UserDetailsServiceImpl;
@@ -32,13 +33,14 @@ import java.util.Map;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final JwtAuthFilter jwtAuthFilter;
+    private final JwtAccessFilter jwtAccessFilter;
+    private final JwtRefreshFilter jwtRefreshFilter;
     private final ExceptionConfig exceptionConfig;
     private final UserDetailsServiceImpl userDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        Map<HttpMethod, String[]> requests = ConfigUtil.getMethodsAndPublicAPIs();
+        Map<HttpMethod, String[]> requests = ConfigUtil.getMethodsAndAPIsByAnnotation(PublicApi.class);
         httpSecurity
                 .cors(corsConfigurer -> corsConfigurer.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
@@ -54,7 +56,8 @@ public class SecurityConfig {
                 .logout(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(this.authenticationProvider())
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAccessFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtRefreshFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(ex -> ex
                         .accessDeniedHandler(exceptionConfig.handleAccessDenied())
                         .authenticationEntryPoint(exceptionConfig.handleAuthenticationEntryPoint())

@@ -1,5 +1,6 @@
 package com.tip.dg4.toeic_exam.services;
 
+import com.tip.dg4.toeic_exam.dto.requests.RefreshTokenReq;
 import com.tip.dg4.toeic_exam.dto.user.ChangePasswordDto;
 import com.tip.dg4.toeic_exam.dto.user.UserDto;
 import com.tip.dg4.toeic_exam.models.User;
@@ -32,4 +33,6 @@ public interface UserService {
     boolean existsUserById(UUID userId);
 
     User save(User user);
+
+    Optional<User> findByUsername(String username);
 }

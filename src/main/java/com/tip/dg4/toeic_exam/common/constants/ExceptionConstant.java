@@ -15,6 +15,7 @@ public class ExceptionConstant {
     public static final String TEXAM_E008 = "Unsupported token";
     public static final String TEXAM_E009 = "Token claims string is empty";
     public static final String TEXAM_E010 = "Token signature does not match locally computed signature";
+    public static final String TEXAM_E011 = "Invalid refresh token";
     //  Auth
     public static final String AUTH_E001 = "The username is invalid";
     public static final String AUTH_E002 = "The password is invalid";
