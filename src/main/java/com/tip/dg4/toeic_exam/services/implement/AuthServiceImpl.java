@@ -13,8 +13,7 @@ import com.tip.dg4.toeic_exam.services.JwtService;
 import com.tip.dg4.toeic_exam.services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthServiceImpl implements AuthService {
     private final UserService userService;
     private final JwtService jwtService;
-    private final UserDetailsService userDetailsService;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Login a user and return an authorization token.
@@ -41,7 +40,7 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = jwtService.generateToken(user.getUsername(), JwtType.ACCESS_TOKEN);
         String refreshToken = jwtService.generateToken(user.getUsername(), JwtType.REFRESH_TOKEN);
 
-        user.setRefreshToken(new BCryptPasswordEncoder().encode(refreshToken));
+        user.setRefreshToken(passwordEncoder.encode(refreshToken));
         userService.save(user);
 
         return AuthorizeDto.builder()
@@ -71,14 +70,14 @@ public class AuthServiceImpl implements AuthService {
     public TokenDto refreshToken(RefreshTokenReq refreshTokenReq) {
         User user = userService.findByUsername(refreshTokenReq.getUsername())
                 .orElseThrow(() -> new NotFoundException(ExceptionConstant.USER_E001));
-        if (!new BCryptPasswordEncoder().matches(refreshTokenReq.getRefreshToken(), user.getRefreshToken())) {
+        if (!passwordEncoder.matches(refreshTokenReq.getRefreshToken(), user.getRefreshToken())) {
             throw new UnauthorizedException(ExceptionConstant.TEXAM_E011);
         }
 
         String accessToken = jwtService.generateToken(refreshTokenReq.getUsername(), JwtType.ACCESS_TOKEN);
         String refreshToken = jwtService.generateToken(refreshTokenReq.getUsername(), JwtType.REFRESH_TOKEN);
 
-        user.setRefreshToken(new BCryptPasswordEncoder().encode(refreshToken));
+        user.setRefreshToken(passwordEncoder.encode(refreshToken));
         userService.save(user);
 
         return TokenDto.builder().accessToken(accessToken).refreshToken(refreshToken).build();
