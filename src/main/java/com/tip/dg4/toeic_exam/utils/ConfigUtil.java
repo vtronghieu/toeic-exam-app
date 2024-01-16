@@ -13,6 +13,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.mvc.condition.PathPatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
@@ -88,25 +89,6 @@ public class ConfigUtil {
     }
 
     /**
-     * Retrieves the Field object corresponding to the specified field name from the given object's class.
-     *
-     * @param source    The object from which to retrieve the Field.
-     * @param fieldName The name of the field to retrieve.
-     * @return The Field object representing the specified field, or null if the field is not found.
-     */
-    public static Field getField(Object source, String fieldName) {
-        try {
-            Field fields = source.getClass().getField(fieldName);
-            System.out.println(fields);
-            return Arrays.stream(source.getClass().getDeclaredFields())
-                    .filter(field -> fieldName.equals(field.getName()))
-                    .findFirst().orElse(null);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    /**
      * Gets the value of a field in the given object.
      *
      * @param field  The field to retrieve the value from.
@@ -117,7 +99,6 @@ public class ConfigUtil {
         try {
             if (field == null) return null;
 
-            field.setAccessible(true);
             return field.get(source);
         } catch (IllegalArgumentException | IllegalAccessException e) {
             return null;
@@ -174,13 +155,27 @@ public class ConfigUtil {
         return segments[segments.length - 1];
     }
 
+    /**
+     * Checks whether a given request URI corresponds to an existing API endpoint based on registered
+     * request mappings in the application.
+     * <p>
+     * This method iterates through the set of {@link RequestMappingInfo} obtained from the application's
+     * handler mapping. For each mapping, it retrieves the path patterns condition and checks if the provided
+     * request URI matches any of the pattern values. If a match is found, the method returns {@code true},
+     * indicating that the URI corresponds to an existing API endpoint; otherwise, it returns {@code false}.
+     *
+     * @param requestURI The request URI to be checked for existence as an API endpoint.
+     * @return {@code true} if the provided request URI corresponds to an existing API endpoint, {@code false} otherwise.
+     * @see org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping#getHandlerMethods()
+     * @see RequestMappingInfo
+     */
     public static boolean existsAPI(String requestURI) {
         Set<RequestMappingInfo> requestMappingInfo = handlerMapping.getHandlerMethods().keySet();
 
         for (RequestMappingInfo mappingInfo : requestMappingInfo) {
-            Set<String> patterns = Objects.nonNull(mappingInfo.getPathPatternsCondition()) ?
-                    mappingInfo.getPathPatternsCondition().getPatternValues() :
-                    Collections.emptySet();
+            Set<String> patterns = Optional.ofNullable(mappingInfo.getPathPatternsCondition())
+                    .map(PathPatternsRequestCondition::getPatternValues)
+                    .orElse(Collections.emptySet());
             boolean isApiMatch = !patterns.isEmpty() && patterns.stream().anyMatch(requestURI::equals);
 
             if (isApiMatch) return true;
@@ -219,6 +214,22 @@ public class ConfigUtil {
         return requests;
     }
 
+    /**
+     * Determines if the given request URI is considered a public URI that does not require authentication.
+     * <p>
+     * This method checks whether the provided request URI is included in the set of URIs that are configured
+     * as public URIs or if it matches any of the predefined Swagger-related URIs. Public URIs are those that
+     * do not require authentication for access. The method retrieves the configured public URIs from the
+     * application's configuration using ConfigUtil.getPublicRequestURIs(), which is expected to return a
+     * mapping of roles to URIs.
+     * <p>
+     * Additionally, predefined Swagger-related URIs are included in the set of public URIs, as they typically
+     * provide API documentation and do not require authentication.
+     *
+     * @param requestUri The request URI to be checked for being a public URI.
+     * @return {@code true} if the provided request URI is a public URI, {@code false} otherwise.
+     * @see ConfigUtil#getPublicRequestURIs()
+     */
     public static boolean publicRequestURI(String requestUri) {
         Set<String> requestUris = ConfigUtil.getPublicRequestURIs().values()
                 .parallelStream().flatMap(Arrays::stream)
@@ -237,6 +248,18 @@ public class ConfigUtil {
         return requestUris.contains(requestUri) || swaggerUris.stream().anyMatch(requestUri::startsWith);
     }
 
+    /**
+     * Determines if the given request URI is configured to use a refresh token for authentication.
+     * <p>
+     * This method checks whether the provided request URI is included in the set of URIs that are configured
+     * to use refresh tokens based on the application's configuration. It retrieves the configured URIs from
+     * the application's configuration using ConfigUtil.getRequestUriUsesRefreshToken(), which is expected to return
+     * a mapping of roles to URIs.
+     *
+     * @param requestUri The request URI to be checked for using a refresh token.
+     * @return {@code true} if the provided request URI is configured to use a refresh token, {@code false} otherwise.
+     * @see ConfigUtil#getRequestUriUsesRefreshToken()
+     */
     public static boolean isRequestUriUseRefreshToken(String requestUri) {
         Set<String> requestUris = ConfigUtil.getRequestUriUsesRefreshToken().values()
                 .parallelStream().flatMap(Arrays::stream)

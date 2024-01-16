@@ -48,7 +48,7 @@ public class GenerateIdImpl extends AbstractMongoEventListener<Object> {
                 if (!isObjectCreated && Objects.isNull(fieldValue)) {
                     throw new NullPointerException(field.getDeclaringClass().getCanonicalName() + ": Id can't be null");
                 }
-                this.setAutoGenerateID(field, source);
+                this.setID(field, source);
             } else {
                 if (!ConfigUtil.isModelClassField(field)) continue;
 
@@ -73,7 +73,7 @@ public class GenerateIdImpl extends AbstractMongoEventListener<Object> {
      * @param source The object containing the field.
      * @throws MappingException If an error occurs while setting the UUID field.
      */
-    private void setAutoGenerateID(Field field, Object source) {
+    private void setID(Field field, Object source) {
         field.setAccessible(true);
         boolean isAccessible = field.canAccess(source);
 
@@ -82,7 +82,7 @@ public class GenerateIdImpl extends AbstractMongoEventListener<Object> {
                 field.set(source, UUID.randomUUID());
             }
         } catch (IllegalAccessException e) {
-            throw new MappingException("Error setting UUID field", e);
+            throw new MappingException("Error setting Id field", e);
         } finally {
             field.setAccessible(isAccessible);
         }
